@@ -25,8 +25,8 @@ The we construct a set $X$ and its collection $S$
   - $(x_n, \bot) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = \neg x_n \land p_{ij} \in c_i \land c_i \in F \rbrace$
   - $(x_n, \top) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = x_n \land p_{ij} \in c_i \land c_i \in F \rbrace$
   </br> bipartites the existence of $x_n$ by its positive or negative existence
-  - $S = \lbrace \lbrace p_{ij} \rbrace | p_{ij} \in c_i \land c_i \in F \rbrace \cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace 
-         \cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace  \cup \lbrace \lbrace c_i, p_{ij} \rbrace | c_i \in F \land p_{ij} \in c_i \rbrace$
+  - $S = \lbrace {\lbrace p_{ij} \rbrace} | p_{ij} \in c_i \land c_i \in F \rbrace \cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace 
+         \cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace  \cup \lbrace {\lbrace c_i, p_{ij} \rbrace} | c_i \in F \land p_{ij} \in c_i \rbrace$
     </br> S includes all elementary sets of atoms, all binary sets of a clause and one of its atoms, and all $(x_n, \bot)$ and
     $(x_n, \top)$.
 
@@ -43,7 +43,7 @@ Now we show that the construction is sound and complete:
     1. each $x_n$ is covered in its $(x_n, \neg M(x_n))$
     2. each $C_i$ is covered in its $\lbrace C_i, p_{ij} \rbrace$
     3. each $p_{ij}$ is covered either in $(x_n, \neg M(x_n))$ if $M(p_{ij}) \equiv \bot$
-      </br> or in $\lbrace C_i, p_{ij} \rbrace$ and $p_{ij}$ if $M(p_{ij}) \equiv \top$
+      </br> or in $\lbrace C_i, p_{ij} \rbrace$ and $\lbrace p_{ij} \rbrace$ if $M(p_{ij}) \equiv \top$
 
   - Completeness: $S' \text{ covers } X \Longrightarrow M \models F$
     We firstly reconstruct the formula $F$ with the $(x_n, \bot)$ and $(x_n, \bot)$
