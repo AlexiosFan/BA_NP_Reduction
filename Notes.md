@@ -66,4 +66,8 @@ Finally we show that the reduction is in the polynomial time w.r.t to the size o
     2. all binary sets of a clause and one of its atoms, $\mathcal{O}(3n)$
     3. all $(x_n, \bot)$ and $(x_n, \top)$, $\mathcal{O}(mn)$, for we need to iterate all variables and clauses for construction
   
-Hence in total, the reduction requires quadratic complexity.
+Hence in total $\mathcal{O}(n^2)$, the reduction requires quadratic complexity.
+
+Pros: direct reduction from the **3SAT**, do not have to deal with tedious definitions in the **Colorability** </br>
+Cons: different types in the same set(resolvable with datatype or tuples?), probably similar problem as in the **Colorability**? </br>
+Todo: check the definition of **3SAT** in the existing works
