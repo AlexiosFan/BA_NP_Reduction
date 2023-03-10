@@ -16,19 +16,19 @@
 ## A polynomial reduction from 3SAT to Exact cover
 Given a formula $F$,
   - indexing the variables occurred in the formula, let $x_n$ denotes the n-th variable
-  - indexing the clauses occurred in the formula, let $c_i$ denotes the i-th variable
+  - indexing the clauses occurred in the formula, let $C_i$ denotes the i-th clause
   - let $p_{ij}$ denotes the j-th atom in the i-th clause
 
 The we construct a set $X$ and its collection $S$
-  - $X = \lbrace x_n | x_n \in (\text{vars } F)\rbrace \cup \lbrace c_i | c_i \in F \rbrace \cup \lbrace p_{ij} | p_{ij} \in c_i \land c_i \in F \rbrace$
+  - $X = \lbrace x_n | x_n \in (\text{vars } F)\rbrace \cup \lbrace C_i | C_i \in F \rbrace \cup \lbrace p_{ij} | p_{ij} \in C_i \land C_i \in F \rbrace$
     </br>X includes all variables, all clauses and all atoms in $F$
-  - $(x_n, \bot) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = \neg x_n \land p_{ij} \in c_i \land c_i \in F \rbrace$
-  - $(x_n, \top) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = x_n \land p_{ij} \in c_i \land c_i \in F \rbrace$
+  - $(x_n, \bot) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = \neg x_n \land p_{ij} \in C_i \land C_i \in F \rbrace$
+  - $(x_n, \top) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = x_n \land p_{ij} \in C_i \land C_i \in F \rbrace$
   </br> bipartites the existence of $x_n$ by its positive or negative existence
-  - $S = \lbrace \lbrace p_{ij} \rbrace | p_{ij} \in c_i \land c_i \in F \rbrace$ 
+  - $S = \lbrace \lbrace p_{ij} \rbrace | p_{ij} \in C_i \land C_i \in F \rbrace$ 
       </br>$\cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace$
       </br>$\cup \lbrace (x_n, \top) | x_n \in (\text{vars } F) \rbrace$
-      </br>$\cup \lbrace \lbrace c_i, p_{ij} \rbrace | c_i \in F \land p_{ij} \in c_i \rbrace$
+      </br>$\cup \lbrace \lbrace C_i, p_{ij} \rbrace | C_i \in F \land p_{ij} \in C_i \rbrace$
     </br> S includes all elementary sets of atoms, all binary sets of a clause and one of its atoms, and all $(x_n, \bot)$ and
     $(x_n, \top)$.
 
@@ -42,9 +42,9 @@ Now we show that the construction is sound and complete:
        we choose the smallest index $j$ and include all other atoms as elementary set \lbrace p_{ij} \rbrace 
     </br>
     Then we check for the correctness:
-    1. each $x_n$ is covered in its $(x_n, \neg M(x_n))$
-    2. each $C_i$ is covered in its $\lbrace C_i, p_{ij} \rbrace$
-    3. each $p_{ij}$ is covered either in $(x_n, \neg M(x_n))$ if $M(p_{ij}) \equiv \bot$
+    4. each $x_n$ is covered in its $(x_n, \neg M(x_n))$
+    5. each $C_i$ is covered in its $\lbrace C_i, p_{ij} \rbrace$
+    6. each $p_{ij}$ is covered either in $(x_n, \neg M(x_n))$ if $M(p_{ij}) \equiv \bot$
       </br> or in $\lbrace C_i, p_{ij} \rbrace$ and $\lbrace p_{ij} \rbrace$ if $M(p_{ij}) \equiv \top$
 
   - Completeness: $S' \text{ covers } X \Longrightarrow M \models F$
