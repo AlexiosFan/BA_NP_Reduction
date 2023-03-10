@@ -25,8 +25,10 @@ The we construct a set $X$ and its collection $S$
   - $(x_n, \bot) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = \neg x_n \land p_{ij} \in c_i \land c_i \in F \rbrace$
   - $(x_n, \top) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = x_n \land p_{ij} \in c_i \land c_i \in F \rbrace$
   </br> bipartites the existence of $x_n$ by its positive or negative existence
-  - $S = \lbrace (\lbrace p_{ij} \rbrace) | p_{ij} \in c_i \land c_i \in F \rbrace \cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace 
-         \cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace  \cup \lbrace (\lbrace c_i, p_{ij} \rbrace) | c_i \in F \land p_{ij} \in c_i \rbrace$
+  - $$ S = \lbrace \lbrace p_{ij} \rbrace | p_{ij} \in c_i \land c_i \in F \rbrace 
+      \cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace 
+      \cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace  
+      \cup \lbrace \lbrace c_i, p_{ij} \rbrace | c_i \in F \land p_{ij} \in c_i \rbrace $$
     </br> S includes all elementary sets of atoms, all binary sets of a clause and one of its atoms, and all $(x_n, \bot)$ and
     $(x_n, \top)$.
 
@@ -53,7 +55,7 @@ Now we show that the construction is sound and complete:
     Then we show that this is a model for $F$. It is sufficient to show that $M \models C_i$ and to show that 
     there is always a $p_{ij}$ s.t. $M(p_{ij}) \equiv \top$
     </br> This is trivial, for  each $p_{ij}$ in $\lbrace C_i, p_{ij} \rbrace$ is not included in any $(x_n, b_n) \in S'$. The reason is 
-    by construction, $M(p'_{ij}) \equiv \bot$ for $p'_{ij} \in (x_n, b_n)$
+    by construction, $M(q_{ij}) \equiv \bot$ for $q_{ij} \in (x_n, b_n)$
 
 Finally we show that the reduction is in the polynomial time w.r.t to the size of the formula.
   - let m denotes the amount of variables, n denotes the amount of clauses, k denotes the amount of atoms
