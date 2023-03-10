@@ -58,8 +58,8 @@ Now we show that the construction is sound and complete:
     by construction, $M(q_{ij}) \equiv \bot$ for $q_{ij} \in (x_n, b_n)$
 
 Finally we show that the reduction is in the polynomial time w.r.t to the size of the formula.
-  - let m denotes the amount of variables, n denotes the amount of clauses, k denotes the amount of atoms
-  </br> by definition of **3SAT**, we have $m \leq 3n \land p \leq 3n$
+  - let $m$ denotes the amount of variables, $n$ denotes the amount of clauses, $k$ denotes the amount of atoms
+  </br> by definition of **3SAT**, we have $m \leq 3n \land k \leq 3n$
   - The construction of $X$ requires to insert all elements mentioned above, i.e. $\mathcal{O}(m + n + k)$
   - The construction of $S$ requires to insert 
     1. all atoms, $\mathcal{O}(k)$
