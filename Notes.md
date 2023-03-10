@@ -48,7 +48,7 @@ Now we show that the construction is sound and complete:
       </br> or in $\lbrace C_i, p_{ij} \rbrace$ and $\lbrace p_{ij} \rbrace$ if $M(p_{ij}) \equiv \top$
 
   - Completeness: $S' \text{ covers } X \Longrightarrow M \models F$
-    We firstly reconstruct the formula $F$ with the $(x_n, \bot)$ and $(x_n, \bot)$
+    We firstly reconstruct the formula $F$ with the $(x_n, \bot)$ and $(x_n, \top)$
     </br>
     Then construct a Model $M$: we check $(x_n, b_n)$ that are included in the $S'$, let $M(x_n) \equiv b_n$
     </br>
