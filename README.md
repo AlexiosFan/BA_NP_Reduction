@@ -14,5 +14,7 @@ Starting to work on the basic setting.
   - Resolved the dependency problems in the directory original_work, which is the
   workspace for the thesis project
 
+## 10/03/2023
+Added an on-paper proof for polynomial reduction from **3SAT** to **Exact Cover**
 
 
