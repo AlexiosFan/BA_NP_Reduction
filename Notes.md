@@ -17,11 +17,11 @@
 Given a formula $F$,
   - indexing the variables occurred in the formula, let $x_n$ denotes the n-th variable
   - indexing the clauses occurred in the formula, let $C_i$ denotes the i-th clause
-  - let $p_{ij}$ denotes the j-th atom in the i-th clause
+  - let $p_{ij}$ denotes the j-th literal in the i-th clause
 
 The we construct a set $X$ and its collection $S$
   - $X = \lbrace x_n | x_n \in (\text{vars } F)\rbrace \cup \lbrace C_i | C_i \in F \rbrace \cup \lbrace p_{ij} | p_{ij} \in C_i \land C_i \in F \rbrace$
-    </br>X includes all variables, all clauses and all atoms in $F$
+    </br>X includes all variables, all clauses and all literals in $F$
   - $(x_n, \bot) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = \neg x_n \land p_{ij} \in C_i \land C_i \in F \rbrace$
   - $(x_n, \top) = \lbrace x_n \rbrace \cup \lbrace p_{ij} | p_{ij} = x_n \land p_{ij} \in C_i \land C_i \in F \rbrace$
   </br> bipartites the existence of $x_n$ by its positive or negative existence
@@ -29,7 +29,7 @@ The we construct a set $X$ and its collection $S$
       </br>$\cup \lbrace (x_n, \bot) | x_n \in (\text{vars } F) \rbrace$
       </br>$\cup \lbrace (x_n, \top) | x_n \in (\text{vars } F) \rbrace$
       </br>$\cup \lbrace \lbrace C_i, p_{ij} \rbrace | C_i \in F \land p_{ij} \in C_i \rbrace$
-    </br> S includes all elementary sets of atoms, all binary sets of a clause and one of its atoms, and all $(x_n, \bot)$ and
+    </br> S includes all elementary sets of literals, all binary sets of a clause and one of its literals, and all $(x_n, \bot)$ and
     $(x_n, \top)$.
 
 Now we show that the construction is sound and complete:
@@ -39,7 +39,7 @@ Now we show that the construction is sound and complete:
     2. to include all $C_i$, we include $\lbrace C_i, p_{ij} \rbrace$ for $M(p_{ij}) \equiv \top$,
        there is at least one such $p_{ij}$, for $M$ is model of $F$ and for all clauses $M \models C_i$
     3. in case there are more than on such $p_{ij}$, 
-       we choose the smallest index $j$ and include all other atoms as elementary set \lbrace p_{ij} \rbrace 
+       we choose the smallest index $j$ and include all other literals as elementary set \lbrace p_{ij} \rbrace 
     </br>
     Then we check for the correctness:
     4. each $x_n$ is covered in its $(x_n, \neg M(x_n))$
@@ -58,12 +58,12 @@ Now we show that the construction is sound and complete:
     by construction, $M(q_{ij}) \equiv \bot$ for $q_{ij} \in (x_n, b_n)$
 
 Finally we show that the reduction is in the polynomial time w.r.t to the size of the formula.
-  - let $m$ denotes the amount of variables, $n$ denotes the amount of clauses, $k$ denotes the amount of atoms
+  - let $m$ denotes the amount of variables, $n$ denotes the amount of clauses, $k$ denotes the amount of literals
   </br> by definition of **3SAT**, we have $m \leq 3n \land k \leq 3n$
   - The construction of $X$ requires to insert all elements mentioned above, i.e. $\mathcal{O}(m + n + k)$
   - The construction of $S$ requires to insert 
-    1. all atoms, $\mathcal{O}(k)$
-    2. all binary sets of a clause and one of its atoms, $\mathcal{O}(3n)$
+    1. all literals, $\mathcal{O}(k)$
+    2. all binary sets of a clause and one of its literals, $\mathcal{O}(3n)$
     3. all $(x_n, \bot)$ and $(x_n, \top)$, $\mathcal{O}(mn)$, for we need to iterate all variables and clauses for construction
   
 Hence in total $\mathcal{O}(n^2)$, the reduction requires quadratic complexity.
