@@ -39,12 +39,12 @@ Now we show that the construction is sound and complete:
     2. to include all $C_i$, we include $\lbrace C_i, p_{ij} \rbrace$ for $M(p_{ij}) \equiv \top$,
        there is at least one such $p_{ij}$, for $M$ is model of $F$ and for all clauses $M \models C_i$
     3. in case there are more than on such $p_{ij}$, 
-       we choose the smallest index $j$ and include all other literals as elementary set \lbrace p_{ij} \rbrace 
+       we choose the smallest index $j$ and include all other literals as elementary set $\lbrace p_{ij} \rbrace$ 
     </br>
     Then we check for the correctness:
-    4. each $x_n$ is covered in its $(x_n, \neg M(x_n))$
-    5. each $C_i$ is covered in its $\lbrace C_i, p_{ij} \rbrace$
-    6. each $p_{ij}$ is covered either in $(x_n, \neg M(x_n))$ if $M(p_{ij}) \equiv \bot$
+    1. each $x_n$ is covered in its $(x_n, \neg M(x_n))$
+    2. each $C_i$ is covered in its $\lbrace C_i, p_{ij} \rbrace$
+    3. each $p_{ij}$ is covered either in $(x_n, \neg M(x_n))$ if $M(p_{ij}) \equiv \bot$
       </br> or in $\lbrace C_i, p_{ij} \rbrace$ and $\lbrace p_{ij} \rbrace$ if $M(p_{ij}) \equiv \top$
 
   - Completeness: $S' \text{ covers } X \Longrightarrow M \models F$
@@ -71,3 +71,8 @@ Hence in total $\mathcal{O}(n^2)$, the reduction requires quadratic complexity.
 Pros: direct reduction from the **3SAT**, do not have to deal with tedious definitions in the **Colorability** </br>
 Cons: different types in the same set(resolvable with datatype or tuples?), probably similar problem as in the **Colorability**? </br>
 Todo: check the definition of **3SAT** in the existing works
+
+Solutions to the cons:
+  1. reduction from sat to sat_list, using the same approach as in the vertex cover
+  2. reduction from exact cover to exact cover list for subset sum, also the same approach
+   
