@@ -94,9 +94,9 @@ definition constr_cover
      vars_sets = 
        {x_set | x_set. \<exists>x \<in> vars F.
        (if (\<sigma>\<up>) (Pos x) then (V x) \<in> x_set \<and> x_set \<in> var_true_literals F
-       else (V x) \<in> x_set \<and> x_set \<in> var_false_literals F)};
+        else (V x) \<in> x_set \<and> x_set \<in> var_false_literals F)};
      clause_sets = 
-       {{C c, p} | c p. c \<in> (set F) \<and> p \<in> c}
+       {{C c, L p c} | c p. c \<in> (set F) \<and> p \<in> c \<and> (\<sigma>\<up>) p}
    in 
     S')
   else {})"
