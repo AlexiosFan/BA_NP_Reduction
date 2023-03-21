@@ -349,13 +349,213 @@ shows  "disjoint (\<Union> (clause_sets F \<sigma>))"
     xc_element.simps(2) xc_element.simps(3) xc_element.simps(9))+
   done 
 
-lemma vars_sets_disj:
-assumes "\<sigma> \<Turnstile> F" 
-shows "disjoint (vars_sets F \<sigma>)"
-  unfolding vars_sets_def
+
+abbreviation "true_literals v F \<equiv> {V v} \<union> {l. l \<in> (literals_of_sat F) 
+  \<and> (\<exists>c. C c\<in> (clauses_of_sat F) \<and> L (Neg v) c = l)}"
+abbreviation "false_literals v F \<equiv> {V v} \<union> {l. l \<in> (literals_of_sat F) 
+  \<and> (\<exists>c. C c\<in> (clauses_of_sat F) \<and> L (Pos v) c = l)}"
+
+lemma true_false_literals_noteq: 
+  "v \<in> vars F \<Longrightarrow> true_literals v F \<noteq> false_literals v F"
+proof -
+  assume "v \<in> vars F"
+  then have "(v \<in> var ` \<Union> (set F))"
+    using vars_correct[of v F] by blast 
+  then have "\<exists>c\<in> set F. v \<in> var ` c"
+    by blast
+  
+  have "\<exists>c. C c \<in> (clauses_of_sat F) \<and>
+    (L (Neg v) c \<in> (literals_of_sat F) \<or> L (Pos v) c \<in> (literals_of_sat F))"
+    unfolding literals_of_sat_def clauses_of_sat_def
+    using comp_literals_correct[of F "{}"] 
+    apply auto
+    using \<open>\<exists>c\<in> set F. v \<in> var ` c\<close> 
+    by (metis imageE var.elims)
+
+  then show  "true_literals v F \<noteq> false_literals v F" 
+    by fast
+qed 
+
+lemma true_literals_not_in_false:
+  "v \<in> vars F \<Longrightarrow> \<forall>u\<in> vars F. true_literals v F \<noteq> false_literals u F"
+proof 
+  fix u 
+  assume  "v \<in> vars F" "u \<in> vars F"  
+
+  have "\<forall>x\<in> true_literals v F. x = V v \<or> (\<exists>c. x = L (Neg v) c)"
+    by blast
+  moreover have "\<forall>x\<in> false_literals u F. x = V u \<or> (\<exists>c. x = L (Pos u) c)"
+    by blast 
+
+  ultimately show "true_literals v F \<noteq> false_literals u F" 
+  apply (cases "v\<noteq>u")
+  using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] by blast+ 
+qed 
+ 
+
+lemma false_literals_not_in_true:
+  "v \<in> vars F \<Longrightarrow> \<forall>u\<in> vars F. false_literals v F \<noteq> true_literals u F"
+proof 
+  fix u 
+  assume  "v \<in> vars F" "u \<in> vars F"  
+
+  have "\<forall>x\<in> true_literals v F. x = V v \<or> (\<exists>c. x = L (Neg v) c)"
+    by blast
+  moreover have "\<forall>x\<in> false_literals u F. x = V u \<or> (\<exists>c. x = L (Pos u) c)"
+    by blast 
+
+  ultimately show "false_literals v F \<noteq> true_literals u F" 
+  apply (cases "v\<noteq>u")
+  using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] by blast+ 
+qed 
+ 
+
+lemma vars_sets_true_assignment:
+"\<lbrakk>(\<sigma>\<up>) (Pos v); v \<in> vars F\<rbrakk> \<Longrightarrow> true_literals v F \<in> vars_sets F \<sigma> \<and> false_literals v F \<notin> vars_sets F \<sigma>"
+proof standard
+  assume "(\<sigma>\<up>) (Pos v)" "v \<in> vars F"
+
+  have "true_literals v F \<in> var_true_literals F"
+    unfolding var_true_literals_def vars_of_sat_def
+    using \<open>v \<in> vars F\<close> by blast
+
+  then show "true_literals v F \<in> vars_sets F \<sigma>"
+    unfolding vars_sets_def
+    using \<open>(\<sigma>\<up>) (Pos v)\<close> \<open>v \<in> vars F\<close> 
+    by auto
+
+  from \<open>v \<in> vars F\<close> have "false_literals v F \<notin> var_true_literals F"
+    unfolding var_true_literals_def vars_of_sat_def
+    using false_literals_not_in_true by force
+
+  then show "false_literals v F \<notin> vars_sets F \<sigma>"
+    unfolding vars_sets_def
+    using \<open>(\<sigma>\<up>) (Pos v)\<close> \<open>v \<in> vars F\<close> 
+    by auto
+qed 
+
+lemma vars_sets_false_assignment:
+"\<lbrakk>\<not> (\<sigma>\<up>) (Pos v); v \<in> vars F\<rbrakk> \<Longrightarrow> true_literals v F \<notin> vars_sets F \<sigma> \<and> false_literals v F \<in> vars_sets F \<sigma>"
+proof standard
+  assume "\<not> (\<sigma>\<up>) (Pos v)" "v \<in> vars F"
+
+  have "false_literals v F \<in> var_false_literals F"
+    unfolding var_false_literals_def vars_of_sat_def
+    using \<open>v \<in> vars F\<close> by blast
+
+  then show "false_literals v F \<in> vars_sets F \<sigma>"
+    unfolding vars_sets_def
+    using \<open>\<not> (\<sigma>\<up>) (Pos v)\<close> \<open>v \<in> vars F\<close> 
+    by fastforce 
+    
+
+  from \<open>v \<in> vars F\<close> have "true_literals v F \<notin> var_false_literals F"
+    unfolding var_false_literals_def vars_of_sat_def
+    using true_literals_not_in_false by force
+
+  then show "true_literals v F \<notin> vars_sets F \<sigma>"
+    unfolding vars_sets_def
+    using \<open>\<not> (\<sigma>\<up>) (Pos v)\<close> \<open>v \<in> vars F\<close> 
+    by auto
+qed 
+
+lemma vars_sets_bipartite:
+  "v \<in> vars F 
+    \<Longrightarrow> (true_literals v F \<notin> vars_sets F \<sigma> \<and> false_literals v F \<in> vars_sets F \<sigma>) 
+        \<or> (true_literals v F \<in> vars_sets F \<sigma> \<and> false_literals v F \<notin> vars_sets F \<sigma>)"
+  using vars_sets_false_assignment vars_sets_true_assignment 
+  by fast
+
+lemma vars_sets_subset:
+  "vars_sets F \<sigma> \<subseteq> (var_true_literals F \<union> var_false_literals F)"
+  unfolding vars_sets_def var_true_literals_def var_false_literals_def
+  by auto
+
+lemma var_true_literals_disj:
+  "disjoint (var_true_literals F)"
   apply (rule disjointI)
+  unfolding var_true_literals_def
+  by auto
+
+lemma var_false_literals_disj:
+  "disjoint (var_false_literals F)"
+  apply (rule disjointI)
+  unfolding var_false_literals_def
+  by auto
+
+
+lemma vars_sets_disj_aux:
+assumes "A \<in> vars_sets F \<sigma>"
+shows "\<forall>s\<in>vars_sets F \<sigma>. s \<noteq> A \<longrightarrow> s \<inter> A = {}"
+proof 
+  fix s
+  assume "s \<in> vars_sets F \<sigma>"
+  show "s \<noteq> A \<longrightarrow> s \<inter> A = {}"
+  proof 
+    assume "s \<noteq> A"
+    consider 
+      "s \<in> var_false_literals F \<and> A \<in> var_false_literals F" |
+      "s \<in> var_false_literals F \<and> A \<in> var_true_literals F \<or> 
+        s \<in> var_true_literals F \<and> A \<in> var_false_literals F" |
+      "s \<in> var_true_literals F \<and> A \<in> var_true_literals F"
+        using vars_sets_subset assms \<open>s \<in> vars_sets F \<sigma>\<close> 
+        by blast
+    then show "s \<inter> A = {}"
+    proof (cases)
+      case 1
+      then show ?thesis
+      using disjointD var_false_literals_disj 
+        \<open>s \<noteq> A\<close> by blast
+    next
+      case 2
+      then show ?thesis
+      unfolding var_false_literals_def var_true_literals_def vars_of_sat_def
+      using assms \<open>s \<in> vars_sets F \<sigma>\<close> vars_sets_bipartite 
+      by fast
+    next
+      case 3
+      then show ?thesis 
+      using disjointD var_true_literals_disj 
+        \<open>s \<noteq> A\<close> by blast
+    qed
+  qed 
+qed 
+
+lemma vars_sets_disj:
+"disjoint (vars_sets F \<sigma>)"
+  apply (rule disjointI)
+  using vars_sets_disj_aux 
+  by blast
+
+lemma vars_sets_only_false_literals:
+assumes "\<sigma> \<Turnstile> F" "L v c \<in> \<Union> (vars_sets F \<sigma>)" "(var v) \<in> vars F"
+shows "\<not> (\<sigma>\<up>) v"
+proof - 
+  from \<open>L v c \<in> \<Union> (vars_sets F \<sigma>)\<close> 
+  obtain s where s_def: "s \<in> vars_sets F \<sigma>" "L v c \<in> s" 
+    by blast
+  hence "s \<in> var_true_literals F \<union> var_false_literals F"
+    using vars_sets_subset by blast
+  hence "V (var v) \<in> s"
+    unfolding var_false_literals_def var_true_literals_def vars_of_sat_def
+    using assms(3) \<open>L v c \<in> s\<close> 
+    by force
+
+  with s_def assms(3) show ?thesis
+  apply(cases v)
+  unfolding vars_sets_def var_true_literals_def var_false_literals_def vars_of_sat_def
   apply auto 
-  sorry
+   sorry
+qed 
+
+thm vars_sets_def
+
+lemma vars_clauses_set_disj:
+assumes "\<sigma> \<Turnstile> F" 
+shows "\<Union>(vars_sets F \<sigma>) \<inter> \<Union> (\<Union> (clause_sets F \<sigma>)) = {}"
+sorry
+
+thm disjoint_union
 
 subsection "The soundness lemma"
   
