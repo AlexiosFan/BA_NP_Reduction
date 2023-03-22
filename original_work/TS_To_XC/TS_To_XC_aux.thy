@@ -2,9 +2,9 @@ theory TS_To_XC_aux
   imports XC_Definition "../../poly-reductions/Lib/SAT_Definition"
 begin
   
-datatype index = Fst | Snd | Thd
-
 datatype 'a xc_element = V 'a | C "'a lit set" | L "'a lit" "'a lit set"
+
+thm xc_element.exhaust
 
 fun var :: "'a lit \<Rightarrow> 'a" where 
 "var (Neg a) = a" | "var (Pos a) = a"
@@ -59,5 +59,9 @@ lemma literals_of_sat_correct[simp]:
   "\<lbrakk>c \<in> set F; l \<in> c\<rbrakk> \<Longrightarrow> L l c \<in> literals_of_sat F"
   unfolding literals_of_sat_def by simp
 
+fun lift_xc_element :: "('a \<Rightarrow> bool) \<Rightarrow> 'a xc_element \<Rightarrow> bool" ("_\<Up>" 60) where
+ "lift_xc_element \<sigma> (V v) = \<sigma> v" |
+ "lift_xc_element \<sigma> (C c) \<longleftrightarrow> (\<exists> l\<in>c. (\<sigma>\<up>) l)" |
+ "lift_xc_element \<sigma> (L x c) = (\<sigma>\<up>) x"
 
 end

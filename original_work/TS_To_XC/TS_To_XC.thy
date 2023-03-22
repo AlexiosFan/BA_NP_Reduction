@@ -338,6 +338,8 @@ qed
 
 subsubsection "The constructed sets are pairwise disjoint"
 
+paragraph "clause_sets are disjoint"
+
 lemma clause_sets_disj:
 assumes "\<sigma> \<Turnstile> F" 
 shows  "disjoint (\<Union> (clause_sets F \<sigma>))"
@@ -349,6 +351,7 @@ shows  "disjoint (\<Union> (clause_sets F \<sigma>))"
     xc_element.simps(2) xc_element.simps(3) xc_element.simps(9))+
   done 
 
+paragraph "vars_sets are disjoint"
 
 abbreviation "true_literals v F \<equiv> {V v} \<union> {l. l \<in> (literals_of_sat F) 
   \<and> (\<exists>c. C c\<in> (clauses_of_sat F) \<and> L (Neg v) c = l)}"
@@ -527,35 +530,75 @@ lemma vars_sets_disj:
   using vars_sets_disj_aux 
   by blast
 
-lemma vars_sets_only_false_literals:
-assumes "\<sigma> \<Turnstile> F" "L v c \<in> \<Union> (vars_sets F \<sigma>)" "(var v) \<in> vars F"
-shows "\<not> (\<sigma>\<up>) v"
-proof - 
-  from \<open>L v c \<in> \<Union> (vars_sets F \<sigma>)\<close> 
-  obtain s where s_def: "s \<in> vars_sets F \<sigma>" "L v c \<in> s" 
+paragraph "clause sets and var sets are disjoint to each other"
+
+lemma vars_sets_only_false_literals_aux:
+"\<forall>s\<in>vars_sets F \<sigma>. \<forall>x \<in> s. x \<in> vars_of_sat F \<or> (x \<in> literals_of_sat F \<and> \<not>(\<sigma>\<Up>) x)"
+unfolding vars_sets_def
+apply auto 
+unfolding var_false_literals_def var_true_literals_def
+using double_neg_id by fastforce+
+
+corollary vars_sets_only_false_literals:
+"\<forall>x\<in>\<Union>(vars_sets F \<sigma>). x \<in> vars_of_sat F \<or> (x \<in> literals_of_sat F \<and> \<not>(\<sigma>\<Up>) x)"
+using vars_sets_only_false_literals_aux by blast
+
+lemma constr_cover_clause_only_true_literals_aux1:
+assumes "\<sigma> \<Turnstile> F" "c \<in> set F"
+shows "\<forall>s\<in> constr_cover_clause c \<sigma>. \<forall>x\<in>s. x \<in> clauses_of_sat F \<or> (x \<in> literals_of_sat F \<and> (\<sigma>\<Up>) x)"
+proof  auto
+  fix s x
+  assume prems: "s \<in> constr_cover_clause c \<sigma>" "x \<in> s" "x \<notin> clauses_of_sat F"
+  
+  obtain p where p_def:"p \<in> c" "(\<sigma>\<up>) p"
+  "constr_cover_clause c \<sigma> = {{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
+    using constr_cover_clause_unfold[OF assms] by blast 
+
+  hence "s \<in> {{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
+    using prems(1) by blast 
+
+  hence "x \<in> \<Union> ({{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q})"
+    using prems(2) by blast 
+
+  hence "x \<in> {C c, L p c} \<union> {L q c |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
     by blast
-  hence "s \<in> var_true_literals F \<union> var_false_literals F"
-    using vars_sets_subset by blast
-  hence "V (var v) \<in> s"
-    unfolding var_false_literals_def var_true_literals_def vars_of_sat_def
-    using assms(3) \<open>L v c \<in> s\<close> 
-    by force
 
-  with s_def assms(3) show ?thesis
-  apply(cases v)
-  unfolding vars_sets_def var_true_literals_def var_false_literals_def vars_of_sat_def
-  apply auto 
-   sorry
-qed 
+  hence "x \<in> {L p c} \<union> {L q c |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
+    using prems(3) assms(2) unfolding clauses_of_sat_def 
+    by blast
+  
+  hence "x \<in> {L q c |q. q \<in> c \<and> (\<sigma>\<up>) q}"
+    using p_def(1-2) by blast 
 
-thm vars_sets_def
+  with assms(2) show "(\<sigma>\<Up>) x" "x \<in> literals_of_sat F"
+  unfolding literals_of_sat_def
+  by fastforce+  
+qed
+
+corollary constr_cover_clause_only_true_literals_aux2:
+assumes "\<sigma> \<Turnstile> F"
+shows "\<forall>s\<in> \<Union>(clause_sets F \<sigma>). \<forall>x\<in>s. x \<in> clauses_of_sat F \<or> (x \<in> literals_of_sat F \<and> (\<sigma>\<Up>) x)"
+unfolding clause_sets_def
+using constr_cover_clause_only_true_literals_aux1[OF assms]
+by blast
+
+corollary constr_cover_clause_only_true_literals:
+assumes "\<sigma> \<Turnstile> F"
+shows "\<forall>x\<in> \<Union>(\<Union>(clause_sets F \<sigma>)). x \<in> clauses_of_sat F \<or> (x \<in> literals_of_sat F \<and> (\<sigma>\<Up>) x)"
+using constr_cover_clause_only_true_literals_aux2[OF assms]
+by blast
 
 lemma vars_clauses_set_disj:
 assumes "\<sigma> \<Turnstile> F" 
 shows "\<Union>(vars_sets F \<sigma>) \<inter> \<Union> (\<Union> (clause_sets F \<sigma>)) = {}"
-sorry
+using assms constr_cover_clause_only_true_literals vars_sets_only_false_literals
+unfolding vars_of_sat_def clauses_of_sat_def literals_of_sat_def
+by fastforce
 
-thm disjoint_union
+corollary constr_cover_disj:
+"\<sigma> \<Turnstile> F \<Longrightarrow> disjoint ((vars_sets F \<sigma>) \<union> (\<Union> (clause_sets F \<sigma>)))"
+using disjoint_union vars_sets_disj clause_sets_disj vars_clauses_set_disj
+by blast  
 
 subsection "The soundness lemma"
   
@@ -607,7 +650,9 @@ lemma ts_xc_sound:
       using prems by blast
 
     show "disjoint (constr_cover F \<sigma>)"
-    sorry
+      unfolding constr_cover_def 
+      using prems constr_cover_disj 
+      by auto
   qed 
 
 end
