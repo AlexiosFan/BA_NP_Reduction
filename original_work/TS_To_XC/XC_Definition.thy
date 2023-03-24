@@ -1,7 +1,7 @@
 theory XC_Definition
   imports "Karp21.Polynomial_Reductions"
           "HOL-Library.Disjoint_Sets"
-
+          "../../poly-reductions/Lib/SAT_Definition"
 begin
 
 subsection "Exact cover definitions"
@@ -11,11 +11,8 @@ definition "exact_cover_alter_def \<equiv>
     (\<exists>S' \<subseteq> S. \<forall>x \<in> X. \<exists>s \<in> S'. x \<in> s \<and> (\<forall>t \<in> S'. s \<noteq> t \<longrightarrow> x \<notin> t))}"
 
 definition "exact_cover \<equiv> {(X, S). \<Union>S \<subseteq> X \<and> (\<exists>S' \<subseteq> S. \<Union>S' = X \<and> disjoint S')}"
-(*for a collection S of subsets of a set X, there exists a subset S' of S s.t. 
-S' covers all elements of X exactly, i.e. the each element of X is contained in
-exactly one element of S'*)
 
-lemma aux: "(X, S) \<in> exact_cover_alter_def \<longleftrightarrow> (X, S) \<in> exact_cover"
+lemma exact_cover_alter_def_eq: "(X, S) \<in> exact_cover_alter_def \<longleftrightarrow> (X, S) \<in> exact_cover"
 proof (standard, goal_cases)
   assume 1: "(X, S) \<in> exact_cover_alter_def"
   hence "\<Union>S \<subseteq> X" unfolding exact_cover_alter_def_def by blast
@@ -69,9 +66,6 @@ next
     unfolding exact_cover_alter_def_def by blast 
 qed
 
-corollary "exact_cover_alter_def = exact_cover"
-   using aux by auto
-
 definition cover :: "'a set set \<Rightarrow> 'a set \<Rightarrow> bool" where
 "cover S' X \<longleftrightarrow> \<Union>S' = X \<and> disjoint S'"
 
@@ -83,4 +77,6 @@ lemma exact_cover_D: "\<lbrakk>(X, S) \<in> exact_cover; \<Union>S \<subseteq> X
   unfolding exact_cover_def cover_def 
   by blast
 
+definition
+  "cnf_sat \<equiv> {F. sat F}"
 end 

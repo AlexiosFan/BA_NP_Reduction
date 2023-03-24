@@ -1,5 +1,5 @@
 theory TS_To_XC_aux
-  imports XC_Definition "../../poly-reductions/Lib/SAT_Definition"
+  imports XC_Definition 
 begin
   
 datatype 'a xc_element = V 'a | C "'a lit set" | L "'a lit" "'a lit set"

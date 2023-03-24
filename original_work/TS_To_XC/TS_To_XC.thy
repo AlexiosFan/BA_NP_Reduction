@@ -32,7 +32,7 @@ abbreviation "comp_S F \<equiv>
   \<union> var_true_literals F \<union> var_false_literals F"
 
 definition ts_xc :: "'a three_sat \<Rightarrow> 'a xc_element set * 'a xc_element set set" where 
-"ts_xc F = (if (\<forall>cls \<in> set F. card cls = 3) then (comp_X F, comp_S F) else (comp_X F, {}))"
+"ts_xc F = (comp_X F, comp_S F)"
 
 lemma ts_xc_is_collection: "\<Union> (comp_S F) \<subseteq> (comp_X F)"
 proof -
@@ -107,7 +107,7 @@ definition clause_sets
 definition constr_cover 
   :: "'a three_sat \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a xc_element set set" where 
 "constr_cover F \<sigma> \<equiv> 
-  (if F \<in> three_cnf_sat 
+  (if F \<in> cnf_sat 
   then vars_sets F \<sigma> \<union> \<Union> (clause_sets F \<sigma>)
   else {})"
 
@@ -300,7 +300,7 @@ lemma true_literals_in_clause_sets:
 paragraph "Integration of all true and false literals"
 
 lemma literals_in_construction_aux:
-assumes "\<sigma> \<Turnstile> F" "x \<in> c" "c \<in> set F" "F \<in> three_cnf_sat"
+assumes "\<sigma> \<Turnstile> F" "x \<in> c" "c \<in> set F" "F \<in> cnf_sat"
 shows "L x c \<in> \<Union>(constr_cover F \<sigma>)"
 proof (cases "(\<sigma>\<up>) x")
   case True
@@ -320,11 +320,11 @@ qed
 
 
 corollary literals_in_construction: 
-"\<lbrakk>\<sigma> \<Turnstile> F; \<forall>cls\<in>set F. card cls = 3\<rbrakk> \<Longrightarrow> literals_of_sat F \<subseteq> \<Union>(constr_cover F \<sigma>)"
+"\<sigma> \<Turnstile> F \<Longrightarrow> literals_of_sat F \<subseteq> \<Union>(constr_cover F \<sigma>)"
 proof - 
-  assume "\<sigma> \<Turnstile> F" "\<forall>cls\<in>set F. card cls = 3"
-  hence "F \<in> three_cnf_sat" 
-    unfolding three_cnf_sat_def sat_def by blast
+  assume "\<sigma> \<Turnstile> F" 
+  hence "F \<in> cnf_sat" 
+    unfolding cnf_sat_def sat_def by blast
 
   with \<open>\<sigma> \<Turnstile> F\<close> have "\<forall>c\<in>set F. \<forall>x\<in>c.  L x c \<in> \<Union> (constr_cover F \<sigma>)"
     using literals_in_construction_aux by blast
@@ -589,32 +589,32 @@ by blast
 subsection "The soundness lemma"
   
 lemma ts_xc_sound_aux:
-  "\<lbrakk>\<sigma> \<Turnstile> F; \<forall>cls \<in> set F. card cls = 3\<rbrakk> \<Longrightarrow> cover (constr_cover F \<sigma>) (comp_X F)"
+  "\<sigma> \<Turnstile> F \<Longrightarrow> cover (constr_cover F \<sigma>) (comp_X F)"
   unfolding cover_def
   proof
-    assume prems: "\<sigma> \<Turnstile> F" "\<forall>cls \<in> set F. card cls = 3"
+    assume prems: "\<sigma> \<Turnstile> F" 
     show "\<Union> (constr_cover F \<sigma>) = comp_X F"
     proof (standard, goal_cases)
       case 1
       have "constr_cover F \<sigma> \<subseteq> comp_S F"
         using constr_cover_is_collection prems by blast 
-      moreover have "F \<in> three_cnf_sat"
-        unfolding three_cnf_sat_def sat_def
+      moreover have "F \<in> cnf_sat"
+        unfolding cnf_sat_def sat_def
         using prems by blast
       ultimately show ?case
         using ts_xc_is_collection by blast
     next
       case 2
-      have "F \<in> three_cnf_sat"
-        unfolding three_cnf_sat_def sat_def
+      have "F \<in> cnf_sat"
+        unfolding cnf_sat_def sat_def
         using prems by blast
       have "vars_of_sat F \<subseteq> \<Union> (constr_cover F \<sigma>)"
         unfolding constr_cover_def
-        using vars_in_vars_set \<open>F \<in> three_cnf_sat\<close>
+        using vars_in_vars_set \<open>F \<in> cnf_sat\<close>
         by auto 
       moreover have "clauses_of_sat F \<subseteq> \<Union> (constr_cover F \<sigma>)"
         unfolding constr_cover_def 
-        using clause_in_clause_set[OF prems(1)] \<open>F \<in> three_cnf_sat\<close>
+        using clause_in_clause_set[OF prems(1)] \<open>F \<in> cnf_sat\<close>
         by auto
       moreover have "literals_of_sat F \<subseteq> \<Union> (constr_cover F \<sigma>)"  
         using prems literals_in_construction 
@@ -623,9 +623,9 @@ lemma ts_xc_sound_aux:
         by blast
     qed
   next
-    assume prems: "\<sigma> \<Turnstile> F" "\<forall>cls \<in> set F. card cls = 3"
-    have "F \<in> three_cnf_sat"
-      unfolding three_cnf_sat_def sat_def
+    assume prems: "\<sigma> \<Turnstile> F" 
+    have "F \<in> cnf_sat"
+      unfolding cnf_sat_def sat_def
       using prems by blast
     show "disjoint (constr_cover F \<sigma>)"
       unfolding constr_cover_def 
@@ -634,25 +634,24 @@ lemma ts_xc_sound_aux:
   qed 
 
 lemma ts_xc_sound:
-  "F \<in> three_cnf_sat \<Longrightarrow> ts_xc F \<in> exact_cover"
+  "F \<in> cnf_sat \<Longrightarrow> ts_xc F \<in> exact_cover"
   proof (goal_cases) 
     let ?X = "comp_X F"
     let ?S = "comp_S F"
   case 1
-    hence prems: "\<exists>\<sigma>. \<sigma> \<Turnstile> F" "\<forall>cls \<in> set F. card cls = 3"
-      unfolding three_cnf_sat_def sat_def
-      by blast+
+    hence prems: "\<exists>\<sigma>. \<sigma> \<Turnstile> F" 
+      unfolding cnf_sat_def sat_def
+      by blast
     then obtain \<sigma> where sig_def: "\<sigma> \<Turnstile> F"
       by blast
     have "(?X, ?S) \<in> exact_cover"
       apply (rule exact_cover_I)
       apply (rule constr_cover_is_collection[OF sig_def])
       apply (rule ts_xc_is_collection)
-      apply (rule ts_xc_sound_aux[OF sig_def prems(2)])
+      apply (rule ts_xc_sound_aux[OF sig_def])
       done 
     then show ?case 
       unfolding ts_xc_def 
-      using prems(2)
       by simp
   qed
 
@@ -690,17 +689,17 @@ lemma clauses_with_literals_satisfiability:
   by blast
 
 lemma constr_model_exists:
-  "\<lbrakk>S' \<subseteq> S; cover S' X; ts_xc F = (X, S); \<forall>cls\<in>set F. card cls = 3\<rbrakk> 
+  "\<lbrakk>S' \<subseteq> S; cover S' X; ts_xc F = (X, S)\<rbrakk> 
     \<Longrightarrow> (\<forall>c\<in> set F. \<exists>s\<in> S'. \<exists>l \<in> c. s = {C c, L l c})"
 proof
   fix c 
-  assume "S' \<subseteq> S" "cover S' X" "ts_xc F = (X, S)" "\<forall>cls\<in>set F. card cls = 3"
+  assume "S' \<subseteq> S" "cover S' X" "ts_xc F = (X, S)" 
   "c \<in> set F"
 
   from \<open>c \<in> set F\<close> have "C c \<in> clauses_of_sat F"
     unfolding clauses_of_sat_def 
     by simp 
-  moreover from \<open>ts_xc F = (X, S)\<close> \<open>\<forall>cls\<in>set F. card cls = 3\<close>
+  moreover from \<open>ts_xc F = (X, S)\<close> 
   have "S = comp_S F" "X = comp_X F"
     unfolding ts_xc_def 
     by force+
@@ -868,13 +867,12 @@ proof
 qed 
 
 lemma ts_xc_complete:
-  "ts_xc F \<in> exact_cover \<Longrightarrow> F \<in> three_cnf_sat"
-proof (cases "\<forall>cls\<in>set F. card cls = 3")
+  "ts_xc F \<in> exact_cover \<Longrightarrow> F \<in> cnf_sat"
+proof -
   let ?X = "comp_X F"
   let ?S = "comp_S F"
 
   assume "ts_xc F \<in> exact_cover"
-  case True
   then have "ts_xc F = (?X, ?S)"
     unfolding ts_xc_def 
     by simp 
@@ -884,7 +882,7 @@ proof (cases "\<forall>cls\<in>set F. card cls = 3")
     by metis 
   then obtain S' where S'_def: "cover S' ?X" "S' \<subseteq> ?S" 
     by blast
-  with True \<open>ts_xc F = (?X, ?S)\<close> 
+  with \<open>ts_xc F = (?X, ?S)\<close> 
   have prem: "\<forall>c\<in> set F. \<exists>s\<in> S'. \<exists>l \<in> c. s = {C c, L l c}"
    using constr_model_exists[of S' ?S ?X]
    by presburger
@@ -914,28 +912,13 @@ proof (cases "\<forall>cls\<in>set F. card cls = 3")
    then have "?\<sigma> \<Turnstile> F"
      unfolding models_def 
      by blast
-   with True show ?thesis
-     unfolding three_cnf_sat_def sat_def
+   then show ?thesis
+     unfolding cnf_sat_def sat_def
      by blast
-next
-  assume prem: "ts_xc F \<in> exact_cover"
-  case False
-  hence "ts_xc F = (comp_X F, {})"
-    unfolding ts_xc_def
-    by argo
-  from False have "set F \<noteq> {}"
-  by force
-  hence "(comp_X F, {}) \<notin> exact_cover"
-    by (induction F) 
-       (auto simp add: exact_cover_def clauses_of_sat_def)
-  with prem ts_xc_def False have "False"
-    by metis
-  then show ?thesis 
-    by simp
 qed
 
 theorem is_reduction_ts_xc:
-"is_reduction ts_xc three_cnf_sat exact_cover"
+"is_reduction ts_xc cnf_sat exact_cover"
   unfolding is_reduction_def 
   using ts_xc_sound ts_xc_complete
   by blast
