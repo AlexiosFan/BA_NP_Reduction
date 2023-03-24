@@ -46,27 +46,27 @@ proof -
   let ?vf = "var_false_literals F"
 
   have x_part: "(comp_X F) = ?vars \<union> ?clauses \<union> ?literals"
-  using ts_xc_def[of F] by (auto simp: Let_def)
-    
+    using ts_xc_def[of F] 
+    by (auto simp: Let_def)
   have s_part: "(comp_S F) = ?ls \<union> ?cs \<union> ?vt \<union> ?vf"
-  using ts_xc_def[of F] by (auto simp: Let_def)
-
+    using ts_xc_def[of F] 
+    by (auto simp: Let_def)
   have "\<Union>?ls = ?literals" 
-    unfolding literal_sets_def by blast 
-
+    unfolding literal_sets_def 
+    by blast 
   moreover have "\<Union>?cs \<subseteq> ?literals \<union> ?clauses" 
-    unfolding clauses_with_literals_def by blast
-
+    unfolding clauses_with_literals_def 
+    by blast
   moreover have "\<Union>?vt \<subseteq> ?literals \<union> ?vars"
-    unfolding var_true_literals_def by blast
-
+    unfolding var_true_literals_def 
+    by blast
   moreover have "\<Union>?vf \<subseteq> ?literals \<union> ?vars" 
-    unfolding var_false_literals_def by blast
-
+    unfolding var_false_literals_def 
+    by blast
   ultimately have "\<Union> (?ls \<union> ?cs \<union> ?vt \<union> ?vf) \<subseteq> ?vars \<union> ?clauses \<union> ?literals"
-  by blast
-
-  with x_part s_part show ?thesis by force
+    by blast
+  with x_part s_part show ?thesis 
+    by force
 qed 
 
 section "the proof for the soundness"
@@ -83,8 +83,8 @@ assumes "\<sigma> \<Turnstile> F" "c \<in> set F"
 shows "\<exists>p\<in>c. (\<sigma>\<up>) p \<and> constr_cover_clause c \<sigma> = {{C c, L p c}} \<union> {{L q c} | q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
 proof- 
   from assms have "\<exists>p \<in>c. (\<sigma>\<up>) p"
-  unfolding models_def lift_def by blast
-
+    unfolding models_def lift_def 
+    by blast
   thus "\<exists>p\<in>c. (\<sigma>\<up>) p \<and> constr_cover_clause c \<sigma> = {{C c, L p c}} \<union> {{L q c} | q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
    unfolding constr_cover_clause_def
    apply auto
@@ -117,71 +117,67 @@ lemma constr_cover_clause_is_collection:
 assumes "\<sigma> \<Turnstile> F" "c \<in> set F"
  shows "constr_cover_clause c \<sigma> \<subseteq> (comp_S F)"
 proof standard
-  fix x   
   let ?s = "constr_cover_clause c \<sigma>"
+  fix x   
   assume prem: "x \<in> ?s"
-
   from assms have "\<exists>p \<in>c. (\<sigma>\<up>) p"
-    unfolding models_def lift_def by blast
-
+    unfolding models_def lift_def 
+    by blast
   from assms have  "\<exists>p\<in>c. (\<sigma>\<up>) p \<and> ?s = {{C c, L p c}} \<union> {{L q c} | q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
-   using constr_cover_clause_unfold by blast
-
+   using constr_cover_clause_unfold 
+   by blast
   then obtain p where 
     p_def: "?s = {{C c, L p c}} \<union> {{L q c} | q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}" 
       "(\<sigma>\<up>) p" "p \<in> c"
      using \<open>\<exists>p \<in>c. (\<sigma>\<up>) p\<close> by blast
-
   with assms(2) have "\<forall>p \<in> c. {L p c} \<in> literal_sets F"
     unfolding literal_sets_def literals_of_sat_def 
     by fastforce
-
   hence "\<forall>p \<in> c. {{L q c} | q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q} \<subseteq> literal_sets F"
     by blast
-
   moreover from assms(2) have "\<forall>p \<in> c. {C c, L p c} \<in> clauses_with_literals F"
     unfolding clauses_with_literals_def literals_of_sat_def
     by force 
-
   ultimately have "x \<in> (literal_sets F \<union> clauses_with_literals F)"
     using prem p_def
-  by auto
-
+    by auto
   then show "x \<in> comp_S F" 
     by blast
 qed
 
 lemma constr_cover_is_collection:
   "\<sigma> \<Turnstile> F \<Longrightarrow> constr_cover F \<sigma> \<subseteq> (comp_S F)"
-  unfolding constr_cover_def vars_sets_def clause_sets_def
-  apply auto
-  using constr_cover_clause_is_collection 
-  by blast
+unfolding constr_cover_def vars_sets_def clause_sets_def
+apply auto
+using constr_cover_clause_is_collection 
+by blast
 
 subsubsection "The constructed set is a cover"
 
 paragraph "covers all variables"
 lemma vars_in_vars_set_aux1:
   "\<forall>x\<in>vars_sets F \<sigma>. \<exists>v \<in> vars F. V v \<in> x"
-  unfolding vars_sets_def by auto
+unfolding vars_sets_def 
+by auto
 
 lemma vars_in_vars_set_aux2:
   "\<forall>v\<in> vars F. \<exists>x \<in> var_true_literals F. V v \<in> x"
-  unfolding var_true_literals_def vars_of_sat_def
-  by auto
+unfolding var_true_literals_def vars_of_sat_def
+by auto
 
 lemma vars_in_vars_set_aux3:
   "\<forall>v\<in> vars F. \<exists>x \<in> var_false_literals F. V v \<in> x"
-  unfolding var_false_literals_def vars_of_sat_def
-  by auto
+unfolding var_false_literals_def vars_of_sat_def
+by auto
 
 lemmas vars_in_vars_set_aux=
 vars_in_vars_set_aux1 vars_in_vars_set_aux2 vars_in_vars_set_aux3
 
 lemma vars_in_vars_set:
   "vars_of_sat F \<subseteq> \<Union> (vars_sets F \<sigma>)"
-  unfolding vars_of_sat_def vars_sets_def 
-  using vars_in_vars_set_aux by (auto, meson)
+unfolding vars_of_sat_def vars_sets_def 
+using vars_in_vars_set_aux 
+by (auto, meson)
 
 paragraph "covers all clauses"
 
@@ -216,21 +212,16 @@ proof (cases x)
     
     have "a \<in> vars F"
       using assms(2-3) Pos by (force simp add: vars_correct)
-
     moreover then have "?s \<in> var_false_literals F"
       unfolding var_false_literals_def vars_of_sat_def
       by blast
-
     moreover have "\<not> (\<sigma>\<up>) (Pos a)"
       using Pos assms(1) by blast
-
     ultimately have "?s \<in> vars_sets F \<sigma>" 
       unfolding vars_sets_def 
       by force
-
     moreover have "L x c \<in> ?s"
       using Pos assms(2-3) by simp
-
     ultimately show ?thesis 
       by meson
   qed 
@@ -239,25 +230,19 @@ next
   then show ?thesis
   proof -
     let ?s = "{V b} \<union> {l \<in> literals_of_sat F. \<exists>c. C c \<in> clauses_of_sat F \<and> L (Neg b) c = l}"
-    
     have "b \<in> vars F"
       using assms(2-3) Neg by (force simp add: vars_correct)
-
     moreover then have "?s \<in> var_true_literals F"
       unfolding var_true_literals_def vars_of_sat_def
       by blast
-
     moreover have "(\<sigma>\<up>) (Pos b)"
       using Neg assms(1) 
       by (force simp add: double_neg_id)
-
     ultimately have "?s \<in> vars_sets F \<sigma>" 
       unfolding vars_sets_def 
       by force
-
     moreover have "L x c \<in> ?s"
       using Neg assms(2-3) by simp
-
     ultimately show ?thesis 
       by meson
   qed 
@@ -265,8 +250,8 @@ qed
 
 lemma false_literal_in_vars_sets:
 "\<lbrakk>\<not> (\<sigma>\<up>) x; x \<in> c; c \<in> set F\<rbrakk> \<Longrightarrow> L x c \<in> \<Union>(vars_sets F \<sigma>)"
-  using false_literal_in_vars_sets_aux 
-  by fast
+using false_literal_in_vars_sets_aux 
+by fast
 
 paragraph "covers all true literals"
 
@@ -279,23 +264,20 @@ let ?s = "constr_cover_clause c \<sigma>"
 from constr_cover_clause_unfold[OF assms(1) assms(4)]
 have "\<exists>p\<in>c. (\<sigma>\<up>) p \<and> ?s = {{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
   by blast
-
 then obtain p where p_def:
 "p \<in> c" "(\<sigma>\<up>) p" "?s = {{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
   by blast 
-
 hence "\<Union>?s = {C c} \<union> {L q c|q. q \<in> c \<and> (\<sigma>\<up>) q}"
   by blast
-
 then show ?thesis 
   using assms(2-3) by blast
 qed
 
 lemma true_literals_in_clause_sets:
 "\<lbrakk>\<sigma> \<Turnstile> F;(\<sigma>\<up>) x; x \<in> c; c \<in> set F\<rbrakk> \<Longrightarrow> L x c \<in> \<Union> (\<Union>(clause_sets F \<sigma>))"
-  unfolding clause_sets_def
-  using true_literals_in_clause_sets_aux 
-  by fast
+unfolding clause_sets_def
+using true_literals_in_clause_sets_aux 
+by fast
 
 paragraph "Integration of all true and false literals"
 
@@ -305,17 +287,21 @@ shows "L x c \<in> \<Union>(constr_cover F \<sigma>)"
 proof (cases "(\<sigma>\<up>) x")
   case True
   with assms have "L x c \<in> \<Union> (\<Union>(clause_sets F \<sigma>))"
-    using true_literals_in_clause_sets by blast
+    using true_literals_in_clause_sets 
+    by blast
   then show ?thesis
     unfolding constr_cover_def 
-    using assms(4) by simp
+    using assms(4) 
+    by simp
 next
   case False
   with assms have "L x c \<in> \<Union>(vars_sets F \<sigma>)"
-    using false_literal_in_vars_sets by blast
+    using false_literal_in_vars_sets 
+    by blast
   then show ?thesis
     unfolding constr_cover_def 
-    using assms(4) by simp
+    using assms(4) 
+    by simp
 qed
 
 
@@ -324,11 +310,11 @@ corollary literals_in_construction:
 proof - 
   assume "\<sigma> \<Turnstile> F" 
   hence "F \<in> cnf_sat" 
-    unfolding cnf_sat_def sat_def by blast
-
+    unfolding cnf_sat_def sat_def 
+    by blast
   with \<open>\<sigma> \<Turnstile> F\<close> have "\<forall>c\<in>set F. \<forall>x\<in>c.  L x c \<in> \<Union> (constr_cover F \<sigma>)"
-    using literals_in_construction_aux by blast
-
+    using literals_in_construction_aux 
+    by blast
   then show "literals_of_sat F \<subseteq> \<Union>(constr_cover F \<sigma>)"
     unfolding literals_of_sat_def 
     by fastforce
@@ -364,7 +350,6 @@ proof -
     using vars_correct[of v F] by blast 
   then have "\<exists>c\<in> set F. v \<in> var ` c"
     by blast
-  
   have "\<exists>c. C c \<in> (clauses_of_sat F) \<and>
     (L (Neg v) c \<in> (literals_of_sat F) \<or> L (Pos v) c \<in> (literals_of_sat F))"
     unfolding literals_of_sat_def clauses_of_sat_def
@@ -372,7 +357,6 @@ proof -
     apply auto
     using \<open>\<exists>c\<in> set F. v \<in> var ` c\<close> 
     by (metis imageE var.elims)
-
   then show  "true_literals v F \<noteq> false_literals v F" 
     by fast
 qed 
@@ -382,15 +366,14 @@ lemma true_literals_not_in_false:
 proof 
   fix u 
   assume  "v \<in> vars F" "u \<in> vars F"  
-
   have "\<forall>x\<in> true_literals v F. x = V v \<or> (\<exists>c. x = L (Neg v) c)"
     by blast
   moreover have "\<forall>x\<in> false_literals u F. x = V u \<or> (\<exists>c. x = L (Pos u) c)"
     by blast 
-
   ultimately show "true_literals v F \<noteq> false_literals u F" 
-  apply (cases "v\<noteq>u")
-  using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] by blast+ 
+    apply (cases "v\<noteq>u")
+    using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] 
+    by blast+ 
 qed 
  
 
@@ -399,15 +382,13 @@ lemma false_literals_not_in_true:
 proof 
   fix u 
   assume  "v \<in> vars F" "u \<in> vars F"  
-
   have "\<forall>x\<in> true_literals v F. x = V v \<or> (\<exists>c. x = L (Neg v) c)"
     by blast
   moreover have "\<forall>x\<in> false_literals u F. x = V u \<or> (\<exists>c. x = L (Pos u) c)"
     by blast 
-
   ultimately show "false_literals v F \<noteq> true_literals u F" 
-  apply (cases "v\<noteq>u")
-  using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] by blast+ 
+    apply (cases "v\<noteq>u")
+    using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] by blast+ 
 qed 
  
 
@@ -415,20 +396,18 @@ lemma vars_sets_true_assignment:
 "\<lbrakk>(\<sigma>\<up>) (Pos v); v \<in> vars F\<rbrakk> \<Longrightarrow> true_literals v F \<in> vars_sets F \<sigma> \<and> false_literals v F \<notin> vars_sets F \<sigma>"
 proof standard
   assume "(\<sigma>\<up>) (Pos v)" "v \<in> vars F"
-
   have "true_literals v F \<in> var_true_literals F"
     unfolding var_true_literals_def vars_of_sat_def
-    using \<open>v \<in> vars F\<close> by blast
-
+    using \<open>v \<in> vars F\<close> 
+    by blast
   then show "true_literals v F \<in> vars_sets F \<sigma>"
     unfolding vars_sets_def
     using \<open>(\<sigma>\<up>) (Pos v)\<close> \<open>v \<in> vars F\<close> 
     by auto
-
   from \<open>v \<in> vars F\<close> have "false_literals v F \<notin> var_true_literals F"
     unfolding var_true_literals_def vars_of_sat_def
-    using false_literals_not_in_true by force
-
+    using false_literals_not_in_true 
+    by force
   then show "false_literals v F \<notin> vars_sets F \<sigma>"
     unfolding vars_sets_def
     using \<open>(\<sigma>\<up>) (Pos v)\<close> \<open>v \<in> vars F\<close> 
@@ -439,21 +418,18 @@ lemma vars_sets_false_assignment:
 "\<lbrakk>\<not> (\<sigma>\<up>) (Pos v); v \<in> vars F\<rbrakk> \<Longrightarrow> true_literals v F \<notin> vars_sets F \<sigma> \<and> false_literals v F \<in> vars_sets F \<sigma>"
 proof standard
   assume "\<not> (\<sigma>\<up>) (Pos v)" "v \<in> vars F"
-
   have "false_literals v F \<in> var_false_literals F"
     unfolding var_false_literals_def vars_of_sat_def
-    using \<open>v \<in> vars F\<close> by blast
-
+    using \<open>v \<in> vars F\<close> 
+    by blast
   then show "false_literals v F \<in> vars_sets F \<sigma>"
     unfolding vars_sets_def
     using \<open>\<not> (\<sigma>\<up>) (Pos v)\<close> \<open>v \<in> vars F\<close> 
     by fastforce 
-    
-
   from \<open>v \<in> vars F\<close> have "true_literals v F \<notin> var_false_literals F"
     unfolding var_false_literals_def vars_of_sat_def
-    using true_literals_not_in_false by force
-
+    using true_literals_not_in_false 
+    by force
   then show "true_literals v F \<notin> vars_sets F \<sigma>"
     unfolding vars_sets_def
     using \<open>\<not> (\<sigma>\<up>) (Pos v)\<close> \<open>v \<in> vars F\<close> 
@@ -484,7 +460,6 @@ lemma var_false_literals_disj:
   unfolding var_false_literals_def
   by auto
 
-
 lemma vars_sets_disj_aux:
 assumes "A \<in> vars_sets F \<sigma>"
 shows "\<forall>s\<in>vars_sets F \<sigma>. s \<noteq> A \<longrightarrow> s \<inter> A = {}"
@@ -505,8 +480,8 @@ proof
     proof (cases)
       case 1
       then show ?thesis
-      using disjointD var_false_literals_disj 
-        \<open>s \<noteq> A\<close> by blast
+      using disjointD var_false_literals_disj \<open>s \<noteq> A\<close> 
+      by blast
     next
       case 2
       then show ?thesis
@@ -516,8 +491,8 @@ proof
     next
       case 3
       then show ?thesis 
-      using disjointD var_true_literals_disj 
-        \<open>s \<noteq> A\<close> by blast
+      using disjointD var_true_literals_disj \<open>s \<noteq> A\<close> 
+      by blast
     qed
   qed 
 qed 
@@ -535,11 +510,13 @@ lemma vars_sets_only_false_literals_aux:
 unfolding vars_sets_def
 apply auto 
 unfolding var_false_literals_def var_true_literals_def
-using double_neg_id by fastforce+
+using double_neg_id 
+by fastforce+
 
 corollary vars_sets_only_false_literals:
 "\<forall>x\<in>\<Union>(vars_sets F \<sigma>). x \<in> vars_of_sat F \<or> (x \<in> literals_of_sat F \<and> \<not>(\<sigma>\<Up>) x)"
-using vars_sets_only_false_literals_aux by blast
+using vars_sets_only_false_literals_aux 
+by blast
 
 lemma constr_cover_clause_only_true_literals_aux1:
 assumes "\<sigma> \<Turnstile> F" "c \<in> set F"
@@ -547,18 +524,16 @@ shows "\<forall>s\<in> constr_cover_clause c \<sigma>. \<forall>x\<in>s. x \<in>
 proof  auto
   fix s x
   assume prems: "s \<in> constr_cover_clause c \<sigma>" "x \<in> s" "x \<notin> clauses_of_sat F"
-  
   obtain p where p_def:"p \<in> c" "(\<sigma>\<up>) p"
   "constr_cover_clause c \<sigma> = {{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
-    using constr_cover_clause_unfold[OF assms] by blast 
-
+    using constr_cover_clause_unfold[OF assms] 
+    by blast 
   hence "x \<in> {L q c |q. q \<in> c \<and> (\<sigma>\<up>) q}"
     using prems assms unfolding clauses_of_sat_def 
     by blast
-
   with assms(2) show "(\<sigma>\<Up>) x" "x \<in> literals_of_sat F"
-  unfolding literals_of_sat_def
-  by fastforce+  
+    unfolding literals_of_sat_def
+    by fastforce+  
 qed
 
 corollary constr_cover_clause_only_true_literals_aux2:
@@ -670,16 +645,14 @@ lemma clause_only_binary:
 proof standard
   fix c 
   assume prems: "c \<in> clauses_of_sat F"
-
   hence "\<forall>s \<in> literal_sets F. c \<notin> s"
         "\<forall>s \<in> var_true_literals F. c \<notin> s"
         "\<forall>s \<in> var_false_literals F. c \<notin> s"
     unfolding literal_sets_def var_true_literals_def var_false_literals_def
       clauses_of_sat_def literals_of_sat_def
     by fastforce+
-
   then show "\<forall>s\<in>(comp_S F). c \<in> s \<longrightarrow> s \<in> clauses_with_literals F"
-  by blast
+    by blast
 qed 
 
 
@@ -695,7 +668,6 @@ proof
   fix c 
   assume "S' \<subseteq> S" "cover S' X" "ts_xc F = (X, S)" 
   "c \<in> set F"
-
   from \<open>c \<in> set F\<close> have "C c \<in> clauses_of_sat F"
     unfolding clauses_of_sat_def 
     by simp 
