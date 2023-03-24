@@ -17,4 +17,5 @@ Starting to work on the basic setting.
 ## 10/03/2023
 Added an on-paper proof for polynomial reduction from **3SAT** to **Exact Cover**
 
-
+## 24/03/2023
+Finished and did a first few refinements of the correctness of the reduction from **3SAT**  to **Exact Cover**
