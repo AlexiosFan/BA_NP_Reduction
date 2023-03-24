@@ -75,7 +75,12 @@ corollary "exact_cover_alter_def = exact_cover"
 definition cover :: "'a set set \<Rightarrow> 'a set \<Rightarrow> bool" where
 "cover S' X \<longleftrightarrow> \<Union>S' = X \<and> disjoint S'"
 
-lemma exact_cover_alter_defI: "\<lbrakk>S' \<subseteq> S; \<Union>S \<subseteq> X; cover S' X\<rbrakk> \<Longrightarrow> (X, S) \<in> exact_cover"
-  unfolding exact_cover_def cover_def by blast
+lemma exact_cover_I: "\<lbrakk>S' \<subseteq> S; \<Union>S \<subseteq> X; cover S' X\<rbrakk> \<Longrightarrow> (X, S) \<in> exact_cover"
+  unfolding exact_cover_def cover_def 
+  by blast
+
+lemma exact_cover_D: "\<lbrakk>(X, S) \<in> exact_cover; \<Union>S \<subseteq> X\<rbrakk> \<Longrightarrow> (\<exists>S' \<subseteq> S. cover S' X)"
+  unfolding exact_cover_def cover_def 
+  by blast
 
 end 

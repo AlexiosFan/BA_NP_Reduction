@@ -32,11 +32,9 @@ abbreviation "comp_S F \<equiv>
   \<union> var_true_literals F \<union> var_false_literals F"
 
 definition ts_xc :: "'a three_sat \<Rightarrow> 'a xc_element set * 'a xc_element set set" where 
-"ts_xc F = (comp_X F, comp_S F)"
+"ts_xc F = (if (\<forall>cls \<in> set F. card cls = 3) then (comp_X F, comp_S F) else (comp_X F, {}))"
 
-lemma ts_xc_is_collection:
-  assumes "F \<in> three_cnf_sat" 
-  shows "\<Union> (comp_S F) \<subseteq> (comp_X F)"
+lemma ts_xc_is_collection: "\<Union> (comp_S F) \<subseteq> (comp_X F)"
 proof -
   let ?vars = "vars_of_sat F"
   let ?clauses = "clauses_of_sat F"
@@ -48,10 +46,10 @@ proof -
   let ?vf = "var_false_literals F"
 
   have x_part: "(comp_X F) = ?vars \<union> ?clauses \<union> ?literals"
-  using assms ts_xc_def[of F] by (auto simp: Let_def)
+  using ts_xc_def[of F] by (auto simp: Let_def)
     
   have s_part: "(comp_S F) = ?ls \<union> ?cs \<union> ?vt \<union> ?vf"
-  using assms ts_xc_def[of F] by (auto simp: Let_def)
+  using ts_xc_def[of F] by (auto simp: Let_def)
 
   have "\<Union>?ls = ?literals" 
     unfolding literal_sets_def by blast 
@@ -554,21 +552,9 @@ proof  auto
   "constr_cover_clause c \<sigma> = {{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
     using constr_cover_clause_unfold[OF assms] by blast 
 
-  hence "s \<in> {{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
-    using prems(1) by blast 
-
-  hence "x \<in> \<Union> ({{C c, L p c}} \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q})"
-    using prems(2) by blast 
-
-  hence "x \<in> {C c, L p c} \<union> {L q c |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
-    by blast
-
-  hence "x \<in> {L p c} \<union> {L q c |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
-    using prems(3) assms(2) unfolding clauses_of_sat_def 
-    by blast
-  
   hence "x \<in> {L q c |q. q \<in> c \<and> (\<sigma>\<up>) q}"
-    using p_def(1-2) by blast 
+    using prems assms unfolding clauses_of_sat_def 
+    by blast
 
   with assms(2) show "(\<sigma>\<Up>) x" "x \<in> literals_of_sat F"
   unfolding literals_of_sat_def
@@ -602,7 +588,7 @@ by blast
 
 subsection "The soundness lemma"
   
-lemma ts_xc_sound:
+lemma ts_xc_sound_aux:
   "\<lbrakk>\<sigma> \<Turnstile> F; \<forall>cls \<in> set F. card cls = 3\<rbrakk> \<Longrightarrow> cover (constr_cover F \<sigma>) (comp_X F)"
   unfolding cover_def
   proof
@@ -610,14 +596,11 @@ lemma ts_xc_sound:
     show "\<Union> (constr_cover F \<sigma>) = comp_X F"
     proof (standard, goal_cases)
       case 1
-
       have "constr_cover F \<sigma> \<subseteq> comp_S F"
         using constr_cover_is_collection prems by blast 
-
       moreover have "F \<in> three_cnf_sat"
         unfolding three_cnf_sat_def sat_def
         using prems by blast
-
       ultimately show ?case
         using ts_xc_is_collection by blast
     next
@@ -625,21 +608,17 @@ lemma ts_xc_sound:
       have "F \<in> three_cnf_sat"
         unfolding three_cnf_sat_def sat_def
         using prems by blast
-
       have "vars_of_sat F \<subseteq> \<Union> (constr_cover F \<sigma>)"
         unfolding constr_cover_def
         using vars_in_vars_set \<open>F \<in> three_cnf_sat\<close>
-        by auto
-        
+        by auto 
       moreover have "clauses_of_sat F \<subseteq> \<Union> (constr_cover F \<sigma>)"
         unfolding constr_cover_def 
         using clause_in_clause_set[OF prems(1)] \<open>F \<in> three_cnf_sat\<close>
         by auto
-
       moreover have "literals_of_sat F \<subseteq> \<Union> (constr_cover F \<sigma>)"  
         using prems literals_in_construction 
         by blast
-
       ultimately show ?case 
         by blast
     qed
@@ -648,11 +627,311 @@ lemma ts_xc_sound:
     have "F \<in> three_cnf_sat"
       unfolding three_cnf_sat_def sat_def
       using prems by blast
-
     show "disjoint (constr_cover F \<sigma>)"
       unfolding constr_cover_def 
       using prems constr_cover_disj 
       by auto
   qed 
+
+lemma ts_xc_sound:
+  "F \<in> three_cnf_sat \<Longrightarrow> ts_xc F \<in> exact_cover"
+  proof (goal_cases) 
+    let ?X = "comp_X F"
+    let ?S = "comp_S F"
+  case 1
+    hence prems: "\<exists>\<sigma>. \<sigma> \<Turnstile> F" "\<forall>cls \<in> set F. card cls = 3"
+      unfolding three_cnf_sat_def sat_def
+      by blast+
+    then obtain \<sigma> where sig_def: "\<sigma> \<Turnstile> F"
+      by blast
+    have "(?X, ?S) \<in> exact_cover"
+      apply (rule exact_cover_I)
+      apply (rule constr_cover_is_collection[OF sig_def])
+      apply (rule ts_xc_is_collection)
+      apply (rule ts_xc_sound_aux[OF sig_def prems(2)])
+      done 
+    then show ?case 
+      unfolding ts_xc_def 
+      using prems(2)
+      by simp
+  qed
+
+section "The proof of the completeness"
+
+definition "constr_model S' F = 
+(\<lambda>x. 
+    if (\<exists>s \<in> S'. \<exists>c \<in> set F. s = {C c, L (Pos x) c} \<and> (Pos x) \<in> c) 
+    then True
+    else if (\<exists>s \<in> S'. \<exists>c \<in> set F. s = {C c, L (Neg x) c} \<and> (Neg x) \<in> c)
+    then False
+    else False)"
+
+lemma clause_only_binary:
+  "\<forall>c \<in> clauses_of_sat F. \<forall>s\<in>(comp_S F). c \<in> s \<longrightarrow> s \<in> clauses_with_literals F"
+proof standard
+  fix c 
+  assume prems: "c \<in> clauses_of_sat F"
+
+  hence "\<forall>s \<in> literal_sets F. c \<notin> s"
+        "\<forall>s \<in> var_true_literals F. c \<notin> s"
+        "\<forall>s \<in> var_false_literals F. c \<notin> s"
+    unfolding literal_sets_def var_true_literals_def var_false_literals_def
+      clauses_of_sat_def literals_of_sat_def
+    by fastforce+
+
+  then show "\<forall>s\<in>(comp_S F). c \<in> s \<longrightarrow> s \<in> clauses_with_literals F"
+  by blast
+qed 
+
+
+lemma clauses_with_literals_satisfiability:
+  "s \<in> clauses_with_literals F \<Longrightarrow> C c \<in> s \<Longrightarrow> (\<exists>l \<in> c. s = {C c, L l c})"
+  unfolding clauses_with_literals_def
+  by blast
+
+lemma constr_model_exists:
+  "\<lbrakk>S' \<subseteq> S; cover S' X; ts_xc F = (X, S); \<forall>cls\<in>set F. card cls = 3\<rbrakk> 
+    \<Longrightarrow> (\<forall>c\<in> set F. \<exists>s\<in> S'. \<exists>l \<in> c. s = {C c, L l c})"
+proof
+  fix c 
+  assume "S' \<subseteq> S" "cover S' X" "ts_xc F = (X, S)" "\<forall>cls\<in>set F. card cls = 3"
+  "c \<in> set F"
+
+  from \<open>c \<in> set F\<close> have "C c \<in> clauses_of_sat F"
+    unfolding clauses_of_sat_def 
+    by simp 
+  moreover from \<open>ts_xc F = (X, S)\<close> \<open>\<forall>cls\<in>set F. card cls = 3\<close>
+  have "S = comp_S F" "X = comp_X F"
+    unfolding ts_xc_def 
+    by force+
+  ultimately 
+  have prem: "\<forall>s\<in>S. C c \<in> s \<longrightarrow> s \<in> clauses_with_literals F"
+    using clause_only_binary 
+    by blast
+
+  from \<open>C c \<in> clauses_of_sat F\<close> \<open>X = comp_X F\<close>
+  have "C c \<in> X" 
+    by fastforce
+  with \<open>cover S' X\<close> have "\<exists>s \<in> S'. C c \<in> s"
+    unfolding cover_def 
+    by blast
+  moreover from \<open>S' \<subseteq> S\<close>
+  have "\<forall>s \<in> S'. C c \<in> s \<longrightarrow> s \<in> clauses_with_literals F"
+    using prem
+    by blast
+  ultimately obtain s where "s \<in> S'" "C c \<in> s" "s \<in> clauses_with_literals F"
+    by blast
+  hence "(\<exists>l \<in> c. s = {C c, L l c})"
+    using clauses_with_literals_satisfiability
+    by blast
+  with \<open>s \<in> S'\<close> show "\<exists>s \<in> S'. \<exists>l\<in>c. s = {C c, L l c}"
+    by blast
+qed 
+
+lemma vars_only_in_true_false_literals:
+assumes "s \<in> comp_S F" "V x \<in> s"
+shows "s = true_literals x F \<or> s = false_literals x F"
+proof -
+have "V x \<notin> \<Union>(literal_sets F)"
+  unfolding literal_sets_def literals_of_sat_def
+  by force 
+with assms(2) have limit1: "s \<notin> literal_sets F"
+  by fastforce 
+
+have "V x \<notin> \<Union>(clauses_with_literals F)"
+  unfolding clauses_with_literals_def clauses_of_sat_def
+  by blast
+with assms(2) have limit2: "s \<notin> clauses_with_literals F"
+  by fastforce
+
+from limit1 limit2 assms(1)
+have "s \<in> var_true_literals F \<or> s \<in> var_false_literals F"
+  by blast
+then consider "s \<in> var_true_literals F" | "s \<in> var_false_literals F"
+  by blast
+then show ?thesis
+  proof (cases)
+    case 1
+    with assms(2) have "s = true_literals x F"
+      unfolding var_true_literals_def
+      by fastforce
+    then show ?thesis 
+      by blast
+  next
+    case 2
+    with assms(2) have "s = false_literals x F"
+      unfolding var_false_literals_def
+      by fastforce
+    then show ?thesis
+      by blast
+  qed
+qed 
+
+lemma constr_model_disj_aux:
+assumes  "cover S' (comp_X F)" "S' \<subseteq> (comp_S F)" "{C c, L (Pos x) c} \<in> S'"
+shows "\<not>(\<exists>c'. {C c', L (Neg x) c'} \<in> S')"
+proof 
+  assume "\<exists>c'. {C c', L (Neg x) c'} \<in> S'"
+  then obtain c' where c'_def: "{C c', L (Neg x) c'} \<in> S'"
+    by blast
+  show "False"
+  proof (cases "c = c'")
+    case True
+    from assms(1) have "disjoint S'"
+      unfolding cover_def
+      by blast
+    with c'_def assms(3) disjointD True 
+    show ?thesis
+      by blast
+  next
+    case False
+    from assms(1) assms(3) c'_def 
+    have "C c \<in> comp_X F" "C c' \<in> comp_X F"
+      unfolding cover_def
+      by blast+
+    hence "C c \<in> clauses_of_sat F" "C c' \<in> clauses_of_sat F"
+      unfolding vars_of_sat_def literals_of_sat_def
+      by simp+
+
+    moreover from assms(2-3) c'_def
+    have "{C c, L (Pos x) c} \<in> comp_S F" "{C c', L (Neg x) c'} \<in> comp_S F"
+      by blast+
+    ultimately have
+    "{C c, L (Pos x) c} \<in> clauses_with_literals F"
+    "{C c', L (Neg x) c'} \<in> clauses_with_literals F"
+      using clause_only_binary
+      by blast+
+    hence c_x_unfold:
+    "C c \<in> clauses_of_sat F" "C c' \<in> clauses_of_sat F"
+    "Pos x \<in> c" "Neg x \<in> c'"
+      unfolding clauses_with_literals_def
+      by (simp add: doubleton_eq_iff)+
+    with \<open>C c \<in> clauses_of_sat F\<close> have "x \<in> vars F"
+      unfolding clauses_of_sat_def vars_correct 
+      by force
+    hence "V x \<in> vars_of_sat F"
+      unfolding vars_of_sat_def
+      by simp
+    then have "V x \<in> comp_X F"
+      by simp
+    with assms(1) have "\<exists>s \<in> S'. V x \<in> s"
+      unfolding cover_def 
+      by blast
+    then obtain s where s_def: "s \<in> S'" "V x \<in> s"
+      by blast
+    hence "s \<in> comp_S F"
+      using assms(2) 
+      by blast
+    with \<open>V x \<in> s\<close> have 
+    "s = true_literals x F \<or> s = false_literals x F"
+      using vars_only_in_true_false_literals[of s F x]
+      by fastforce
+    then consider "s = true_literals x F" | "s = false_literals x F"
+      by blast
+    then show ?thesis
+    proof (cases)
+      case 1
+      have "L (Neg x) c' \<in> comp_literals F {}"
+        using c_x_unfold 
+        unfolding clauses_of_sat_def
+        by auto
+      hence "L (Neg x) c' \<in> true_literals x F"
+        by simp
+      moreover have "L (Neg x) c' \<in> {C c', L (Neg x) c'}"
+        by blast
+      moreover from assms(1)
+      have "disjoint S'"
+        unfolding cover_def 
+        by blast
+      ultimately show ?thesis
+        using disjointD[of S', OF _ c'_def s_def(1)] 1
+        by blast
+    next
+      case 2
+      have "L (Pos x) c \<in> comp_literals F {}"
+        using c_x_unfold 
+        unfolding clauses_of_sat_def
+        by auto
+      hence "L (Pos x) c \<in> false_literals x F"
+        by simp
+      moreover have "L (Pos x) c \<in> {C c, L (Pos x) c}"
+        by blast
+      moreover from assms(1)
+      have "disjoint S'"
+        unfolding cover_def 
+        by blast
+      ultimately show ?thesis
+        using disjointD[of S', OF _ assms(3) s_def(1)] 2
+        by blast
+    qed
+  qed
+qed 
+
+lemma ts_xc_complete:
+  "ts_xc F \<in> exact_cover \<Longrightarrow> F \<in> three_cnf_sat"
+proof (cases "\<forall>cls\<in>set F. card cls = 3")
+  let ?X = "comp_X F"
+  let ?S = "comp_S F"
+
+  assume "ts_xc F \<in> exact_cover"
+  case True
+  then have "ts_xc F = (?X, ?S)"
+    unfolding ts_xc_def 
+    by simp 
+  with \<open>ts_xc F \<in> exact_cover\<close> 
+  have "\<exists>S' \<subseteq> ?S. cover S' ?X"
+    using exact_cover_D ts_xc_is_collection
+    by metis 
+  then obtain S' where S'_def: "cover S' ?X" "S' \<subseteq> ?S" 
+    by blast
+  with True \<open>ts_xc F = (?X, ?S)\<close> 
+  have prem: "\<forall>c\<in> set F. \<exists>s\<in> S'. \<exists>l \<in> c. s = {C c, L l c}"
+   using constr_model_exists[of S' ?S ?X]
+   by presburger
+
+   let ?\<sigma> = "constr_model S' F"
+   have "\<forall>c\<in> set F. \<exists>s\<in> S'. \<exists>l \<in> c. s = {C c, L l c} \<and> (?\<sigma> \<up>) l"
+   proof 
+     fix c 
+     assume "c \<in> set F"
+     then have "\<exists>s\<in> S'. \<exists>l \<in> c. s = {C c, L l c}"
+       using prem 
+       by blast
+     then obtain s l where s_def: "s \<in> S'" "l \<in> c" "s = {C c, L l c}"
+       by blast
+     
+     have "(?\<sigma>\<up>) l"
+      unfolding constr_model_def lift_def
+      apply (cases l)
+      using s_def \<open>c \<in> set F\<close> apply force 
+      apply auto 
+      using constr_model_disj_aux[OF S'_def] s_def
+      by blast
+     with s_def \<open>c \<in> set F\<close> 
+     show "\<exists>s\<in>S'. \<exists>l\<in>c. s = {C c, L l c} \<and> (?\<sigma>\<up>) l"
+       by blast
+   qed 
+   then have "?\<sigma> \<Turnstile> F"
+     unfolding models_def 
+     by blast
+   with True show ?thesis
+     unfolding three_cnf_sat_def sat_def
+     by blast
+next
+  assume prem: "ts_xc F \<in> exact_cover"
+  case False
+  hence "ts_xc F = (comp_X F, {})"
+    unfolding ts_xc_def
+    by argo
+  from False have "set F \<noteq> {}"
+  by force
+  hence "(comp_X F, {}) \<notin> exact_cover"
+    by (induction F) 
+       (auto simp add: exact_cover_def clauses_of_sat_def)
+  with prem ts_xc_def False have "False"
+    by metis
+  then show ?thesis 
+    by simp
+qed
 
 end
