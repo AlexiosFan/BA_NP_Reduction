@@ -934,4 +934,10 @@ next
     by simp
 qed
 
+theorem is_reduction_ts_xc:
+"is_reduction ts_xc three_cnf_sat exact_cover"
+  unfolding is_reduction_def 
+  using ts_xc_sound ts_xc_complete
+  by blast
+
 end
