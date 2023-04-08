@@ -91,6 +91,7 @@ proof-
    apply (rule someI_ex)
    by blast
 qed 
+
   
 definition vars_sets 
   :: "'a three_sat \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a xc_element set set" where 
@@ -306,9 +307,9 @@ qed
 
 
 corollary literals_in_construction: 
-"\<sigma> \<Turnstile> F \<Longrightarrow> literals_of_sat F \<subseteq> \<Union>(constr_cover F \<sigma>)"
+"\<lbrakk>\<sigma> \<Turnstile> F; \<forall>cls\<in>set F. finite cls\<rbrakk> \<Longrightarrow> literals_of_sat F \<subseteq> \<Union>(constr_cover F \<sigma>)"
 proof - 
-  assume "\<sigma> \<Turnstile> F" 
+  assume "\<sigma> \<Turnstile> F" "\<forall>cls\<in>set F. finite cls"
   hence "F \<in> cnf_sat" 
     unfolding cnf_sat_def sat_def 
     by blast
@@ -353,10 +354,8 @@ proof -
   have "\<exists>c. C c \<in> (clauses_of_sat F) \<and>
     (L (Neg v) c \<in> (literals_of_sat F) \<or> L (Pos v) c \<in> (literals_of_sat F))"
     unfolding literals_of_sat_def clauses_of_sat_def
-    using comp_literals_correct[of F "{}"] 
-    apply auto
-    using \<open>\<exists>c\<in> set F. v \<in> var ` c\<close> 
-    by (metis imageE var.elims)
+    using comp_literals_correct[of F "{}"] imageE var.elims \<open>\<exists>c\<in> set F. v \<in> var ` c\<close>
+    by (smt (verit) literals_of_sat_correct literals_of_sat_def mem_Collect_eq)
   then show  "true_literals v F \<noteq> false_literals v F" 
     by fast
 qed 
@@ -388,7 +387,8 @@ proof
     by blast 
   ultimately show "false_literals v F \<noteq> true_literals u F" 
     apply (cases "v\<noteq>u")
-    using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] by blast+ 
+    using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] 
+    by blast+ 
 qed 
  
 
@@ -564,10 +564,10 @@ by blast
 subsection "The soundness lemma"
   
 lemma ts_xc_sound_aux:
-  "\<sigma> \<Turnstile> F \<Longrightarrow> cover (constr_cover F \<sigma>) (comp_X F)"
+  "\<lbrakk>\<sigma> \<Turnstile> F; \<forall>cls\<in>set F. finite cls\<rbrakk> \<Longrightarrow> cover (constr_cover F \<sigma>) (comp_X F)"
   unfolding cover_def
   proof
-    assume prems: "\<sigma> \<Turnstile> F" 
+    assume prems: "\<sigma> \<Turnstile> F" "\<forall>cls\<in>set F. finite cls"
     show "\<Union> (constr_cover F \<sigma>) = comp_X F"
     proof (standard, goal_cases)
       case 1
@@ -598,7 +598,7 @@ lemma ts_xc_sound_aux:
         by blast
     qed
   next
-    assume prems: "\<sigma> \<Turnstile> F" 
+    assume prems: "\<sigma> \<Turnstile> F" "\<forall>cls\<in>set F. finite cls"
     have "F \<in> cnf_sat"
       unfolding cnf_sat_def sat_def
       using prems by blast
@@ -608,22 +608,28 @@ lemma ts_xc_sound_aux:
       by auto
   qed 
 
+lemma finite_constr:
+  "\<forall>cls\<in>set F. finite cls \<Longrightarrow> finite (comp_X F)"
+    using vars_of_sat_finite clauses_of_sat_finite literals_of_sat_finite
+    by blast
+
 lemma ts_xc_sound:
   "F \<in> cnf_sat \<Longrightarrow> ts_xc F \<in> exact_cover"
   proof (goal_cases) 
     let ?X = "comp_X F"
     let ?S = "comp_S F"
   case 1
-    hence prems: "\<exists>\<sigma>. \<sigma> \<Turnstile> F" 
+    hence prems: "\<exists>\<sigma>. \<sigma> \<Turnstile> F" "\<forall>cls \<in> set F. finite cls"
       unfolding cnf_sat_def sat_def
-      by blast
+      by blast+
     then obtain \<sigma> where sig_def: "\<sigma> \<Turnstile> F"
       by blast
     have "(?X, ?S) \<in> exact_cover"
       apply (rule exact_cover_I)
       apply (rule constr_cover_is_collection[OF sig_def])
       apply (rule ts_xc_is_collection)
-      apply (rule ts_xc_sound_aux[OF sig_def])
+      apply (rule ts_xc_sound_aux[OF sig_def prems(2)])
+      apply (rule finite_constr[OF prems(2)])
       done 
     then show ?case 
       unfolding ts_xc_def 
@@ -845,11 +851,11 @@ proof -
   let ?S = "comp_S F"
 
   assume "ts_xc F \<in> exact_cover"
-  then have "ts_xc F = (?X, ?S)"
+  then have "ts_xc F = (?X, ?S)" 
     unfolding ts_xc_def 
     by simp 
   with \<open>ts_xc F \<in> exact_cover\<close> 
-  have "\<exists>S' \<subseteq> ?S. cover S' ?X"
+  have "\<exists>S' \<subseteq> ?S. cover S' ?X" 
     using exact_cover_D ts_xc_is_collection
     by metis 
   then obtain S' where S'_def: "cover S' ?X" "S' \<subseteq> ?S" 
@@ -873,10 +879,9 @@ proof -
      have "(?\<sigma>\<up>) l"
       unfolding constr_model_def lift_def
       apply (cases l)
-      using s_def \<open>c \<in> set F\<close> apply force 
-      apply auto 
-      using constr_model_disj_aux[OF S'_def] s_def
-      by blast
+      using s_def \<open>c \<in> set F\<close>  
+       constr_model_disj_aux[OF S'_def]
+      by auto
      with s_def \<open>c \<in> set F\<close> 
      show "\<exists>s\<in>S'. \<exists>l\<in>c. s = {C c, L l c} \<and> (?\<sigma>\<up>) l"
        by blast
@@ -884,15 +889,43 @@ proof -
    then have "?\<sigma> \<Turnstile> F"
      unfolding models_def 
      by blast
-   then show ?thesis
+   moreover have "\<forall>cls \<in> set F. finite cls"
+     proof -
+       from \<open>ts_xc F \<in> exact_cover\<close> \<open>ts_xc F = (?X, ?S)\<close>
+       have "(?X, ?S) \<in> exact_cover"
+         by force 
+       hence "finite ?X"
+         unfolding exact_cover_def
+         by blast
+       hence "finite (literals_of_sat F)"
+         by blast
+       moreover have "\<forall>cls \<in> set F. {L l cls | l. l \<in> cls} \<subseteq> (literals_of_sat F)"
+        unfolding literals_of_sat_def comp_literals_correct
+        by blast
+      ultimately have "\<forall>cls \<in> set F. finite {L l cls | l. l \<in> cls}"
+        using rev_finite_subset
+        by meson
+       moreover have "\<forall>cls \<in> set F. inj_on (\<lambda>l. L l cls) cls"
+        unfolding inj_on_def
+        by blast
+       moreover have "\<forall>cls \<in> set F. {L l cls | l. l \<in> cls} = (\<lambda>l. L l cls) ` cls"
+         by blast
+       ultimately show ?thesis
+         using finite_imageD
+         by fastforce
+     qed 
+     
+   ultimately show ?thesis
      unfolding cnf_sat_def sat_def
      by blast
 qed
+
 
 theorem is_reduction_ts_xc:
 "is_reduction ts_xc cnf_sat exact_cover"
   unfolding is_reduction_def 
   using ts_xc_sound ts_xc_complete
   by blast
+
 
 end

@@ -7,10 +7,10 @@ begin
 subsection "Exact cover definitions"
 
 definition "exact_cover_alter_def \<equiv> 
-   {(X, S). \<Union>S \<subseteq> X \<and>
+   {(X, S). finite X \<and> \<Union>S \<subseteq> X \<and>
     (\<exists>S' \<subseteq> S. \<forall>x \<in> X. \<exists>s \<in> S'. x \<in> s \<and> (\<forall>t \<in> S'. s \<noteq> t \<longrightarrow> x \<notin> t))}"
 
-definition "exact_cover \<equiv> {(X, S). \<Union>S \<subseteq> X \<and> (\<exists>S' \<subseteq> S. \<Union>S' = X \<and> disjoint S')}"
+definition "exact_cover \<equiv> {(X, S). finite X \<and> \<Union>S \<subseteq> X \<and> (\<exists>S' \<subseteq> S. \<Union>S' = X \<and> disjoint S')}"
 
 lemma exact_cover_alter_def_eq: "(X, S) \<in> exact_cover_alter_def \<longleftrightarrow> (X, S) \<in> exact_cover"
 proof (standard, goal_cases)
@@ -46,15 +46,19 @@ proof (standard, goal_cases)
     ultimately show "a \<inter> b = {}" 
       by blast
   qed
-  from \<open>X = \<Union>S'\<close> \<open>disjoint S'\<close> \<open>S' \<subseteq> S\<close> \<open>\<Union>S \<subseteq> X\<close> 
+
+  from 1 have "finite X"
+    unfolding exact_cover_alter_def_def
+    by blast
+  with \<open>X = \<Union>S'\<close> \<open>disjoint S'\<close> \<open>S' \<subseteq> S\<close> \<open>\<Union>S \<subseteq> X\<close> 
   show "(X, S) \<in> exact_cover"
     unfolding exact_cover_def 
     by blast
 next
   assume 2:"(X, S) \<in> exact_cover"
-  then have "\<Union>S \<subseteq> X" 
+  then have "\<Union>S \<subseteq> X" "finite X"
     unfolding exact_cover_def 
-    by blast
+    by blast+
   from 2 obtain S' where S'_def: "S' \<subseteq> S" "\<Union>S' = X" "disjoint S'"
     unfolding exact_cover_def 
     by blast 
@@ -72,15 +76,15 @@ next
       by blast
   qed 
   then show "(X, S) \<in> exact_cover_alter_def" 
-    using \<open>\<Union>S \<subseteq> X\<close> \<open>S' \<subseteq> S\<close>
+    using \<open>\<Union>S \<subseteq> X\<close> \<open>S' \<subseteq> S\<close> \<open>finite X\<close>
     unfolding exact_cover_alter_def_def 
-    by blast 
+    by blast
 qed
 
 definition cover :: "'a set set \<Rightarrow> 'a set \<Rightarrow> bool" where
 "cover S' X \<longleftrightarrow> \<Union>S' = X \<and> disjoint S'"
 
-lemma exact_cover_I: "\<lbrakk>S' \<subseteq> S; \<Union>S \<subseteq> X; cover S' X\<rbrakk> \<Longrightarrow> (X, S) \<in> exact_cover"
+lemma exact_cover_I: "\<lbrakk>S' \<subseteq> S; \<Union>S \<subseteq> X; cover S' X; finite X\<rbrakk> \<Longrightarrow> (X, S) \<in> exact_cover"
   unfolding exact_cover_def cover_def 
   by blast
 
@@ -89,5 +93,5 @@ lemma exact_cover_D: "\<lbrakk>(X, S) \<in> exact_cover; \<Union>S \<subseteq> X
   by blast
 
 definition
-  "cnf_sat \<equiv> {F. sat F}"
+  "cnf_sat \<equiv> {F. sat F \<and> (\<forall>cls \<in> set F. finite cls)}"
 end 
