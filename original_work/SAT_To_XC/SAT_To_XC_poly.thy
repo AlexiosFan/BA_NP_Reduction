@@ -1,5 +1,5 @@
-theory TS_To_XC_poly
-  imports  "Karp21.TSTSC_Poly" "Poly_Reductions_Lib.Set_Auxiliaries" TS_To_XC 
+theory SAT_To_XC_poly
+  imports  "Karp21.TSTSC_Poly" "Poly_Reductions_Lib.Set_Auxiliaries" SAT_To_XC 
 begin
 
 section "the reduction from sat to xc is polynomial"

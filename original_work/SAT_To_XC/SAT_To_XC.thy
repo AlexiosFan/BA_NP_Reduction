@@ -1,5 +1,5 @@
-theory TS_To_XC
-  imports TS_To_XC_aux
+theory SAT_To_XC
+  imports SAT_To_XC_aux
 begin
 
 section "useful definitions and the reduction function"

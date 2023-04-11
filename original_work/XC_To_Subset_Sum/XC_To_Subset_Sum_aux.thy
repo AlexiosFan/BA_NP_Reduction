@@ -1,5 +1,5 @@
 theory  XC_To_Subset_Sum_aux
-  imports "../TS_To_XC/XC_Definition"
+  imports "../SAT_To_XC/XC_Definition"
 begin
 
 definition is_subset_sum :: "'a set \<Rightarrow> ('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> bool" where
