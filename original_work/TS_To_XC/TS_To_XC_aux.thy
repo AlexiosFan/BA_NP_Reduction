@@ -7,36 +7,7 @@ datatype 'a xc_element = V 'a | C "'a lit set" | L "'a lit" "'a lit set"
 fun var :: "'a lit \<Rightarrow> 'a" where 
 "var (Neg a) = a" | "var (Pos a) = a"
 
-fun vars :: "'a three_sat \<Rightarrow> 'a set" where
-"vars [] = {}" |
-"vars (x#xs) = (var ` x) \<union> vars xs"
-
-lemma vars_correct:
-"x \<in> vars F \<longleftrightarrow> x \<in> (var) ` \<Union> (set F)"
-by (induction F) auto
-
-fun comp_literals :: "'a three_sat \<Rightarrow> 'a xc_element set \<Rightarrow> 'a xc_element set" where
-"comp_literals [] acc = acc" |
-"comp_literals (x # xs) acc = comp_literals xs ({L a x | a. a \<in> x} \<union> acc)"
-
-lemma sat_tail:
-  "sat (x#xs) \<Longrightarrow> sat xs"
-apply (induction xs)
-apply (auto simp add: sat_def models_def)
-done 
-
-lemma comp_literals_mono:
-  "acc \<le> comp_literals F acc"
-apply (induction F arbitrary: acc)
-apply (auto simp add: three_cnf_sat_def sat_tail, force)
-done
-
-lemma comp_literals_correct[simp]:
-  "comp_literals F acc = acc \<union> {L l c| l c. c \<in> set F \<and> l \<in> c}" 
-apply (induction F arbitrary: acc)
-using comp_literals_mono 
-by fastforce+
-
+definition "vars F \<equiv> (var) ` \<Union> (set F)"
 
 section "splitting of the sat"
 
@@ -53,8 +24,8 @@ lemma vars_of_sat_finite:
       using finite_imageI
       by blast
     moreover have "vars F = (var ` (\<Union> (set F)))"
-      using vars_correct
-      by fast
+      unfolding vars_def 
+      by blast
     ultimately show ?thesis
       unfolding vars_of_sat_def
       by auto
@@ -74,7 +45,7 @@ lemma clauses_of_sat_finite:
   by simp 
 
 definition literals_of_sat :: "'a three_sat \<Rightarrow> 'a xc_element set" where
-"literals_of_sat F = comp_literals F {}"
+"literals_of_sat F = {L l c| l c. c \<in> set F \<and> l \<in> c}"
 
 lemma literals_of_sat_correct[simp]:
   "\<lbrakk>c \<in> set F; l \<in> c\<rbrakk> \<Longrightarrow> L l c \<in> literals_of_sat F"
@@ -92,7 +63,7 @@ lemma literals_of_sat_finite:
     ultimately have "finite {L l c |l c. c \<in> set F \<and> l \<in> c}"
       by fastforce
    then show ?thesis
-     unfolding literals_of_sat_def comp_literals_correct
+     unfolding literals_of_sat_def 
      by simp
   qed 
 

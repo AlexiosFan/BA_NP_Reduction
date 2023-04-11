@@ -31,10 +31,30 @@ abbreviation "comp_S F \<equiv>
     literal_sets F \<union> clauses_with_literals F 
   \<union> var_true_literals F \<union> var_false_literals F"
 
-definition ts_xc :: "'a three_sat \<Rightarrow> 'a xc_element set * 'a xc_element set set" where 
-"ts_xc F = (comp_X F, comp_S F)"
+definition sat_xc :: "'a three_sat \<Rightarrow> 'a xc_element set * 'a xc_element set set" where 
+"sat_xc F = (comp_X F, comp_S F)"
 
-lemma ts_xc_is_collection: "\<Union> (comp_S F) \<subseteq> (comp_X F)"
+
+lemma infinite_constr_not_incl:
+assumes "\<not> (\<forall>cls \<in> set F. finite cls)"
+shows  "(comp_X F, {}) \<notin> exact_cover"
+proof -
+ from assms obtain cls where c_def: "cls \<in> set F" "\<not> finite cls"
+   by blast
+ then have "\<forall>l \<in> cls. L l cls \<in> comp_X F"
+   unfolding literals_of_sat_def
+   by blast
+ then have "comp_X F \<noteq> {}"
+   using c_def 
+   by fastforce
+ then have "\<forall>S' \<subseteq> {}. \<Union>S' \<noteq> comp_X F"
+   by blast
+ then show ?thesis 
+   unfolding exact_cover_def 
+   by blast
+qed 
+
+lemma sat_xc_is_collection: "\<Union> (comp_S F) \<subseteq> (comp_X F)"
 proof -
   let ?vars = "vars_of_sat F"
   let ?clauses = "clauses_of_sat F"
@@ -46,10 +66,10 @@ proof -
   let ?vf = "var_false_literals F"
 
   have x_part: "(comp_X F) = ?vars \<union> ?clauses \<union> ?literals"
-    using ts_xc_def[of F] 
+    using sat_xc_def[of F] 
     by (auto simp: Let_def)
   have s_part: "(comp_S F) = ?ls \<union> ?cs \<union> ?vt \<union> ?vf"
-    using ts_xc_def[of F] 
+    using sat_xc_def[of F] 
     by (auto simp: Let_def)
   have "\<Union>?ls = ?literals" 
     unfolding literal_sets_def 
@@ -212,7 +232,7 @@ proof (cases x)
     let ?s = "{V a} \<union> {l \<in> literals_of_sat F. \<exists>c. C c \<in> clauses_of_sat F \<and> L (Pos a) c = l}"
     
     have "a \<in> vars F"
-      using assms(2-3) Pos by (force simp add: vars_correct)
+      using assms(2-3) Pos by (force simp add: vars_def)
     moreover then have "?s \<in> var_false_literals F"
       unfolding var_false_literals_def vars_of_sat_def
       by blast
@@ -232,7 +252,7 @@ next
   proof -
     let ?s = "{V b} \<union> {l \<in> literals_of_sat F. \<exists>c. C c \<in> clauses_of_sat F \<and> L (Neg b) c = l}"
     have "b \<in> vars F"
-      using assms(2-3) Neg by (force simp add: vars_correct)
+      using assms(2-3) Neg by (force simp add: vars_def)
     moreover then have "?s \<in> var_true_literals F"
       unfolding var_true_literals_def vars_of_sat_def
       by blast
@@ -348,14 +368,15 @@ lemma true_false_literals_noteq:
 proof -
   assume "v \<in> vars F"
   then have "(v \<in> var ` \<Union> (set F))"
-    using vars_correct[of v F] by blast 
+    unfolding vars_def 
+    by blast
   then have "\<exists>c\<in> set F. v \<in> var ` c"
     by blast
   have "\<exists>c. C c \<in> (clauses_of_sat F) \<and>
     (L (Neg v) c \<in> (literals_of_sat F) \<or> L (Pos v) c \<in> (literals_of_sat F))"
     unfolding literals_of_sat_def clauses_of_sat_def
-    using comp_literals_correct[of F "{}"] imageE var.elims \<open>\<exists>c\<in> set F. v \<in> var ` c\<close>
-    by (smt (verit) literals_of_sat_correct literals_of_sat_def mem_Collect_eq)
+    using imageE var.elims \<open>\<exists>c\<in> set F. v \<in> var ` c\<close>
+    by (smt (verit, del_insts) mem_Collect_eq)
   then show  "true_literals v F \<noteq> false_literals v F" 
     by fast
 qed 
@@ -563,7 +584,7 @@ by blast
 
 subsection "The soundness lemma"
   
-lemma ts_xc_sound_aux:
+lemma sat_xc_sound_aux:
   "\<lbrakk>\<sigma> \<Turnstile> F; \<forall>cls\<in>set F. finite cls\<rbrakk> \<Longrightarrow> cover (constr_cover F \<sigma>) (comp_X F)"
   unfolding cover_def
   proof
@@ -577,7 +598,7 @@ lemma ts_xc_sound_aux:
         unfolding cnf_sat_def sat_def
         using prems by blast
       ultimately show ?case
-        using ts_xc_is_collection by blast
+        using sat_xc_is_collection by blast
     next
       case 2
       have "F \<in> cnf_sat"
@@ -613,12 +634,13 @@ lemma finite_constr:
     using vars_of_sat_finite clauses_of_sat_finite literals_of_sat_finite
     by blast
 
-lemma ts_xc_sound:
-  "F \<in> cnf_sat \<Longrightarrow> ts_xc F \<in> exact_cover"
-  proof (goal_cases) 
+lemma sat_xc_sound:
+  "F \<in> cnf_sat \<Longrightarrow> sat_xc F \<in> exact_cover"
+  proof (cases "\<forall>cls \<in> set F. finite cls") 
     let ?X = "comp_X F"
     let ?S = "comp_S F"
-  case 1
+  case True
+  assume "F \<in> cnf_sat"
     hence prems: "\<exists>\<sigma>. \<sigma> \<Turnstile> F" "\<forall>cls \<in> set F. finite cls"
       unfolding cnf_sat_def sat_def
       by blast+
@@ -627,13 +649,19 @@ lemma ts_xc_sound:
     have "(?X, ?S) \<in> exact_cover"
       apply (rule exact_cover_I)
       apply (rule constr_cover_is_collection[OF sig_def])
-      apply (rule ts_xc_is_collection)
-      apply (rule ts_xc_sound_aux[OF sig_def prems(2)])
+      apply (rule sat_xc_is_collection)
+      apply (rule sat_xc_sound_aux[OF sig_def prems(2)])
       apply (rule finite_constr[OF prems(2)])
       done 
-    then show ?case 
-      unfolding ts_xc_def 
-      by simp
+    with True show ?thesis
+      unfolding sat_xc_def 
+      by presburger
+  next 
+    case False 
+    assume "F \<in> cnf_sat"
+    with False show ?thesis 
+      unfolding cnf_sat_def
+      by blast
   qed
 
 section "The proof of the completeness"
@@ -668,18 +696,18 @@ lemma clauses_with_literals_satisfiability:
   by blast
 
 lemma constr_model_exists:
-  "\<lbrakk>S' \<subseteq> S; cover S' X; ts_xc F = (X, S)\<rbrakk> 
+  "\<lbrakk>S' \<subseteq> S; cover S' X; sat_xc F = (X, S)\<rbrakk> 
     \<Longrightarrow> (\<forall>c\<in> set F. \<exists>s\<in> S'. \<exists>l \<in> c. s = {C c, L l c})"
 proof
   fix c 
-  assume "S' \<subseteq> S" "cover S' X" "ts_xc F = (X, S)" 
-  "c \<in> set F"
+  assume "S' \<subseteq> S" "cover S' X" "sat_xc F = (X, S)" 
+  "c \<in> set F" 
   from \<open>c \<in> set F\<close> have "C c \<in> clauses_of_sat F"
     unfolding clauses_of_sat_def 
     by simp 
-  moreover from \<open>ts_xc F = (X, S)\<close> 
+  moreover from \<open>sat_xc F = (X, S)\<close> 
   have "S = comp_S F" "X = comp_X F"
-    unfolding ts_xc_def 
+    unfolding sat_xc_def
     by force+
   ultimately 
   have prem: "\<forall>s\<in>S. C c \<in> s \<longrightarrow> s \<in> clauses_with_literals F"
@@ -784,7 +812,7 @@ proof
       unfolding clauses_with_literals_def
       by (simp add: doubleton_eq_iff)+
     with \<open>C c \<in> clauses_of_sat F\<close> have "x \<in> vars F"
-      unfolding clauses_of_sat_def vars_correct 
+      unfolding clauses_of_sat_def vars_def 
       by force
     hence "V x \<in> vars_of_sat F"
       unfolding vars_of_sat_def
@@ -808,11 +836,9 @@ proof
     then show ?thesis
     proof (cases)
       case 1
-      have "L (Neg x) c' \<in> comp_literals F {}"
+     have "L (Neg x) c' \<in> true_literals x F"
         using c_x_unfold 
         unfolding clauses_of_sat_def
-        by auto
-      hence "L (Neg x) c' \<in> true_literals x F"
         by simp
       moreover have "L (Neg x) c' \<in> {C c', L (Neg x) c'}"
         by blast
@@ -825,11 +851,9 @@ proof
         by blast
     next
       case 2
-      have "L (Pos x) c \<in> comp_literals F {}"
+      have "L (Pos x) c \<in> false_literals x F"
         using c_x_unfold 
         unfolding clauses_of_sat_def
-        by auto
-      hence "L (Pos x) c \<in> false_literals x F"
         by simp
       moreover have "L (Pos x) c \<in> {C c, L (Pos x) c}"
         by blast
@@ -844,25 +868,26 @@ proof
   qed
 qed 
 
-lemma ts_xc_complete:
-  "ts_xc F \<in> exact_cover \<Longrightarrow> F \<in> cnf_sat"
-proof -
+lemma sat_xc_complete:
+  "sat_xc F \<in> exact_cover \<Longrightarrow> F \<in> cnf_sat"
+proof (goal_cases)
+  case 1
   let ?X = "comp_X F"
   let ?S = "comp_S F"
 
-  assume "ts_xc F \<in> exact_cover"
-  then have "ts_xc F = (?X, ?S)" 
-    unfolding ts_xc_def 
+  assume "sat_xc F \<in> exact_cover"
+  then have "sat_xc F = (?X, ?S)" 
+    unfolding sat_xc_def 
     by simp 
-  with \<open>ts_xc F \<in> exact_cover\<close> 
+  with \<open>sat_xc F \<in> exact_cover\<close> 
   have "\<exists>S' \<subseteq> ?S. cover S' ?X" 
-    using exact_cover_D ts_xc_is_collection
+    using exact_cover_D sat_xc_is_collection
     by metis 
   then obtain S' where S'_def: "cover S' ?X" "S' \<subseteq> ?S" 
     by blast
-  with \<open>ts_xc F = (?X, ?S)\<close> 
+  with \<open>sat_xc F = (?X, ?S)\<close> 
   have prem: "\<forall>c\<in> set F. \<exists>s\<in> S'. \<exists>l \<in> c. s = {C c, L l c}"
-   using constr_model_exists[of S' ?S ?X]
+   using constr_model_exists[of S' ?S ?X F] 
    by presburger
 
    let ?\<sigma> = "constr_model S' F"
@@ -891,7 +916,7 @@ proof -
      by blast
    moreover have "\<forall>cls \<in> set F. finite cls"
      proof -
-       from \<open>ts_xc F \<in> exact_cover\<close> \<open>ts_xc F = (?X, ?S)\<close>
+       from \<open>sat_xc F \<in> exact_cover\<close> \<open>sat_xc F = (?X, ?S)\<close>
        have "(?X, ?S) \<in> exact_cover"
          by force 
        hence "finite ?X"
@@ -900,7 +925,7 @@ proof -
        hence "finite (literals_of_sat F)"
          by blast
        moreover have "\<forall>cls \<in> set F. {L l cls | l. l \<in> cls} \<subseteq> (literals_of_sat F)"
-        unfolding literals_of_sat_def comp_literals_correct
+        unfolding literals_of_sat_def 
         by blast
       ultimately have "\<forall>cls \<in> set F. finite {L l cls | l. l \<in> cls}"
         using rev_finite_subset
@@ -918,13 +943,13 @@ proof -
    ultimately show ?thesis
      unfolding cnf_sat_def sat_def
      by blast
-qed
+qed 
 
 
-theorem is_reduction_ts_xc:
-"is_reduction ts_xc cnf_sat exact_cover"
+theorem is_reduction_sat_xc:
+"is_reduction sat_xc cnf_sat exact_cover"
   unfolding is_reduction_def 
-  using ts_xc_sound ts_xc_complete
+  using sat_xc_sound sat_xc_complete
   by blast
 
 
