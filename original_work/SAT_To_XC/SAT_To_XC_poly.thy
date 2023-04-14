@@ -22,6 +22,10 @@ definition "sz_lit F \<equiv> length F * (Max_nat (card ` (set F)))"
 definition "size_XC XC \<equiv> card (fst XC) + card (snd XC)"
 definition "size_SAT_max \<equiv> (\<lambda>x. max (max (sz_cls x) (sz_lit x)) (sz_vars x))"
 
+(*
+3 metrics are independent from each other, hence lift them to the maximum
+*)
+
 subsection "forging the X"
 
 definition "mop_vars_of_sat F \<equiv> SPEC (\<lambda>v. v = vars_of_sat F) (\<lambda>_. 3 * sz_vars F)"

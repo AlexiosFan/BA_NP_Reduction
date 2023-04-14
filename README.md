@@ -19,3 +19,6 @@ Added an on-paper proof for polynomial reduction from **3SAT** to **Exact Cover*
 
 ## 24/03/2023
 Finished and did a first few refinements of the correctness of the reduction from **3SAT**  to **Exact Cover**
+
+## 11/04/2023
+Finished the proof of the polynomial complexity of the reduction from **3SAT** to **Exact Cover**
