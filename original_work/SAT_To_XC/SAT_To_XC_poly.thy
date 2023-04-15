@@ -19,7 +19,7 @@ abbreviation "Max_nat s \<equiv> (if s = {} then 0 else Max s)"
 definition "sz_vars F \<equiv> card (vars F)"
 definition "sz_cls \<equiv> size_SAT"
 definition "sz_lit F \<equiv> length F * (Max_nat (card ` (set F)))"
-definition "size_XC XC \<equiv> card (fst XC) + card (snd XC)"
+definition "size_XC XC \<equiv> max (card (fst XC)) (card (snd XC))"
 definition "size_SAT_max \<equiv> (\<lambda>x. max (max (sz_cls x) (sz_lit x)) (sz_vars x))"
 
 (*
