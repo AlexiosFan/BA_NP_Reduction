@@ -3,6 +3,8 @@ theory XC_To_SS
 
 begin
 
+subsection "definitino of reduction functions"
+
 definition "map_to_nat X \<equiv> (SOME f. (if X = {} then bij_betw f X {} else bij_betw f X {1..card X}))"
 definition "weight p X \<equiv> (sum (\<lambda>x. p ^ x)  X)"
 
@@ -79,6 +81,8 @@ definition
     )
   )"
 
+subsection "the proof of the soundness"
+
 lemma infinite_not_in_ss:
   "\<not> is_subset_sum ({}, card , 1::nat)"
 unfolding is_subset_sum_def
@@ -131,6 +135,8 @@ proof -
     unfolding is_subset_sum_def xc_to_ss_def Let_def weight_def
     by auto
 qed 
+
+subsubsection "the proof of the completeness"
 
 
 lemma distr_aux: 
@@ -462,6 +468,8 @@ proof -
     unfolding cover_def 
     by blast
 qed
+
+subsection "the final theorem"
   
 
 lemma xc_to_subset_sum_sound:
