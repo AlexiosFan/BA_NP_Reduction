@@ -24,4 +24,4 @@ Finished and did a first few refinements of the correctness of the reduction fro
 Finished the proof of the polynomial complexity of the reduction from **3SAT** to **Exact Cover**
 
 ## 15/04/2023
-Finished the proof of the correctness of the reduction from **Exact cover** to **Subset sum**
+Finished the proof of the correctness and polynomial complexity of the reduction from **Exact cover** to **Subset sum**
