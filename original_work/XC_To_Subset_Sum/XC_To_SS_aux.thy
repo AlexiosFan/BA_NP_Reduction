@@ -101,29 +101,6 @@ proof (induction S rule: finite_induct)
   qed
 qed (auto simp add: bij_betw_def inj_on_def)
 
-subsection "property of a set of polynomials"
-
-definition "is_poly_of A b \<equiv> \<forall>x \<in> A. \<exists>k. b = x ^ k"
-
-lemma is_poly_of_sum:
-"\<lbrakk>finite A; is_poly_of A b; \<forall>x \<in> A. x \<le> b ^ p\<rbrakk> 
-  \<Longrightarrow> \<Sum>A = sum (\<lambda>k. if b ^ k \<in> A then b ^ k else 0) {..p}"
-sorry
-
-definition "is_set_of_poly S b \<equiv> \<forall>A \<in> S. is_poly_of A b"
-
-definition "coeff_in_sum S b p = 
-  (if \<forall>A \<in> S. is_poly_of A b 
-  then card {A | A. b ^ p \<in> A}
-  else 0)"
-
-lemma coeff_in_sum_correct:
-assumes "is_set_of_poly S b" "\<forall>x \<in> \<Union>S. x \<le> b ^ p"
-shows "(\<Sum> \<circ> \<Sum>) S = sum (coeff_in_sum S b) {..p}"
-using assms 
-unfolding coeff_in_sum_def is_set_of_poly_def is_poly_of_def
-apply auto 
-sorry
 
 
 end 

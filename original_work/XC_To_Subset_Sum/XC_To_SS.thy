@@ -140,7 +140,7 @@ shows "a * c + (b - a) * c = b * c"
 using assms 
 by (metis add_mult_distrib le_add_diff_inverse)
 
-lemma sum_distr:
+lemma   sum_distr:
 fixes X :: "'a set" and f :: "'a \<Rightarrow> nat"
 assumes "finite S" "finite X" "\<Union>S \<subseteq> X" 
 shows "(\<Sum>i\<in>S. sum f i) = (\<Sum>i \<in> X. (card {A \<in> S. i \<in> A}) * f i)"
@@ -513,8 +513,6 @@ next
     using exact_cover_I[of S' S] False 
     by blast
 qed 
-
-
 
 theorem is_reduction_xc_to_ss:
   "is_reduction xc_to_ss exact_cover subset_sum"
