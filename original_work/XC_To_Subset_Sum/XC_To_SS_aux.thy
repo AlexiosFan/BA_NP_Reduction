@@ -4,11 +4,11 @@ begin
 
 section "subset sum"
 
-definition is_subset_sum :: "'a set * ('a \<Rightarrow> nat) * nat \<Rightarrow> bool" where
+definition is_subset_sum :: "'a set * ('a \<Rightarrow> int) * int \<Rightarrow> bool" where
 "is_subset_sum SS \<equiv> 
-  (case SS of (S, w, B) => (finite S \<and> sum w S = B))"
+  (case SS of (S, w, B) => (sum w S = B))"
 
-definition "subset_sum \<equiv> {(S, w, B) | S w B. \<exists>S' \<subseteq> S. is_subset_sum (S', w, B)}"
+definition "subset_sum \<equiv> {(S, w, B) | S w B. finite S \<and> (\<exists>S' \<subseteq> S. is_subset_sum (S', w, B))}"
 
 (*construction via a bijective function, a preliminary lemma that 
 there is a bijective function from a finite set to a finite natural number interval
@@ -100,7 +100,6 @@ proof (induction S rule: finite_induct)
       by metis
   qed
 qed (auto simp add: bij_betw_def inj_on_def)
-
 
 
 end 
