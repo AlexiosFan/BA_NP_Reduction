@@ -4,7 +4,7 @@ begin
 
 section "subset sum"
 
-definition is_subset_sum :: "'a set * ('a \<Rightarrow> int) * int \<Rightarrow> bool" where
+definition is_subset_sum :: "'a set * ('a \<Rightarrow> nat) * nat \<Rightarrow> bool" where
 "is_subset_sum SS \<equiv> 
   (case SS of (S, w, B) => (sum w S = B))"
 

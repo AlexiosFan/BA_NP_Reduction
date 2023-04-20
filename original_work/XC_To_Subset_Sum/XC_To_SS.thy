@@ -3,7 +3,7 @@ theory XC_To_SS
 
 begin
 
-subsection "definitino of reduction functions"
+subsection "definition of reduction functions"
 
 definition "map_to_nat X \<equiv> (SOME f. (if X = {} then bij_betw f X {} else bij_betw f X {1..card X}))"
 definition "weight p X \<equiv> (sum (\<lambda>x. p ^ x)  X)"
@@ -75,8 +75,8 @@ definition
            p = max 2 (card S + 1) 
         in
       (S, 
-      (\<lambda>A. int (weight p (f ` A))), 
-      int (weight p (f ` X)))
+      (\<lambda>A.  (weight p (f ` A))), 
+       (weight p (f ` X)))
       )
     )
   )"
@@ -130,7 +130,7 @@ proof -
     by blast
   ultimately have "(\<Sum>x\<in>S. \<Sum>x\<in>?f` x. ?p ^ x) = (\<Sum>x\<in>?f ` X. ?p ^ x)"
     by argo
-  hence "(\<Sum>x\<in>S. int (\<Sum>x\<in>?f` x. ?p ^ x)) = (\<Sum>x\<in>?f ` X. int (?p ^ x))"
+  hence "(\<Sum>x\<in>S.  (\<Sum>x\<in>?f` x. ?p ^ x)) = (\<Sum>x\<in>?f ` X.  (?p ^ x))"
     by (metis of_nat_sum)
   with assms * prems have "sum w S = B"
     unfolding xc_to_ss_def Let_def weight_def
@@ -223,7 +223,7 @@ proof -
   let ?D = "\<lambda>x. if x \<in> ?f ` X then card {A. A \<in> S \<and> x \<in> ?f ` A} else 0"
       let ?E = "(\<lambda>x. if x \<in> ?f ` X then 1 else 0)"
   from assms have S_prop: 
-  "finite S" "(\<Sum>A\<in>S. int (weight ?p (?f ` A))) = int (weight ?p (?f ` X))" "\<Union>S \<subseteq> X" "S' = S0"
+  "finite S" "(\<Sum>A\<in>S.  (weight ?p (?f ` A))) =  (weight ?p (?f ` X))" "\<Union>S \<subseteq> X" "S' = S0"
     unfolding xc_to_ss_def is_subset_sum_def Let_def 
     using finite_subset 
     by auto
@@ -276,27 +276,27 @@ proof -
    unfolding inj_on_def 
    by auto
 
-  from assms have "?m = (\<Sum>i\<in>S. int (weight ?p (?f ` i)))"
+  from assms have "?m = (\<Sum>i\<in>S.  (weight ?p (?f ` i)))"
     unfolding is_subset_sum_def xc_to_ss_def Let_def 
     by auto
-  also have "... = int (\<Sum>A\<in>S. sum (\<lambda>i. ?p ^ i) (?f ` A))"
+  also have "... =  (\<Sum>A\<in>S. sum (\<lambda>i. ?p ^ i) (?f ` A))"
     unfolding weight_def
     by simp
-  also have "... = int (\<Sum>A\<in>S. (sum (\<lambda>i. ?p ^ ?f i)) A)"
+  also have "... =  (\<Sum>A\<in>S. (sum (\<lambda>i. ?p ^ ?f i)) A)"
     using **
     by simp
-  also have "... = int (\<Sum>i\<in>X. card {A \<in> S. i \<in> A} * ?p ^ (?f i))"
+  also have "... =  (\<Sum>i\<in>X. card {A \<in> S. i \<in> A} * ?p ^ (?f i))"
     using sum_distr[OF S_prop(1) f_dom(3) S_prop(3), of "\<lambda>i. ?p ^ (?f i)"] 
     by argo
-  also have "... = int (\<Sum>x\<in>X. card {A \<in> S. ?f x \<in> ?f ` A} * ?p ^ ?f x)"
+  also have "... =  (\<Sum>x\<in>X. card {A \<in> S. ?f x \<in> ?f ` A} * ?p ^ ?f x)"
     using **** 
     by simp
-  also have "... = int (\<Sum>i\<in>?f ` X. card {A \<in> S. i \<in> ?f ` A} * ?p ^ i)"
+  also have "... =  (\<Sum>i\<in>?f ` X. card {A \<in> S. i \<in> ?f ` A} * ?p ^ i)"
     using sum.reindex_bij_betw[OF ***,of "\<lambda>i. card {A \<in> S. i \<in> ?f ` A} * ?p ^ i"] 
     by argo
-  also have "... = int (\<Sum>i \<in> (?f ` X). ?D i * ?p ^ i)"
+  also have "... =  (\<Sum>i \<in> (?f ` X). ?D i * ?p ^ i)"
     by simp
-  finally have *: "?m = int (\<Sum>i \<in> (?f ` X). ?D i * ?p ^ i)"
+  finally have *: "?m =  (\<Sum>i \<in> (?f ` X). ?D i * ?p ^ i)"
     by simp
 
   from assms have "finite (?f ` X)"
@@ -380,7 +380,7 @@ shows "cover S X"
 proof -
   let ?f = "map_to_nat X"
   let ?p = "max 2 (card S' + 1)"
-  have S_prop: "finite S" "(\<Sum>A\<in>S. int (weight ?p (?f ` A))) = int (weight ?p (?f ` X))" "S0 = S'"
+  have S_prop: "finite S" "(\<Sum>A\<in>S.  (weight ?p (?f ` A))) =  (weight ?p (?f ` X))" "S0 = S'"
       using assms 
       unfolding xc_to_ss_def is_subset_sum_def Let_def
       by auto
@@ -397,11 +397,11 @@ proof -
   "\<forall>A\<in>S. weight ?p (?f ` A) = \<Sum>{?p ^ x | x . x \<in> (?f ` A)}"
     using weight_eq_poly[of ?p] 
     by blast+
-  hence "(\<Sum>A\<in>S. int (weight ?p (?f ` A))) = \<Sum>{?p ^ x | x . x \<in> (?f ` X)}"
+  hence "(\<Sum>A\<in>S.  (weight ?p (?f ` A))) = \<Sum>{?p ^ x | x . x \<in> (?f ` X)}"
     using S_prop(2)
     by argo
   moreover from weight_unfold(2) have 
-  "(\<Sum>A\<in>S. int (weight ?p (?f ` A))) = (\<Sum>A\<in>S. \<Sum>{?p ^ x | x . x \<in> (?f ` A)})"
+  "(\<Sum>A\<in>S.  (weight ?p (?f ` A))) = (\<Sum>A\<in>S. \<Sum>{?p ^ x | x . x \<in> (?f ` A)})"
     by simp
   ultimately have Sum_eq: "(\<Sum>A\<in>S. \<Sum>{?p ^ x | x . x \<in> (?f ` A)}) = \<Sum>{?p ^ x | x . x \<in> (?f ` X)}"
     by presburger
