@@ -40,13 +40,13 @@ definition "mop_literals_of_sat F \<equiv> SPEC (\<lambda>l. l = literals_of_sat
 subsection "forging the S"
 
 
-definition "mop_literal_sets F \<equiv> SPEC (\<lambda>s. s = literal_sets F) (\<lambda>_. 3 * sz_lit F)"
+definition "mop_literal_sets F \<equiv> SPEC (\<lambda>s. s = literal_sets F) (\<lambda>_. (3 + 1) * sz_lit F)"
 definition "mop_clauses_with_literals F 
-  \<equiv> SPEC (\<lambda>s. s = clauses_with_literals F) (\<lambda>_. (3 + 1) * sz_lit F + sz_cls F)"
+  \<equiv> SPEC (\<lambda>s. s = clauses_with_literals F) (\<lambda>_. (3 + 1 + 1) * sz_lit F + sz_cls F)"
 definition "mop_var_true_literals F 
-  \<equiv> SPEC (\<lambda>s. s = var_true_literals F) (\<lambda>_. 3 * sz_vars F + (3 + 1) * sz_lit F + sz_cls F + 1)"
+  \<equiv> SPEC (\<lambda>s. s = var_true_literals F) (\<lambda>_. (3 + 1) * sz_vars F + (3 + 1) * sz_lit F + (1 + 1) * sz_cls F + 1)"
 definition "mop_var_false_literals F 
-  \<equiv> SPEC (\<lambda>s. s = var_false_literals F) (\<lambda>_. 3 * sz_vars F + (3 + 1) * sz_lit F + sz_cls F + 1)"
+  \<equiv> SPEC (\<lambda>s. s = var_false_literals F) (\<lambda>_. (3 + 1) * sz_vars F + (3 + 1) * sz_lit F + (1 + 1) * sz_cls F + 1)"
 
 subsection "algorithmic in NREST"
 
@@ -71,9 +71,9 @@ definition "sat_to_xc_alg \<equiv> (\<lambda>F.
 definition "sat_to_xc_time_aux l m n = 
   2 * m + 3 * n + 1 + 1
 + 3 * l + 3 * m + m + 3 * n
-+ 3 * n + (3 + 1) * n + m
-+ 3 * l + (3 + 1) * n + m + 1
-+ 3 * l + (3 + 1) * n + m + 1
++ (3 + 1) * n + (3 + 1 + 1) * n + m
++ (3 + 1) * l + (3 + 1 + 1) * n + (1 + 1) * m + 1
++ (3 + 1) * l + (3 + 1 + 1) * n + (1 + 1) * m + 1
 + 2 + 3"
 
 definition "sat_to_xc_space_aux l m n = 
@@ -84,12 +84,12 @@ l + m + n
 lemma sat_to_xc_time_aux_mono1: 
 "(a::nat) \<le> b \<Longrightarrow> sat_to_xc_time_aux a x y \<le> sat_to_xc_time_aux b x y"
  unfolding sat_to_xc_time_aux_def
- by linarith
+ by auto
 
 lemma sat_to_xc_time_aux_mono2: 
 "(a::nat) \<le> b \<Longrightarrow> sat_to_xc_time_aux x a y \<le> sat_to_xc_time_aux x b y"
  unfolding sat_to_xc_time_aux_def
- by linarith
+ by auto
 
 lemma sat_to_xc_time_aux_mono3: 
 "(a::nat) \<le> b \<Longrightarrow> sat_to_xc_time_aux x y a \<le> sat_to_xc_time_aux x y b"
