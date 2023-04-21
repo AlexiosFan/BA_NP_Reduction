@@ -148,6 +148,4 @@ unfolding ispolyred_def
     by blast 
   done 
 
-find_theorems "(\<lambda>n. real (1 + 2 * n)) \<in> O(\<lambda>n. (real n)\<^sup>2)"
-
 end 
