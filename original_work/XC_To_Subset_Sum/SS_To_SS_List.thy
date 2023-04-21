@@ -17,7 +17,8 @@ definition subset_sum_list :: "((int list) * int) set" where
   "subset_sum_list \<equiv> {(as,s). (\<exists>xs::int list. 
     (\<forall>i<length xs. xs!i \<in> {0,1}) \<and> (\<Sum>i<length as. as!i * xs!i) = s \<and> length xs = length as)}"
 
-definition "ss_indeces_to_ss_list \<equiv> (\<lambda>(S, w, B). if (finite S \<and> S = {1..card S}) then (map w (sorted_list_of_set S), int B) else ([], 1))"
+definition ss_indeces_to_ss_list :: "nat set \<times> (nat \<Rightarrow> nat) \<times> nat \<Rightarrow> int list \<times> int" where 
+"ss_indeces_to_ss_list \<equiv> (\<lambda>(S, w, B). if (finite S \<and> S = {1..card S}) then (map (int \<circ> w) (sorted_list_of_set S), int B) else ([], 1))"
 
 paragraph ss_to_ss_indeces_complete
 
@@ -154,11 +155,11 @@ qed auto
 
 lemma ss_indeces_to_ss_list_sound_aux:
 assumes "(S, w, B) \<in> subset_sum_indeces"
-shows "(map w (sorted_list_of_set S), B) \<in> subset_sum_list"
+shows "(map (int \<circ> w) (sorted_list_of_set S), B) \<in> subset_sum_list"
 proof -
   from assms have prems: "finite S" "S = (if S = {} then {} else {1..card S})" "(\<exists>S'\<subseteq>S. sum w S' = B)"
     unfolding subset_sum_indeces_def
-    by blast+
+    by auto
   then obtain S' where S'_def: "S' \<subseteq> S" "sum w S' = B"
     by blast
   let ?as = "map w (sorted_list_of_set S)"  
@@ -215,7 +216,7 @@ proof -
     by blast
   with xs_prop show ?thesis
     unfolding subset_sum_list_def
-    by blast
+    by fastforce
 qed 
 
 lemma ss_indeces_to_ss_list_complete_aux:
@@ -349,17 +350,22 @@ by fastforce
 
 lemma ss_indeces_to_ss_list_sound:
 assumes "(S, w, B) \<in> subset_sum_indeces"
-shows "ss_indeces_to_ss_list (S, int \<circ> w, B) \<in> subset_sum_list"
+shows "ss_indeces_to_ss_list (S, w, B) \<in> subset_sum_list"
 proof (cases "finite S \<and> S = {1..card S}")
   case True
-  from assms have "(S, int \<circ> w, B) \<in> subset_sum_indeces"
+  from assms have "(S, w, B) \<in> subset_sum_indeces"
     unfolding subset_sum_indeces_def
     by auto
+  hence "(S, \<lambda>x. int (w x), int B) \<in> subset_sum_indeces"
+    unfolding subset_sum_indeces_def 
+    by auto
+  hence "(map (int \<circ> w) (sorted_list_of_set S), B) \<in> subset_sum_list"
+    using ss_indeces_to_ss_list_sound_aux[of S w B]
+    by fastforce
   with True 
   show ?thesis  
-    unfolding ss_indeces_to_ss_list_def
-    using ss_indeces_to_ss_list_sound_aux 
-    by (auto | blast)
+    unfolding ss_indeces_to_ss_list_def 
+    by auto
 next
   case False
   from assms have "S = {} \<or> (finite S \<and> S = {1..card S})"
@@ -372,7 +378,7 @@ next
 qed
 
 lemma ss_indeces_to_ss_list_complete:
-assumes "ss_indeces_to_ss_list (S, int \<circ> w, B) \<in> subset_sum_list" 
+assumes "ss_indeces_to_ss_list (S, w, B) \<in> subset_sum_list" 
 shows "(S, w, B) \<in> subset_sum_indeces"
 proof (cases "finite S \<and> S = {1..card S}")
   case True
@@ -385,7 +391,7 @@ proof (cases "finite S \<and> S = {1..card S}")
     by (auto, metis of_nat_eq_iff of_nat_sum)
 next
   case False
-  hence "ss_indeces_to_ss_list (S, int \<circ> w, B) = ([], 1)"
+  hence "ss_indeces_to_ss_list (S, w, B) = ([], 1)"
     unfolding ss_indeces_to_ss_list_def
     by auto
   moreover have "([], 1) \<notin> subset_sum_list"

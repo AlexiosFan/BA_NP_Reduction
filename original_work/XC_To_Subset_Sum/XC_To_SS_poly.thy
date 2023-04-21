@@ -6,13 +6,11 @@ section "the reduction from the exact cover to subset sum is polynomial"
 
 subsection "definitions"
 
-definition "size_SS \<equiv> (\<lambda>(S, w, B). card S)"
-
 definition "mop_check_finite_collection \<equiv> (\<lambda>(X, S). SPECT [infinite X \<or> (\<not> \<Union>S \<subseteq> X) \<mapsto> 1])"
 definition "mop_constr_bij_mapping \<equiv> (\<lambda>(X, _). SPEC (\<lambda>f. f = map_to_nat X) (\<lambda>_. 3 * card X + 1))"
 definition "mop_constr_base \<equiv> (\<lambda>(_, S). SPEC (\<lambda>p. p = max 2 (card S + 1)) (\<lambda>_. card S + 3))"
-definition "mop_constr_weight \<equiv> (\<lambda>p f. SPEC (\<lambda>w. w = (\<lambda>A. int (weight p (f ` A)))) (\<lambda>_. 1))"
-definition "mop_constr_B \<equiv> (\<lambda>p f X. SPEC (\<lambda>B.  B = int (weight p (f ` X))) (\<lambda>_. 3 * card X + 1))"
+definition "mop_constr_weight \<equiv> (\<lambda>p f. SPEC (\<lambda>w. w = (\<lambda>A.  (weight p (f ` A)))) (\<lambda>_. 1))"
+definition "mop_constr_B \<equiv> (\<lambda>p f X. SPEC (\<lambda>B.  B =  (weight p (f ` X))) (\<lambda>_. 3 * card X + 1))"
 (*bij_mapping:
   3 for obtaining the element, constructing the mapping and updating the construction
   1 for the bijection check
@@ -31,7 +29,7 @@ definition "xc_to_ss_alg \<equiv> (\<lambda>(X, S).
     b \<leftarrow> mop_check_finite_collection (X, S);
     if b
     then do {
-        RETURNT ({}, int \<circ> card, 1::int)
+        RETURNT ({},  card, 1)
     }
     else do {
         f \<leftarrow> mop_constr_bij_mapping (X, S);

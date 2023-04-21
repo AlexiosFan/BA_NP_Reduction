@@ -10,6 +10,8 @@ definition is_subset_sum :: "'a set * ('a \<Rightarrow> nat) * nat \<Rightarrow>
 
 definition "subset_sum \<equiv> {(S, w, B) | S w B. finite S \<and> (\<exists>S' \<subseteq> S. is_subset_sum (S', w, B))}"
 
+definition "size_SS \<equiv> (\<lambda>(S, w, B). card S)"
+
 (*construction via a bijective function, a preliminary lemma that 
 there is a bijective function from a finite set to a finite natural number interval
 from 0 to the cardinality of the set*)
