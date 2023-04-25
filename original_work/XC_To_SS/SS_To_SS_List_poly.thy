@@ -7,8 +7,6 @@ section "the reduction from subset sum to subset sum indeces is polynomial"
 
 subsection "definitions"
 
-definition "size_ss_indeces \<equiv> \<lambda>(S, w, B). card S + 2"
-
 definition "mop_check_finiteness \<equiv> \<lambda>(S, w, B). SPECT [finite S \<mapsto> 1]"
 definition "mop_mapping_of_set \<equiv> \<lambda>(S, _, _). SPEC (\<lambda>S'. S' = (generate_func S) ` S) (\<lambda>_. 3 * card S + 3 * card S + 1)"
 definition "mop_updating_the_weighting \<equiv> \<lambda>(S, w, _). SPEC (\<lambda>w'. w' = (\<lambda>x. w (inv_into S (generate_func S) x))) (\<lambda>_. 3 * card S + 3 * card S + 1)"
@@ -76,26 +74,16 @@ section "the reduction from subset sum indeces to subset sum list is polynomial"
 
 subsection "definition"
 
-(*
-definition subset_sum_list :: "((int list) * int) set" where
-  "subset_sum_list \<equiv> {(as,s). (\<exists>xs::int list. 
-    (\<forall>i<length xs. xs!i \<in> {0,1}) \<and> (\<Sum>i<length as. as!i * xs!i) = s \<and> length xs = length as)}"
-
-definition "ss_indeces_to_ss_list \<equiv> (\<lambda>(S, w, B). if (finite S \<and> S = {1..card S}) then (map w (sorted_list_of_set S), int B) else ([], 1))"
-*)
-
-definition"size_ss_list \<equiv> \<lambda>(as, s). length as + 1"
-
 definition "mop_check_finiteness_set \<equiv> \<lambda>(S, _, _). SPECT [finite S \<and> S = {1..card S} \<mapsto> 1]"
 definition "mop_mapping_to_list \<equiv>  \<lambda>(S, w, _). SPEC (\<lambda>as. as = map w (sorted_list_of_set S)) (\<lambda>_. 3 * card S + 3 * card S)"
-definition "mop_nat_to_int \<equiv> \<lambda>B. SPEC (\<lambda>B'. B' = int B) (\<lambda>_. 1)"
+definition "mop_nat_to_int \<equiv> \<lambda>B. SPEC (\<lambda>B'. B' = B) (\<lambda>_. 1)"
 
 definition "ss_indeces_to_ss_list_alg \<equiv> \<lambda>(S, w, B).
   do {
     b \<leftarrow> mop_check_finiteness_set (S, w, B);
     if b
     then do {
-      as \<leftarrow> mop_mapping_to_list (S, int \<circ> w, B);
+      as \<leftarrow> mop_mapping_to_list (S, w, B);
       s \<leftarrow> mop_nat_to_int B;
       RETURNT (as, s)
     }

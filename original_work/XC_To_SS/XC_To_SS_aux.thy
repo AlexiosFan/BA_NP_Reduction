@@ -12,6 +12,17 @@ definition "subset_sum \<equiv> {(S, w, B) | S w B. finite S \<and> (\<exists>S'
 
 definition "size_SS \<equiv> (\<lambda>(S, w, B). card S)"
 
+definition "subset_sum_indeces \<equiv> {(S, w, B). finite S \<and> S = (if S = {} then {} else {1..card S}) \<and> (\<exists>S' \<subseteq> S. sum w S' = B)}"
+
+definition "size_ss_indeces \<equiv> \<lambda>(S, w, B). card S + 2"
+
+definition subset_sum_list :: "((nat list) * nat) set" where
+  "subset_sum_list \<equiv> {(as,s). (\<exists>xs::nat list. 
+    (\<forall>i<length xs. xs!i \<in> {0,1}) \<and> (\<Sum>i<length as. as!i * xs!i) = s \<and> length xs = length as)}"
+
+
+definition"size_ss_list \<equiv> \<lambda>(as, s). length as + 1"
+
 (*construction via a bijective function, a preliminary lemma that 
 there is a bijective function from a finite set to a finite natural number interval
 from 0 to the cardinality of the set*)
