@@ -1,4 +1,4 @@
-theory SS_Part_KS_aux
+theory Combinatorics_aux
   imports "../XC_To_SS/XC_To_SS_aux"
 begin
 

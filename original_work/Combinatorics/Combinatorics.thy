@@ -1,5 +1,5 @@
-theory SS_Part_KS
-  imports SS_Part_KS_aux
+theory Combinatorics
+  imports Combinatorics_aux
 
 begin
 
