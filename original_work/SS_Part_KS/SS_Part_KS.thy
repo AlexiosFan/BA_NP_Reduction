@@ -3,6 +3,7 @@ theory SS_Part_KS
 
 begin
 
+subsection "the reduction from subset sum to number partition is correct"
 
 lemma ss_to_part_sound:
 assumes "(as, s) \<in> subset_sum_list"
@@ -294,5 +295,31 @@ next
     unfolding ss_to_part_def part_def
     by simp
 qed 
+
+
+theorem is_reduction_ss_to_part:
+"is_reduction ss_to_part subset_sum_list part"
+  unfolding is_reduction_def 
+  using ss_to_part_sound ss_to_part_complete
+  by fast
+
+subsection "the reduction from subset sum to knapsack is correct"
+
+lemma ss_to_ks_sound:
+"(S, w, B) \<in> subset_sum \<Longrightarrow> (S, w, w, B, B) \<in> knapsack"
+  unfolding subset_sum_def is_subset_sum_def knapsack_def 
+  by blast
+
+lemma ss_to_ks_complete:
+"(S, w, w, B, B) \<in> knapsack \<Longrightarrow> (S, w, B) \<in> subset_sum"
+  unfolding subset_sum_def is_subset_sum_def knapsack_def 
+  by auto 
+
+theorem is_reduction_ss_to_ks:
+"is_reduction ss_to_ks subset_sum knapsack"
+  unfolding is_reduction_def ss_to_ks_def
+  using ss_to_ks_sound ss_to_ks_complete 
+  by fast
+
 
 end 

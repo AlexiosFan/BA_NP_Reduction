@@ -12,6 +12,10 @@ definition ss_to_part :: "nat list * nat \<Rightarrow> nat list" where
 definition "subset_sum_int_list \<equiv> {(as,s). (\<exists>xs::int list. 
     (\<forall>i<length xs. xs!i \<in> {0,1}) \<and> (\<Sum>i<length as. as!i * xs!i) = s \<and> length xs = length as)}"
 
+definition "knapsack \<equiv> {(S, w, b, W, B). finite S \<and> (\<exists>S' \<subseteq> S. sum w S' \<le> W \<and> sum b S' \<ge> B)}"
+
+definition "ss_to_ks \<equiv> (\<lambda>(S, w, B). (S, w, w, B, B))"
+
 lemma subset_sum_nat_to_int_sound:
 assumes "(as, s) \<in> subset_sum_list"
 shows "(map int as, int s) \<in> subset_sum_int_list"
