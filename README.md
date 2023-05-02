@@ -28,3 +28,7 @@ Finished the proof of the correctness and polynomial complexity of the reduction
 
 ## 25/04/2023
 Finished the proof of the correctness of the reduction from **subset sum** to **partition**
+
+## 02/05/2023
+Finished the proof of the correctness of the reduction from **exact cover** to
+**hitting set**
