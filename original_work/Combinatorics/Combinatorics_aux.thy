@@ -2,6 +2,7 @@ theory Combinatorics_aux
   imports "../XC_To_SS/XC_To_SS_aux"
 begin
 
+section "A few NP-hard combinatorics problems"
 
 definition "part \<equiv> {as::nat list. \<exists>xs. (\<forall>i < length xs. xs!i \<in> {0, 1}) \<and> length as = length xs 
   \<and> 2 * (\<Sum>i < length as. as ! i * xs ! i) =( \<Sum>i < length as. as ! i)}"
@@ -15,6 +16,9 @@ definition "subset_sum_int_list \<equiv> {(as,s). (\<exists>xs::int list.
 definition "knapsack \<equiv> {(S, w, b, W, B). finite S \<and> (\<exists>S' \<subseteq> S. sum w S' \<le> W \<and> sum b S' \<ge> B)}"
 
 definition "ss_to_ks \<equiv> (\<lambda>(S, w, B). (S, w, w, B, B))"
+
+
+subsection "a type lifting from natural numbers to integers for subset sum"
 
 lemma subset_sum_nat_to_int_sound:
 assumes "(as, s) \<in> subset_sum_list"

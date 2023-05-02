@@ -75,4 +75,4 @@ Todo: check the definition of **3SAT** in the existing works
 Solutions to the cons:
   1. reduction from sat to sat_list, using the same approach as in the vertex cover
   2. reduction from exact cover to exact cover list for subset sum, also the same approach
-   
+   ****
