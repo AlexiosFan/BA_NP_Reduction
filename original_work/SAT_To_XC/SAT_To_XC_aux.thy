@@ -73,4 +73,6 @@ fun lift_xc_element :: "('a \<Rightarrow> bool) \<Rightarrow> 'a xc_element \<Ri
  "lift_xc_element \<sigma> (C c) \<longleftrightarrow> (\<exists> l\<in>c. (\<sigma>\<up>) l)" |
  "lift_xc_element \<sigma> (L x c) = (\<sigma>\<up>) x"
 
+ 
+
 end
