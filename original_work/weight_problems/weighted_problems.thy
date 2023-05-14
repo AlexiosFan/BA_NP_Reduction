@@ -1,13 +1,13 @@
-theory Combinatorics
-  imports Combinatorics_aux
+theory weighted_problems
+  imports weighted_problems_aux
 
 begin
 
 subsection "the reduction from subset sum to number partition is correct"
 
-lemma ss_to_part_sound:
+lemma ss_list_to_part_sound:
 assumes "(as, s) \<in> subset_sum_list"
-shows "ss_to_part (as, s) \<in> part"
+shows "ss_list_to_part (as, s) \<in> part"
 proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
   case True 
   from assms obtain xs where xs_def:
@@ -70,7 +70,7 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
     unfolding part_def 
     by blast   
   with True show ?thesis
-    unfolding ss_to_part_def 
+    unfolding ss_list_to_part_def 
     using by_def
     by fastforce
 next 
@@ -89,16 +89,16 @@ next
   with xs_def have s_up: "s \<le> (\<Sum>i<length as. as ! i)"
     by blast
   with False show ?thesis
-    unfolding part_def ss_to_part_def 
+    unfolding part_def ss_list_to_part_def 
     by argo
 qed 
 
-lemma ss_to_part_complete:
-assumes "ss_to_part (as, s) \<in> part"
+lemma ss_list_to_part_complete:
+assumes "ss_list_to_part (as, s) \<in> part"
 shows "(as, s) \<in> subset_sum_list"
 proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
   case True 
-  obtain bs where bs_def: "bs = ss_to_part (as, s)"
+  obtain bs where bs_def: "bs = ss_list_to_part (as, s)"
     by blast 
   with assms obtain ys where ys_def: 
   "(\<forall>i < length ys. ys!i = 0 \<or> ys!i = 1 )" "length bs = length ys"
@@ -106,17 +106,17 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
     unfolding part_def
     by blast
   from True this(2) bs_def have "length ys = length as + 2"
-    unfolding ss_to_part_def
+    unfolding ss_list_to_part_def
     by force
   with ys_def(1) have "\<And>i. i < length as \<Longrightarrow> ys ! (i + 2) \<in> {0, 1}"
-    unfolding ss_to_part_def 
+    unfolding ss_list_to_part_def 
     by simp
   hence i_up: "\<And>i. i \<in> {..<length as} \<Longrightarrow> as ! i * ys ! (i + 2) \<le> as ! i"
     by force 
 
   from True have "(\<Sum>i < length bs. bs ! i * ys ! i) = (\<Sum>i <length as + 2. bs ! i * ys ! i)"
     using bs_def 
-    unfolding ss_to_part_def
+    unfolding ss_list_to_part_def
     by auto
   also have "... = (bs ! 0 * ys ! 0) + (\<Sum>i < length as + 1. bs ! (i+1) * ys ! (i+1))"
     using sum.lessThan_Suc_shift
@@ -130,7 +130,7 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
 
   from True have "(\<Sum>i < length bs. bs ! i) = (\<Sum>i < length as + 2. bs ! i)"
     using bs_def
-    unfolding ss_to_part_def
+    unfolding ss_list_to_part_def
     by force 
   also have "... = bs ! 0 + (\<Sum>i < length as + 1. bs ! (i+1))"
     using sum.lessThan_Suc_shift
@@ -140,7 +140,7 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
     by auto
   also have "... = (\<Sum>i < length as. as ! i) + 1 + 1 + (\<Sum>i < length as. as ! i)"
     using bs_def True
-    unfolding ss_to_part_def
+    unfolding ss_list_to_part_def
     by fastforce 
   finally have "(\<Sum>i < length bs. bs ! i) = 2 * ((\<Sum>i < length as. as ! i) + 1)"
     by presburger
@@ -150,12 +150,12 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
   
   from True have ***: "bs ! 0 = (\<Sum>i < length as. as ! i) + 1 - s" "bs ! 1 = (s + 1)"
     using bs_def 
-    unfolding ss_to_part_def 
+    unfolding ss_list_to_part_def 
     by auto
 
   from True ys_def(2) have "length ys > 1"
     using bs_def
-    unfolding ss_to_part_def
+    unfolding ss_list_to_part_def
     by force 
   with ys_def(1) have "ys ! 0 \<in> {0, 1}" "ys ! 1 \<in> {0, 1}"
     by fastforce+
@@ -171,7 +171,7 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
       by algebra
     also have "... = (\<Sum>i < length as. as ! i) + 2 + (\<Sum>i < length as. as ! i * ys ! (i+2))"
       using bs_def True
-      unfolding ss_to_part_def
+      unfolding ss_list_to_part_def
       by simp
     finally have "(\<Sum>i < length bs. bs ! i * ys ! i) 
       = (\<Sum>i < length as. as ! i) + 2 + (\<Sum>i < length as. as ! i * ys ! (i+2))"
@@ -186,7 +186,7 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
       by algebra
     also have "... = (\<Sum>i < length as. as ! i * ys ! (i+2))"
       using bs_def True
-      unfolding ss_to_part_def 
+      unfolding ss_list_to_part_def 
       by simp
     also have "... \<le> (\<Sum>i < length as. as ! i)"
       using sum_mono i_up
@@ -215,7 +215,7 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
       by linarith
     hence "(\<Sum>i < length as. as ! i * ys ! (i+2)) = s"
       using bs_def True
-      unfolding ss_to_part_def
+      unfolding ss_list_to_part_def
       by simp
     moreover have "\<forall>i < length as. xs ! i = ys ! (i + 2)"
       using xs_def \<open>length ys = length as + 2\<close> 
@@ -257,7 +257,7 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
 
     from True have "(\<Sum>i < length bs. bs ! i * (1 - ys ! i)) = (\<Sum>i <length as + 2. bs ! i * (1 - ys ! i))"
       using bs_def 
-      unfolding ss_to_part_def
+      unfolding ss_list_to_part_def
       by auto
     also have "... = (bs ! 0 * (1 - ys ! 0)) + (\<Sum>i < length as + 1. bs ! (i+1) * (1 - ys ! (i + 1)))"
       using sum.lessThan_Suc_shift 
@@ -274,11 +274,11 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
     with True ** flip_eq have "(\<Sum>i < length as. bs ! (i+2) * (1 - ys ! (i + 2))) = s"
       by linarith
     with True bs_def have "(\<Sum>i < length as. as ! i * (1 - ys ! (i + 2))) = s"
-      unfolding ss_to_part_def 
+      unfolding ss_list_to_part_def 
       by force
     moreover have "\<forall>i < length as. 1 - ys ! (i+2) = zs ! (i+2)"
       using zs_def ys_def(1-2) True bs_def
-      unfolding ss_to_part_def
+      unfolding ss_list_to_part_def
       by auto
     moreover have "\<forall>i < length as. xs ! i = zs ! (i + 2)"
       using xs_def \<open>length zs = length as + 2\<close> 
@@ -292,15 +292,15 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
 next 
   case False 
   with assms show ?thesis
-    unfolding ss_to_part_def part_def
+    unfolding ss_list_to_part_def part_def
     by simp
 qed 
 
 
-theorem is_reduction_ss_to_part:
-"is_reduction ss_to_part subset_sum_list part"
+theorem is_reduction_ss_list_to_part:
+"is_reduction ss_list_to_part subset_sum_list part"
   unfolding is_reduction_def 
-  using ss_to_part_sound ss_to_part_complete
+  using ss_list_to_part_sound ss_list_to_part_complete
   by fast
 
 subsection "the reduction from subset sum to knapsack is correct"

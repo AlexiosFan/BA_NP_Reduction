@@ -1,21 +1,29 @@
-theory Combinatorics_aux
+theory weighted_problems_aux
   imports "../XC_To_SS/XC_To_SS_aux"
 begin
 
 section "A few NP-hard combinatorics problems"
 
+definition "subset_sum_int_list \<equiv> {(as,s). (\<exists>xs::int list. 
+    (\<forall>i<length xs. xs!i \<in> {0,1}) \<and> (\<Sum>i<length as. as!i * xs!i) = s \<and> length xs = length as)}"
+
+definition "ss_lift_to_int \<equiv> (\<lambda>(as, s). ((map int as), int s))"
+
+definition "size_ss_int_list \<equiv> \<lambda>(as, s). length as + 1"
+
 definition "part \<equiv> {as::nat list. \<exists>xs. (\<forall>i < length xs. xs!i \<in> {0, 1}) \<and> length as = length xs 
   \<and> 2 * (\<Sum>i < length as. as ! i * xs ! i) =( \<Sum>i < length as. as ! i)}"
 
-definition ss_to_part :: "nat list * nat \<Rightarrow> nat list" where
-"ss_to_part \<equiv> \<lambda>(as, s). (if s \<le> (\<Sum> i < length as. as ! i) then ((\<Sum>i < length as. as ! i) + 1 - s) # (s + 1) # as else [1])"
+definition ss_list_to_part :: "nat list * nat \<Rightarrow> nat list" where
+"ss_list_to_part \<equiv> \<lambda>(as, s). (if s \<le> (\<Sum> i < length as. as ! i) then ((\<Sum>i < length as. as ! i) + 1 - s) # (s + 1) # as else [1])"
 
-definition "subset_sum_int_list \<equiv> {(as,s). (\<exists>xs::int list. 
-    (\<forall>i<length xs. xs!i \<in> {0,1}) \<and> (\<Sum>i<length as. as!i * xs!i) = s \<and> length xs = length as)}"
+definition "size_part \<equiv> length"
 
 definition "knapsack \<equiv> {(S, w, b, W, B). finite S \<and> (\<exists>S' \<subseteq> S. sum w S' \<le> W \<and> sum b S' \<ge> B)}"
 
 definition "ss_to_ks \<equiv> (\<lambda>(S, w, B). (S, w, w, B, B))"
+
+definition "size_ks \<equiv> \<lambda>(S, w, b, W, B). card S"
 
 
 subsection "a type lifting from natural numbers to integers for subset sum"
@@ -70,11 +78,11 @@ proof -
     by blast
 qed 
 
-lemma is_reduction_subset_sum_nat_to_int:
-"is_reduction (\<lambda>(as, s). (map int as, int s)) subset_sum_list subset_sum_int_list"
-  unfolding is_reduction_def 
+lemma is_reduction_ss_lift_to_int:
+"is_reduction ss_lift_to_int subset_sum_list subset_sum_int_list"
+  unfolding is_reduction_def ss_lift_to_int_def
   using subset_sum_nat_to_int_sound subset_sum_nat_to_int_complete
-  by fast
+  by auto
 
 
 end 

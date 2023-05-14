@@ -30,12 +30,12 @@ definition "ss_to_ss_indeces_time n = 1 + (3 * n + 3 * n + 1) + (3 * n + 3 * n +
 
 subsection "proof"
 
-lemma ss_to_ss_size:
+lemma ss_to_ss_indeces_size:
 "size_ss_indeces (ss_to_ss_indeces (S, w, B)) \<le> ss_to_ss_indeces_space (size_SS (S, w, B))"
 by (simp add: size_ss_indeces_def ss_to_ss_indeces_def 
   ss_to_ss_indeces_space_def size_SS_def card_image_le trans_le_add2)
 
-lemma ss_to_ss_refines:
+lemma ss_to_ss_indeces_refines:
 "ss_to_ss_indeces_alg (S, w, B) \<le> SPEC (\<lambda>y. y = ss_to_ss_indeces (S, w, B)) (\<lambda>_. ss_to_ss_indeces_time (size_SS (S, w, B)))"
 unfolding SPEC_def
 unfolding ss_to_ss_indeces_alg_def ss_to_ss_indeces_def mop_check_finiteness_def
@@ -52,10 +52,10 @@ unfolding ispolyred_def
   apply(rule exI[where x=ss_to_ss_indeces_space])
   apply safe 
   subgoal 
-    using ss_to_ss_refines 
+    using ss_to_ss_indeces_refines 
     by blast
   subgoal
-    using ss_to_ss_size
+    using ss_to_ss_indeces_size
     by blast 
   subgoal 
     unfolding poly_def ss_to_ss_indeces_time_def
