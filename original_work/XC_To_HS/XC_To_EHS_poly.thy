@@ -1,5 +1,5 @@
-theory XC_To_HS_poly
-  imports "XC_To_HS" "../SAT_To_XC/SAT_To_XC_poly"
+theory XC_To_EHS_poly
+  imports "XC_To_EHS" "../SAT_To_XC/SAT_To_XC_poly"
 
 begin
 

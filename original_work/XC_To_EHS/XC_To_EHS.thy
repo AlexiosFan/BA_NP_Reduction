@@ -1,4 +1,4 @@
-theory XC_To_HS
+theory XC_To_EHS
   imports "../SAT_To_XC/XC_Definition"
 
 begin
