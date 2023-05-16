@@ -4,12 +4,16 @@ begin
 
 section "A few NP-hard combinatorics problems"
 
+subsection "type lifting"
+
 definition "subset_sum_int_list \<equiv> {(as,s). (\<exists>xs::int list. 
     (\<forall>i<length xs. xs!i \<in> {0,1}) \<and> (\<Sum>i<length as. as!i * xs!i) = s \<and> length xs = length as)}"
 
 definition "ss_lift_to_int \<equiv> (\<lambda>(as, s). ((map int as), int s))"
 
 definition "size_ss_int_list \<equiv> \<lambda>(as, s). length as + 1"
+
+subsection "number_partition"
 
 definition "part \<equiv> {as::nat list. \<exists>xs. (\<forall>i < length xs. xs!i \<in> {0, 1}) \<and> length as = length xs 
   \<and> 2 * (\<Sum>i < length as. as ! i * xs ! i) =( \<Sum>i < length as. as ! i)}"
@@ -19,12 +23,25 @@ definition ss_list_to_part :: "nat list * nat \<Rightarrow> nat list" where
 
 definition "size_part \<equiv> length"
 
+subsection "knapsack"
+
 definition "knapsack \<equiv> {(S, w, b, W, B). finite S \<and> (\<exists>S' \<subseteq> S. sum w S' \<le> W \<and> sum b S' \<ge> B)}"
 
 definition "ss_to_ks \<equiv> (\<lambda>(S, w, B). (S, w, w, B, B))"
 
 definition "size_ks \<equiv> \<lambda>(S, w, b, W, B). card S"
 
+subsection "zero-one integer programming"
+
+definition "zero_one_int_prog \<equiv> {(X, cs, B). \<forall>(as, s)\<in>X. 
+  \<exists>xs. (\<forall>i<length xs. xs ! i \<in> {0, 1}) 
+  \<and> (\<Sum>i<length as. as ! i * xs ! i) \<le> s \<and> length xs = length as 
+  \<and> (\<Sum>i<length cs. cs ! i * xs ! i) \<ge> B \<and> length xs = length cs}"
+(*The definition from the intracbility book by Garey and Harrison*)
+
+definition "ss_int_list_to_zero_one_int_prog \<equiv> \<lambda>(as, s). ({(as, s)}, as, s)"
+
+definition "size_zero_one_int_prog \<equiv> \<lambda>(X, cs, B). (length cs + 1) * card X"
 
 subsection "a type lifting from natural numbers to integers for subset sum"
 
