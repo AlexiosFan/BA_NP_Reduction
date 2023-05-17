@@ -18,6 +18,9 @@ subsection "number_partition"
 definition "part \<equiv> {as::nat list. \<exists>xs. (\<forall>i < length xs. xs!i \<in> {0, 1}) \<and> length as = length xs 
   \<and> 2 * (\<Sum>i < length as. as ! i * xs ! i) =( \<Sum>i < length as. as ! i)}"
 
+definition "part_alter \<equiv> {as::nat list. \<exists>xs. (\<forall>i < length xs. xs!i \<in> {0, 1}) \<and> length as = length xs 
+  \<and> (\<Sum>i < length as. as ! i * xs ! i) =(\<Sum>i < length as. as ! i * (1 - xs ! i))}"
+
 definition ss_list_to_part :: "nat list * nat \<Rightarrow> nat list" where
 "ss_list_to_part \<equiv> \<lambda>(as, s). (if s \<le> (\<Sum> i < length as. as ! i) then ((\<Sum>i < length as. as ! i) + 1 - s) # (s + 1) # as else [1])"
 
@@ -100,6 +103,68 @@ lemma is_reduction_ss_lift_to_int:
   unfolding is_reduction_def ss_lift_to_int_def
   using subset_sum_nat_to_int_sound subset_sum_nat_to_int_complete
   by auto
+
+subsection "the two definitions of number partition are equivalent"
+
+lemma sum_binary_part: 
+assumes  "(\<forall>i < length xs. xs!i = (0::nat) \<or> xs!i = 1)" "length as = length xs" 
+shows  "(\<Sum>i < length as. as ! i * xs ! i) + (\<Sum>i < length as. as ! i * (1 - xs ! i)) = (\<Sum>i < length as. as ! i)"
+proof -
+  have "(\<Sum>i < length as. as ! i * xs ! i) + (\<Sum>i < length as. as ! i * (1 - xs ! i)) 
+    = (\<Sum>i < length as. as ! i * xs ! i + as ! i * (1 - xs ! i))"
+    by (simp add: sum.distrib)
+  also have "... = (\<Sum>i < length as. as ! i * (xs ! i + 1 - xs ! i))"
+    proof -
+      from assms have "\<forall>i < length as. as ! i * xs ! i + as ! i * (1 - xs ! i) 
+          = as ! i * (xs ! i + 1 - xs ! i)"
+        by fastforce
+      then show ?thesis 
+        by auto
+    qed 
+  finally show ?thesis
+    by auto
+qed 
+
+lemma part_subseteq_part_alter:
+"as \<in> part \<Longrightarrow> as \<in> part_alter"
+proof -
+  assume "as \<in> part"
+  then obtain xs where xs_def: "(\<forall>i < length xs. xs!i \<in> {0, 1})" "length as = length xs "
+    "2 * (\<Sum>i < length as. as ! i * xs ! i) = (\<Sum>i < length as. as ! i)"
+    unfolding part_def 
+    by blast 
+  then have "(\<Sum>i < length as. as ! i * xs ! i) + (\<Sum>i < length as. as ! i * (1 - xs ! i))
+   = (\<Sum>i < length as. as ! i)"
+   using sum_binary_part 
+   by blast 
+  with xs_def show "as \<in> part_alter"
+    unfolding part_alter_def
+    by auto
+qed
+
+lemma part_alter_subseteq_part:
+"as \<in> part_alter \<Longrightarrow> as \<in> part"
+proof -
+  assume "as \<in> part_alter"
+  then obtain xs where xs_def: "(\<forall>i < length xs. xs!i \<in> {0, 1})" "length as = length xs "
+    "(\<Sum>i<length as. as ! i * xs ! i) = (\<Sum>i<length as. as ! i * (1 - xs ! i))"
+    unfolding part_alter_def
+    by blast 
+  moreover then have "(\<Sum>i<length as. as ! i * xs ! i) + (\<Sum>i<length as. as ! i * (1 - xs ! i)) 
+    = (\<Sum>i < length as. as ! i)"
+    using sum_binary_part
+    by blast 
+  ultimately have "2 * (\<Sum>i < length as. as ! i * xs ! i) = (\<Sum>i < length as. as ! i)"
+    by linarith
+  with xs_def show "as \<in> part"
+    unfolding part_def 
+    by blast 
+qed
+
+theorem part_eq_part_alter:
+"part = part_alter"
+using part_alter_subseteq_part part_subseteq_part_alter 
+by blast
 
 
 end 

@@ -237,20 +237,9 @@ proof (cases "s \<le> (\<Sum> i < length as. as ! i)")
       by auto
     with xs_def have prems: "\<forall>i < length xs. xs!i \<in> {0, 1}" "length xs = length as"
       by (auto, metis Misc.nth_tl Zero_not_Suc diff_Suc_1 length_0_conv length_tl)
-    have "(\<Sum>i < length bs. bs ! i * ys ! i) + (\<Sum>i < length bs. bs ! i * (1 - ys ! i))
-      = (\<Sum>i < length bs. bs ! i * ys ! i + bs ! i * (1 - ys ! i))"
-      by (simp add: sum.distrib)
-    also have "... = (\<Sum>i < length bs. bs ! i * (ys ! i + 1 - ys ! i))"
-      proof -
-        have "\<forall>i < length bs. bs ! i * ys ! i + bs ! i * (1 - ys ! i) 
-          = bs ! i * (ys ! i + 1 - ys ! i)"
-          using ys_def(1,2)
-        by auto
-        then show ?thesis
-          by simp
-      qed 
-    finally have "(\<Sum>i < length bs. bs ! i * ys ! i) 
+    have "(\<Sum>i < length bs. bs ! i * ys ! i) 
       + (\<Sum>i < length bs. bs ! i * (1 - ys ! i)) = (\<Sum>i < length bs. bs ! i)"
+      using ys_def(1, 2) sum_binary_part
       by auto
     with ys_def(3) have flip_eq: "(\<Sum>i < length bs. bs ! i * ys ! i) = (\<Sum>i < length bs. bs ! i * (1 - ys ! i))"
         by linarith
