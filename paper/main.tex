@@ -1,0 +1,62 @@
+\RequirePackage[l2tabu,orthodox]{nag}
+
+% TODO: decide if one-sided/two-sided
+%\documentclass[headsepline,footsepline,footinclude=false,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc,BCOR=12mm,DIV=12]{scrbook} % two-sided % original source stated: BCOR=12mm,DIV=12
+\documentclass[headsepline,footsepline,footinclude=false,oneside,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc,DIV=12]{scrbook} % one-sided
+
+% TODO: change citation style in settings
+\input{settings}
+
+% TODO: change thesis information
+\newcommand*{\getUniversity}{Technische Universität München}
+\newcommand*{\getFaculty}{School of Computation, Information and Technology}
+\newcommand*{\getTitle}{Verfication of selected NP-hard Problems}
+\newcommand*{\getTitleGer}{Verifikation der ausgewählten NP-schweren Probleme}
+\newcommand*{\getAuthor}{Zixuan Fan}
+\newcommand*{\getDoctype}{Bachelor's Thesis in Informatics,}
+\newcommand*{\getSupervisor}{Tobias Nipkow PhD.}
+\newcommand*{\getAdvisor}{Katharina Kreuzer}
+\newcommand*{\getSubmissionDate}{Submission date}
+\newcommand*{\getSubmissionLocation}{Munich}
+
+\newcommand{\PN}{\textbf{P}}
+\newcommand{\NP}{\textbf{NP}}
+\newcommand*{\NPH}{\textbf{NP-Hard}}
+\newcommand*{\NPC}{\textbf{NP-Complete}}
+\newcommand*{\SAT}{\textbf{Satisfiability}}
+
+\begin{document}
+
+
+\pagenumbering{alph}
+\input{pages/cover}
+
+\frontmatter{}
+
+\input{pages/title}
+\input{pages/disclaimer}
+\input{pages/acknowledgements} % TODO: if you don't have anyone to thank for or don't wish to publish it, comment this line out.
+\input{pages/abstract}
+\microtypesetup{protrusion=false}
+\tableofcontents{}
+\microtypesetup{protrusion=true}
+
+\mainmatter{}
+
+\input{chapters/01_introduction}
+\input{chapters/02_preliminaries}
+\input{chapters/03_covering_problems}
+
+\appendix{}
+
+% TODO: appendix chapter
+\input{pages/appendix}
+
+\microtypesetup{protrusion=false}
+\listoffigures{}
+\listoftables{}
+\microtypesetup{protrusion=true}
+\printglossaries
+\printbibliography{}
+
+\end{document}

@@ -1,0 +1,55 @@
+\chapter{Set Covering Problems}\label{chapter:covering}
+In this chapter, we discuss about the \textbf{NP-Hardness} of a few set covering problems. Covering problems ask whether a certain combinatorical structure $A$ covers another structure $B$, or how large $A$ has to be to cover $B$. We focus on a subclass of covering problems, the exact covering problem. In this subclass, $A$ covers $B$ exactly, i.e. no element in $B$ is covered twice in $A$. In Karp's paper in 1972, the following covering problems were included: Exact Cover, Exact Hitting Set, 3-Dimensional Matching, Steiner Tree, and Max Cut. In our implementation, we reduced \SAT\ to \XC, and then reduced \XC\ to \HS. 
+
+\section{Exact Cover}
+We follow the definition given in Karp's paper:
+\problem{\XC}{A set $X$ and a collection $S$ of subsets of $X$.}{Is there a disjoint subset $S'$ of $S$ s.t. each element in $X$ is contained in one of the elements of $S'$?}
+
+\subsection{Choice of reduction}
+Since \XC\ is a fundamental \NPH\ problem, there are many different reductions available. Karp's reduction is from the Chromatic Number problem. Although the Chromatic Number problem was formalized in Karp's 21 project, we chose not to reduce from this problem because of the complexity of the graph traversal and the slight difference between Karp's definition and the available Isabelle definition. On the other hand, there is an easy reduction from \SAT\ to \XC. This reduction does not involve graph traversal. The sole implementation hardness is the non-typed set, which is not yet supported by \textsc{Isabelle}. However, this problem is resolvable by lifting the arbitrary data type to a container type. 
+\begin{align}
+    Unfinished
+\end{align}
+
+\subsection{Details in the reduction}
+In this part, we discuss the reduction and its correctness in details, with the \textsc{Isabelle} definitions and theorems as a complement.
+\paragraph{Reduction}
+Given a propositional logical formula $F$, we index the variables and the clauses and use the following notations.
+\begin{enumerate}
+    \item $x_i$ denotes the $i$-th variable in the formula with $x_i \in vars\; F$
+    \item $c_i$ denotes the $i$-th clause in the formula with $c_i \in F$
+    \item $p_{ij}$ denotes the $j$-th position/literal in the $i$-th clause with $p_{ij} \in c_i$
+\end{enumerate} 
+Then we construct a set $X$ and which contains all 3 different kinds objects. 
+\begin{align*}
+    X = vars\; F \cup F \cup \bigcup_{c_i \in F} c_i
+\end{align*}
+Furthermore, we construct $S$, a collection of subsets of $X$. We determine the following subsets
+\begin{enumerate}
+    \item $\{p_{ij}\}$. The unary set of positions
+    \item $\{c_i, p_{ij}\}$. The binary set of a clause and a position in it.
+    \item $pos(x) := \{x_i\} \cup \{p_{ab} | p_{ab} = x_i\}$. The set of its positive occurrences as positions.
+    \item $neg(x):= \{x_i\} \cup \{p_{ab} | p_{ab} = \neg x_i\}$. The set of a variable with  its negative occurrences as positions.
+\end{enumerate}.
+$S$ contains all of the four types of subsets.
+\begin{align*}
+    S =& \{{p_{ij}} | p_{ij} \in c_i, c_i \in F \} 
+    \cup \{\{c_i, p_{ij}\} | p_{ij} \in c_i, c_i \in F \} \\
+    &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, x_i = p_{ij}\}\\
+    &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, \neg x_i = p_{ij}\}
+\end{align*}
+The pair of $(X, S)$ is the input for the \XC\ problem. 
+
+\paragraph{Soundness}
+Let $F$ be a satisfiable propositional formula, with $\sigma \models F$ as a valid assignment. We construct an exact cover $S' \subseteq S$ of $X$ in the following steps.
+\begin{enumerate}
+    \item For each $x_i \in vars\; F$, $pos(x)$ is included in $S'$ if $\sigma(pos(x)) \equiv \top$. Otherwise we insert $neg(x)$ into $S'$.
+    \item For each $c_i \in F$, we choose the minimal $j$ with $\sigma(p_{ij}) \equiv \top$, and insert $\{c_i, p_{ij}\}$ into $S'$
+    \item For each $p_{ij} \in c_i$, if $\sigma(p_{ij}) \equiv \top$ and $\{c_i, p_{ij}\}$ is not in $S'$, the unary set $\{p_{ij}\}$ is included. 
+\end{enumerate}
+Obviously, each position in included $pos(x)$ and $neg(x)$ will have the false value under the assignment $\sigma$, while the positions in the other sets all have truth value. By design, the positions in the second and the third steps never duplicate. Thus, the positions never occur in two different sets in the collection $S'$. Furthermore, the clauses and variables occurs in exactly one set in $S'$. Hence the constructed collection is disjoint. \\\\
+From the sole occurrence of the clauses and variables, we can also conclude that they are covered in this collection. Now we only have to prove that all the positions are covered. If a position $p_{ij}$ has the false value under $\sigma$, it is covered in the first step. Otherwise it is either covered in the second step or the third step. 
+With the disjointness, we may conclude that $S'$ covers $X$ exactly and that $(X, S)$ is an instance of the \XC.
+
+\paragraph{Completeness}
+Let $(X, S)$ be an exact cover pair which is reduced from the propositional logical formula $F$. It is easy to reconstruct the model $\sigma$ with the same approach as in the proof of the \textbf{soundness}, which also shows that $F$ is satisfiable.
