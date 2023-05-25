@@ -76,3 +76,17 @@ Solutions to the cons:
   1. reduction from sat to sat_list, using the same approach as in the vertex cover
   2. reduction from exact cover to exact cover list for subset sum, also the same approach
    ****
+
+
+## Questions for the Meeting 5th of May
+1. How to add Isabelle codes into the latex?
+2. Explanation of the proof, separate the Isabelle proofs and the in-paper proof or  joint them together?
+3. Good idea to add an example for each reduction?
+4. Any previous thesis paper that I can refer to? Besides those available on the website. 
+
+## 
+1. Graphs with captions and descriptions
+1. Definitions from amsmath
+1. TSP, examples in the introduction
+1. Laudau notations
+1. No Isabelle proof details unless it is a worth-mentioning technical problem

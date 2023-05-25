@@ -93,7 +93,7 @@ proof -
          obtain s where s_def: "s = {s. x \<in> s \<and> s \<in> S}"
            by blast 
          with prems(1-2) assms(1) x_def have "{a, b} \<subseteq> W \<inter> s"
-          by blast
+           by blast
          hence "card (W \<inter> s) \<ge> 2"
            using card_mono[of "W \<inter> s" "{a, b}"] assms(2) prems(3)
            by force 

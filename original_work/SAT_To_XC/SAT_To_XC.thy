@@ -107,10 +107,10 @@ proof-
     by blast
   thus "\<exists>p\<in>c. (\<sigma>\<up>) p \<and> constr_cover_clause c \<sigma> = {{C c, L p c}} \<union> {{L q c} | q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q}"
    unfolding constr_cover_clause_def
-   apply auto
-   apply (rule someI_ex)
-   by blast
-qed 
+   using someI_ex[of "\<lambda>s. (\<exists>p\<in>c. (\<sigma>\<up>) p \<and> s = {{C c, L p c}} 
+      \<union> {{L q c} |q. q \<in> c \<and> q \<noteq> p \<and> (\<sigma>\<up>) q})"] 
+   by blast 
+   qed 
 
   
 definition vars_sets 
@@ -169,9 +169,8 @@ qed
 lemma constr_cover_is_collection:
   "\<sigma> \<Turnstile> F \<Longrightarrow> constr_cover F \<sigma> \<subseteq> (comp_S F)"
 unfolding constr_cover_def vars_sets_def clause_sets_def
-apply auto
 using constr_cover_clause_is_collection 
-by blast
+by auto
 
 subsubsection "The constructed set is a cover"
 
@@ -350,11 +349,11 @@ assumes "\<sigma> \<Turnstile> F"
 shows  "disjoint (\<Union> (clause_sets F \<sigma>))"
   unfolding clause_sets_def 
   apply (rule disjointI)
-  apply (auto)
-  using constr_cover_clause_unfold[OF assms] 
-  apply (smt (z3) Un_iff empty_iff insertE mem_Collect_eq 
-    xc_element.simps(2) xc_element.simps(3) xc_element.simps(9))+
+  apply (safe)
+  apply (smt (z3) constr_cover_clause_unfold[OF assms] Un_iff empty_iff 
+  insertE mem_Collect_eq xc_element.simps)+
   done 
+(*refinements?*)
 
 paragraph "vars_sets are disjoint"
 
@@ -392,7 +391,7 @@ proof
     by blast 
   ultimately show "true_literals v F \<noteq> false_literals u F" 
     apply (cases "v\<noteq>u")
-    using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>] 
+    using true_false_literals_noteq[OF \<open>v \<in> vars F\<close>]
     by blast+ 
 qed 
  
@@ -521,18 +520,15 @@ qed
 lemma vars_sets_disj:
 "disjoint (vars_sets F \<sigma>)"
   apply (rule disjointI)
-  using vars_sets_disj_aux 
-  by blast
+  by (auto simp: vars_sets_disj_aux)  
 
 paragraph "clause sets and var sets are disjoint to each other"
 
 lemma vars_sets_only_false_literals_aux:
 "\<forall>s\<in>vars_sets F \<sigma>. \<forall>x \<in> s. x \<in> vars_of_sat F \<or> (x \<in> literals_of_sat F \<and> \<not>(\<sigma>\<Up>) x)"
-unfolding vars_sets_def
-apply auto 
-unfolding var_false_literals_def var_true_literals_def
-using double_neg_id 
-by fastforce+
+unfolding vars_sets_def var_false_literals_def var_true_literals_def
+using double_neg_id
+by (fastforce split: if_splits)+
 
 corollary vars_sets_only_false_literals:
 "\<forall>x\<in>\<Union>(vars_sets F \<sigma>). x \<in> vars_of_sat F \<or> (x \<in> literals_of_sat F \<and> \<not>(\<sigma>\<Up>) x)"
