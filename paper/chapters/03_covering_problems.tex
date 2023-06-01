@@ -1,19 +1,28 @@
+\newcommand{\bigO}[1]{$\mathcal{O}({#1})$}
+
 \chapter{Set Covering Problems}\label{chapter:covering}
 In this chapter, we discuss about the \textbf{NP-Hardness} of a few set covering problems. Covering problems ask whether a certain combinatorical structure $A$ covers another structure $B$, or how large $A$ has to be to cover $B$. We focus on a subclass of covering problems, the exact covering problem. In this subclass, $A$ covers $B$ exactly, i.e. no element in $B$ is covered twice in $A$. In Karp's paper in 1972, the following covering problems were included: Exact Cover, Exact Hitting Set, 3-Dimensional Matching, Steiner Tree, and Max Cut. In our implementation, we reduced \SAT\ to \XC, and then reduced \XC\ to \HS. 
 
 \section{Exact Cover}
-We follow the definition given in Karp's paper:
-\problem{\XC}{A set $X$ and a collection $S$ of subsets of $X$.}{Is there a disjoint subset $S'$ of $S$ s.t. each element in $X$ is contained in one of the elements of $S'$?}
+The \XC problem is a special of the set cover problem. Besides the covering property, it also requires the uniqueness of the elements.
+Being one of the most studied set cover problems, there are many other \NPH\ problems reduced from the \XC. Among them, we will present 
+the reduction to the \SS\ and \HS. 
+\problem{\XC}{A set $X$ and a collection $S$ of subsets of $X$.}{Is there a disjoint subset $S'$ of $S$ s.t. 
+each element in $X$ is contained in one of the elements of $S'$?}
+\Snippet{exact-cover-def}
 
 \subsection{Choice of reduction}
-Since \XC\ is a fundamental \NPH\ problem, there are many different reductions available. Karp's reduction is from the Chromatic Number problem. Although the Chromatic Number problem was formalized in Karp's 21 project, we chose not to reduce from this problem because of the complexity of the graph traversal and the slight difference between Karp's definition and the available Isabelle definition. On the other hand, there is an easy reduction from \SAT\ to \XC. This reduction does not involve graph traversal. The sole implementation hardness is the non-typed set, which is not yet supported by \textsc{Isabelle}. However, this problem is resolvable by lifting the arbitrary data type to a container type. 
-\begin{align}
-    Unfinished
-\end{align}
+Since \XC\ is a fundamental \NPH\ problem, there are many different reductions available. 
+Karp's reduction is from the Chromatic Number problem. 
+Although the Chromatic Number problem was formalized in Karp's 21 project, we chose not to reduce from this problem 
+because of the complexity of the graph traversal and the slight difference between Karp's definition and the available Isabelle definition. 
+On the other hand, there is an easy reduction from \SAT\ to \XC. This reduction does not involve graph traversal.
+The only technical barrier is the untyped set. While Isabelle only supportes typed sets, we resolve this problem
+by creating a container type. More details follow in the \textbf{ADD HYPERREF} chapter. 
 
-\subsection{Details in the reduction}
-In this part, we discuss the reduction and its correctness in details, with the \textsc{Isabelle} definitions and theorems as a complement.
-\paragraph{Reduction}
+
+\subsection{Reduction Details}
+\subsubsection{Reduction}
 Given a propositional logical formula $F$, we index the variables and the clauses and use the following notations.
 \begin{enumerate}
     \item $x_i$ denotes the $i$-th variable in the formula with $x_i \in vars\; F$
@@ -28,9 +37,9 @@ Furthermore, we construct $S$, a collection of subsets of $X$. We determine the 
 \begin{enumerate}
     \item $\{p_{ij}\}$. The unary set of positions
     \item $\{c_i, p_{ij}\}$. The binary set of a clause and a position in it.
-    \item $pos(x) := \{x_i\} \cup \{p_{ab} | p_{ab} = x_i\}$. The set of its positive occurrences as positions.
-    \item $neg(x):= \{x_i\} \cup \{p_{ab} | p_{ab} = \neg x_i\}$. The set of a variable with  its negative occurrences as positions.
-\end{enumerate}.
+    \item $pos(x_i) := \{x_i\} \cup \{p_{ab} | p_{ab} = x_i\}$. The set of its positive occurrences as positions.
+    \item $neg(x_i):= \{x_i\} \cup \{p_{ab} | p_{ab} = \neg x_i\}$. The set of a variable with  its negative occurrences as positions.
+\end{enumerate}
 $S$ contains all of the four types of subsets.
 \begin{align*}
     S =& \{{p_{ij}} | p_{ij} \in c_i, c_i \in F \} 
@@ -40,16 +49,87 @@ $S$ contains all of the four types of subsets.
 \end{align*}
 The pair of $(X, S)$ is the input for the \XC\ problem. 
 
-\paragraph{Soundness}
+\subsubsection{Correctness}
 Let $F$ be a satisfiable propositional formula, with $\sigma \models F$ as a valid assignment. We construct an exact cover $S' \subseteq S$ of $X$ in the following steps.
 \begin{enumerate}
     \item For each $x_i \in vars\; F$, $pos(x)$ is included in $S'$ if $\sigma(pos(x)) \equiv \top$. Otherwise we insert $neg(x)$ into $S'$.
     \item For each $c_i \in F$, we choose the minimal $j$ with $\sigma(p_{ij}) \equiv \top$, and insert $\{c_i, p_{ij}\}$ into $S'$
     \item For each $p_{ij} \in c_i$, if $\sigma(p_{ij}) \equiv \top$ and $\{c_i, p_{ij}\}$ is not in $S'$, the unary set $\{p_{ij}\}$ is included. 
 \end{enumerate}
-Obviously, each position in included $pos(x)$ and $neg(x)$ will have the false value under the assignment $\sigma$, while the positions in the other sets all have truth value. By design, the positions in the second and the third steps never duplicate. Thus, the positions never occur in two different sets in the collection $S'$. Furthermore, the clauses and variables occurs in exactly one set in $S'$. Hence the constructed collection is disjoint. \\\\
-From the sole occurrence of the clauses and variables, we can also conclude that they are covered in this collection. Now we only have to prove that all the positions are covered. If a position $p_{ij}$ has the false value under $\sigma$, it is covered in the first step. Otherwise it is either covered in the second step or the third step. 
-With the disjointness, we may conclude that $S'$ covers $X$ exactly and that $(X, S)$ is an instance of the \XC.
+Obviously, each position in included $pos(x)$ and $neg(x)$ will have the false value under the assignment $\sigma$, 
+while the positions in the other sets all have truth value. By design, the positions in the second and the third steps never duplicate. 
+Thus, the positions never occur in two different sets in the collection $S'$. 
+Furthermore, the clauses and variables occurs in exactly one set in $S'$. Hence the constructed collection is disjoint. \\\\
+From the sole occurrence of the clauses and variables, we can also conclude that they are covered in this collection. 
+Now we only have to prove that all the positions are covered. If a position $p_{ij}$ has the false value under $\sigma$, 
+it is covered in the first step. Otherwise it is either covered in the second step or the third step. 
+With the disjointness, we may conclude that $S'$ covers $X$ exactly and that the reduction is sound. \\\\
+Given an exact cover pair $(X, S)$, it is easy to reconstruct the model $\sigma$ with the same approach as in the proof of the soundness, 
+which also shows that $F$ is satisfiable. Thus, the completeness of the reduction is proven. 
 
-\paragraph{Completeness}
-Let $(X, S)$ be an exact cover pair which is reduced from the propositional logical formula $F$. It is easy to reconstruct the model $\sigma$ with the same approach as in the proof of the \textbf{soundness}, which also shows that $F$ is satisfiable.
+\subsubsection{Polynomial Complexity}
+In the reduction, we have to iterate all of the variables, the clauses and the positions. 
+Thus, we have to find a polynomial bound with regards to three metrics. Let $n, m$ and $k$ denotes 
+the number of variables, clauses and postitions respectively. To derive the three metrics, we have to iterate 
+all of the clauses, resulting the complexity of \bigO{m}. Unexpectedly, this results in the set $X$, 
+indicating a linear complexity for the construction. \\\\
+Now the interesting part is the collection $S$. For each type of subsets, we give a polynomial bound 
+\begin{enumerate}
+    \item $\{p_{ij}\}$. It is sufficient to merely iterate the positions, which requires the complexity of $k$.
+    \item $\{c_i, p_{ij}\}$. Each clause is iterated for $|c_i|$ times. Since $|c_i|$ is a constant, there is a $c \in \mathbb{N}$ 
+    s.t. $|c_i| \leq c$. Obviously, the complexity is above bounded by $c \cdot m$.
+    \item $pos(x)$ and $neg(x)$. For each variable $x$, it is required to iterate all of the positions, which produces the complexity 
+    of $2 \cdot nk$ in total.
+\end{enumerate}
+Thus, the construction costs the polynomial complexity of $k + cm + nk \in \mathcal{O}(nk + m)$. 
+With the linear complexity of the construction of $X$, we conclude that the reduction has the polynomial complexity.
+
+\subsection{Implementation Details}
+
+
+\section{Exact Hitting Set}
+The hitting set problems are variants of the set covering problems. Essentially, they are two different ways 
+of viewing the same problem. Just as hitting set is a variant of set covering, exact hitting set is 
+a variant of exact cover. 
+\problem{\HS}{A collection of sets $S$}{Is there a finite set $W$ s.t. the intersection of $W$ and 
+each element $s \in S$ contains exactly one element?}
+Note that the exact hitting set problem was referred to as the hitting set problem in Karp's work, whereas 
+it is generalized to be another problem nowadays. 
+
+\subsection{Reduction Details}
+\subsubsection{Reduction}
+Given an exact cover pair $(X, S_0)$, the hitting set input $S_1$ is constructed by 
+\begin{align*}
+    S_1 = \{\{s | u \in s, s \in S_0 \} | u \in X\}
+\end{align*}
+Thus, $S'$ is the set of sub-collections, which all contains one specific element. 
+
+\subsubsection{Correctness}
+The soundness is directly proven with the existence of $S'$ that covers $X$ exactly in the exact cover problem. 
+Let $W = S'$ and $c_u = \{s | u \in s, s \in S_0 \}$ be an arbitrary element in $S_1$. 
+Since $S'$ covers $X$ exactly, there is exactly one $s \in S'$, which contains $u$. Moreover, this $s$
+is also included in the $S_0$. Hence it holds that $W \cap c_u = s$ and hence $|W \cap c_u| = 1$. \\\\
+The proof of the completeness shares a similar construction of $S'$ from $W$. The only difference is that $W$ is not 
+necessarily a subset of $S_0$. Nevertheless, there exists a subset $W' \subseteq W$ s.t. it is also a subset of $S_0$,
+fulfills the same property as $W$. The completeness is then proven analogous as the soundness. 
+
+\subsubsection*{Polynomial Complexity}
+To construct $S_1$ as in the reduction, it is necessary to iterate the set $X$ and the collection $S$ in a nested loop. 
+With the cardinality $|X|$ and $|S|$ as the metrics, it is obvious that the reduction costs the complexity of \bigO{|X||S|}.
+
+\subsection{Implementation Details}
+\subsubsection*{Reduction and Correctness}
+Since the exact cover problem is defined over a finite set $X$ and a finite collection $S_0$, we have to check if the $X$ and $S_0$ are finite and 
+if $S_0$ only contains the subsets of $X$. Thus, a condition statement, which checks this requirement, is added to the implementation. Furthermore,
+the proof of the correctness is implemented as described above. Following is a snippet of implemented definitions and lemmas.
+\begin{figure}
+    \Snippet{exact-hitting-set-def}
+    \Snippet{exact-hitting-set-reduction}
+    \caption{Definitions and lemmas about the reduction and correctness}
+\end{figure}
+
+\subsubsection*{Polynomial Complexity}
+We determine the size of the exact hitting set entry $S_1$ as $|S_1|$, the cardinality of $S_1$. 
+
+
+

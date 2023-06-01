@@ -11,7 +11,11 @@
 
 \chapter{Introduction}\label{chapter:introduction}
 \section{Motivations}
-\NPH\ problems has been an fundamental problem in theoretical computer science since the 1970s, when Cook and Levin showed that the \SAT\ problem is \NPC\ and Karp gave a list of 21 \NPH\ problems. In the next few decades, many attempts were made to show that $\PN = \NP$ and to develop algorithms that computes \NP\ problems efficiently. Among many fields related to \textbf{NP-Hardness}, we focus on the polynomial reductions, which show the \textbf{NP-Hardness} of decision problems. \\\\
+We may encounter many real-life problems that require a decision process to find a solution. 
+When shopping at a supermarket, for example, we always want to choose the shortest queue. 
+Another example is board games like go and chess. These problems are formally defined as decision problems.
+One of the most famous decision problem classes is the \NPH.
+\NPH\ problems have been a fundamental research topic in theoretical computer science since the 1970s, when Cook and Levin showed that the \SAT\ problem is \NPC\ and Karp gave a list of 21 \NPH\ problems. In the next few decades, many attempts were made to show that $\PN = \NP$ and to develop algorithms that computes \NP\ problems efficiently. Among many fields related to \textbf{NP-Hardness}, we focus on the polynomial reductions, which show the \textbf{NP-Hardness} of decision problems. \\\\
 All the existing proof of \textbf{NP-Hardness}\ were on-paper proofs, which lack the automated verification by a computer. With the existence of powerful interactive theorem provers, it is meaningful to formalize and verify the classical results of \textbf{NP-Hardness} in a computer, contributing to the theoretical basis of many existing formalisation results, e.g. cryptography, approximation algorithms etc. There has been an attempt to formalise \NPH\ problems that were given in Karp's paper in 1972. Our work benefits from this attempt and continues to formalise the rest of the 21 \NPH\ problems in the interactive theorem prover Isabelle. 
 
 \section{Contributions}
@@ -23,6 +27,10 @@ Our work contains 2 categories of problems.
 For each listed problem, we present a polynomial reduction either from \SAT\ or from another problem that is listed above. Thus, a reduction trace from \SAT\ is witnessed. Furthermore, a proof for the soundness, completeness, and the polynomial complexity of each polynomial reduction is also presented. 
 
 \section{Outline}
-In Chapter 2, we introduce the Isabelle dependencies and the work of the predecessors, on which our work is based. Furthermore, we present the mathematical background of the polynomial reductions and \NPH\ problems.\\\\
-Chapter 3 and Chapter 4 follow with the formalisation and verification of the listed problems. For each decision problem, we start with the definition of the problem and the polynomial reduction. Then a proof of the soundness and completeness of the reduction is presented. To finish, a polynomial complexity of the reduction is also proved. In Chapter 3, we discuss the polynomial reduction of the set cover problems, while Chapter 4 consists of that of the weighted sum problems.\\\\
-To finish, we conclude the current status of the project of formalisation of Karp's 21 \NPH\ problems and present a few possibilities for the verification of the rest of the problems in Chapter 5.
+In Chapter 2, we introduce the Isabelle dependencies and mathematical backgrounds of our work.\\\\
+Chapter 3 and Chapter 4 follow with the formalisation and verification of the listed problems. For each decision problem, 
+we present a definition of the problem and the reduction. Then, we sketch the proof of the correctness of the reduction and the polynomial bound. 
+Finally, we present a few concrete implementation details.
+In Chapter 3, we discuss the polynomial reduction of the set cover problems, while Chapter 4 consists of that of the weighted sum problems.\\\\
+To finish, we conclude the current status of the project of formalisation of Karp's 21 \NPH\ problems 
+and present a few possibilities for the verification of the rest of the problems in Chapter 5.
