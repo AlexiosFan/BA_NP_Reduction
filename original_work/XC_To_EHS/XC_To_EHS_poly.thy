@@ -9,7 +9,7 @@ to the exact hitting set is polynomial"
 subsection "definitions"
 
 definition "mop_check_finiteness_and_is_collection \<equiv> \<lambda>(X, S). SPECT [finite X \<and> \<Union> S \<subseteq> X \<mapsto> 1]"
-definition "mop_construct_sets \<equiv> \<lambda>(X, S). SPEC (\<lambda>S'. S' = {{s. u \<in> s \<and> s \<in> S} |u. u \<in> X}) (\<lambda>_. 3 * card S + card X)"
+definition "mop_construct_sets \<equiv> \<lambda>(X, S). SPEC (\<lambda>S'. S' = {{s. u \<in> s \<and> s \<in> S} |u. u \<in> X}) (\<lambda>_. 3 * card S * card X)"
 (*
 3 * card S for iterating the sets, check if u is contained in s and the insertion
 1 * card X for iterating the elements
@@ -30,7 +30,7 @@ definition "xc_to_ehs_alg \<equiv> \<lambda>(X, S).
 "
 
 definition "xc_to_ehs_space n \<equiv> 1 + n*n"
-definition "xc_to_ehs_time n \<equiv> 1 + 3 * n + n"
+definition "xc_to_ehs_time n \<equiv> 1 + 3 * n * n"
 
 subsection "proof"
 
@@ -65,7 +65,7 @@ unfolding xc_to_ehs_alg_def xc_to_ehs_def xc_to_ehs_time_def
 mop_check_finiteness_and_is_collection_def mop_construct_sets_def
 apply (rule T_specifies_I)
 apply (vcg' \<open>-\<close> rules: T_SPEC)
-by (auto simp add: one_enat_def size_XC_def)
+by (auto simp add: one_enat_def size_XC_def card_ehs_le max_def)
 
 theorem xc_to_ehs_is_polyred:
   "ispolyred xc_to_ehs_alg exact_cover exact_hitting_set size_XC size_ehs"

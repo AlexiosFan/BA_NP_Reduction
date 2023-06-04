@@ -34,26 +34,6 @@ abbreviation "comp_S F \<equiv>
 definition sat_xc :: "'a three_sat \<Rightarrow> 'a xc_element set * 'a xc_element set set" where 
 "sat_xc F = (comp_X F, comp_S F)"
 
-
-lemma infinite_constr_not_incl:
-assumes "\<not> (\<forall>cls \<in> set F. finite cls)"
-shows  "(comp_X F, {}) \<notin> exact_cover"
-proof -
- from assms obtain cls where c_def: "cls \<in> set F" "\<not> finite cls"
-   by blast
- then have "\<forall>l \<in> cls. L l cls \<in> comp_X F"
-   unfolding literals_of_sat_def
-   by blast
- then have "comp_X F \<noteq> {}"
-   using c_def 
-   by fastforce
- then have "\<forall>S' \<subseteq> {}. \<Union>S' \<noteq> comp_X F"
-   by blast
- then show ?thesis 
-   unfolding exact_cover_def 
-   by blast
-qed 
-
 lemma sat_xc_is_collection: "\<Union> (comp_S F) \<subseteq> (comp_X F)"
 proof -
   let ?vars = "vars_of_sat F"
