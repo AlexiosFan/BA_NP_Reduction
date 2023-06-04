@@ -1,4 +1,4 @@
- session Snippets = "HOL" + 
+ session Snippets = "Karp21" + 
    options [
      document = "pdf",
      document_output = "generated"]

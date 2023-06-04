@@ -68,3 +68,56 @@
 \ is{\isacharunderscore}{\kern0pt}reduction{\isacharunderscore}{\kern0pt}xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharcolon}{\kern0pt}\isanewline
 \ \ {\isachardoublequoteopen}is{\isacharunderscore}{\kern0pt}reduction\ xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs\ exact{\isacharunderscore}{\kern0pt}cover\ exact{\isacharunderscore}{\kern0pt}hitting{\isacharunderscore}{\kern0pt}set{\isachardoublequoteclose}
 }
+
+\DefineSnippet{exact-hitting-set-poly}{
+    \isacommand{definition}\isamarkupfalse%
+    \ {\isachardoublequoteopen}mop{\isacharunderscore}{\kern0pt}check{\isacharunderscore}{\kern0pt}finiteness{\isacharunderscore}{\kern0pt}and{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}collection\ \isanewline
+    \ \ {\isasymequiv}\ {\isasymlambda}{\isacharparenleft}{\kern0pt}X{\isacharcomma}{\kern0pt}\ S{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\ SPECT\ {\isacharbrackleft}{\kern0pt}finite\ X\ {\isasymand}\ {\isasymUnion}\ S\ {\isasymsubseteq}\ X\ {\isasymmapsto}\ {\isadigit{1}}{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+    \isacommand{definition}\isamarkupfalse%
+    \ {\isachardoublequoteopen}mop{\isacharunderscore}{\kern0pt}construct{\isacharunderscore}{\kern0pt}sets\ \isanewline
+    \ \ {\isasymequiv}\ {\isasymlambda}{\isacharparenleft}{\kern0pt}X{\isacharcomma}{\kern0pt}\ S{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\ \isanewline
+    \ \ SPEC\ {\isacharparenleft}{\kern0pt}{\isasymlambda}S{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ S{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}s{\isachardot}{\kern0pt}\ u\ {\isasymin}\ s\ {\isasymand}\ s\ {\isasymin}\ S{\isacharbraceright}{\kern0pt}\ {\isacharbar}{\kern0pt}u{\isachardot}{\kern0pt}\ u\ {\isasymin}\ X{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ {\isadigit{3}}\ {\isacharasterisk}{\kern0pt}\ card\ S\ {\isacharasterisk}{\kern0pt}\ card\ X{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+    \isanewline
+    \isacommand{definition}\isamarkupfalse%
+    \ {\isachardoublequoteopen}xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}alg\ {\isasymequiv}\ {\isasymlambda}{\isacharparenleft}{\kern0pt}X{\isacharcomma}{\kern0pt}\ S{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\isanewline
+    \ \ do\ {\isacharbraceleft}{\kern0pt}\isanewline
+    \ \ \ \ b\ {\isasymleftarrow}\ mop{\isacharunderscore}{\kern0pt}check{\isacharunderscore}{\kern0pt}finiteness{\isacharunderscore}{\kern0pt}and{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}collection\ {\isacharparenleft}{\kern0pt}X{\isacharcomma}{\kern0pt}\ S{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\isanewline
+    \ \ \ \ if\ b\ \isanewline
+    \ \ \ \ then\ do\ {\isacharbraceleft}{\kern0pt}\isanewline
+    \ \ \ \ \ \ S{\isacharprime}{\kern0pt}\ {\isasymleftarrow}\ mop{\isacharunderscore}{\kern0pt}construct{\isacharunderscore}{\kern0pt}sets\ {\isacharparenleft}{\kern0pt}X{\isacharcomma}{\kern0pt}\ S{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\isanewline
+    \ \ \ \ \ \ RETURNT\ S{\isacharprime}{\kern0pt}\isanewline
+    \ \ \ \ {\isacharbraceright}{\kern0pt}\isanewline
+    \ \ \ \ else\ do\ {\isacharbraceleft}{\kern0pt}\isanewline
+    \ \ \ \ \ \ RETURNT\ {\isacharbraceleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+    \ \ \ \ {\isacharbraceright}{\kern0pt}\isanewline
+    \ \ {\isacharbraceright}{\kern0pt}\isanewline
+    {\isachardoublequoteclose}\isanewline
+    \isanewline
+    \isacommand{definition}\isamarkupfalse%
+    \ {\isachardoublequoteopen}xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}space\ n\ {\isasymequiv}\ {\isadigit{1}}\ {\isacharplus}{\kern0pt}\ n{\isacharasterisk}{\kern0pt}n{\isachardoublequoteclose}\isanewline
+    \isacommand{definition}\isamarkupfalse%
+    \ {\isachardoublequoteopen}xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}time\ n\ {\isasymequiv}\ {\isadigit{1}}\ {\isacharplus}{\kern0pt}\ {\isadigit{3}}\ {\isacharasterisk}{\kern0pt}\ n\ {\isacharasterisk}{\kern0pt}\ n{\isachardoublequoteclose}\isanewline
+
+    \isacommand{lemma}\isamarkupfalse%
+\ xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}size{\isacharcolon}{\kern0pt}\isanewline
+{\isachardoublequoteopen}size{\isacharunderscore}{\kern0pt}ehs\ {\isacharparenleft}{\kern0pt}xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs\ xc{\isacharparenright}{\kern0pt}\ {\isasymle}\ xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}space\ {\isacharparenleft}{\kern0pt}size{\isacharunderscore}{\kern0pt}XC\ xc{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isacommand{lemma}\isamarkupfalse%
+\ xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}refines{\isacharcolon}{\kern0pt}\isanewline
+{\isachardoublequoteopen}xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}alg\ xc\ {\isasymle}\ SPEC\ {\isacharparenleft}{\kern0pt}{\isasymlambda}y{\isachardot}{\kern0pt}\ y\ {\isacharequal}{\kern0pt}\ xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs\ xc{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}time\ {\isacharparenleft}{\kern0pt}size{\isacharunderscore}{\kern0pt}XC\ xc{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
+%
+}
+
+\DefineSnippet{exact-hitting-set-aux}{
+    \isacommand{lemma}\isamarkupfalse%
+\ card{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}le{\isacharcolon}{\kern0pt}\isanewline
+\isakeyword{assumes}\ {\isachardoublequoteopen}finite\ X{\isachardoublequoteclose}\ {\isachardoublequoteopen}card\ X\ {\isasymle}\ Y{\isachardoublequoteclose}\isanewline
+\isakeyword{shows}\ {\isachardoublequoteopen}card\ {\isacharbraceleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}s{\isachardot}{\kern0pt}\ u\ {\isasymin}\ s\ {\isasymand}\ s\ {\isasymin}\ S{\isacharbraceright}{\kern0pt}\ {\isacharbar}{\kern0pt}u{\isachardot}{\kern0pt}\ u\ {\isasymin}\ X{\isacharbraceright}{\kern0pt}\ {\isasymle}\ Suc\ {\isacharparenleft}{\kern0pt}Y\ {\isacharasterisk}{\kern0pt}\ Y{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
+%
+}
+
+\DefineSnippet{exact-hitting-set-final}{
+    \isacommand{theorem}\isamarkupfalse%
+\ xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}polyred{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}ispolyred\ xc{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}ehs{\isacharunderscore}{\kern0pt}alg\ exact{\isacharunderscore}{\kern0pt}cover\ exact{\isacharunderscore}{\kern0pt}hitting{\isacharunderscore}{\kern0pt}set\ size{\isacharunderscore}{\kern0pt}XC\ size{\isacharunderscore}{\kern0pt}ehs{\isachardoublequoteclose}
+}

@@ -6,11 +6,12 @@
     \textbf{Output}: {#3}
 \end{definition}
 }
+\newcommand{\bigO}[1]{$\mathcal{O}({#1})$}
 
 \chapter{Preliminaries}\label{chapter:preliminaries}
 \section{Isabelle and Dependencies}
 \subsection*{Isabelle/HOL}
-\textsc{Isabelle} is a generic interactive theorem prover. \textsc{HOL} is the Isabelle's formalization of Higher-Order Logic, a logical system with inductive sets, types , well-founded recursion etc. Our implementation requires the introduction of new datatypes, formalisation of natural numbers and integers. Thus, this type system is necessary.
+Isabelle is a generic interactive theorem prover. HOL is the Isabelle's formalization of Higher-Order Logic, a logical system with inductive sets, types , well-founded recursion etc. Our implementation requires the introduction of new datatypes, formalisation of natural numbers and integers. Thus, this type system is necessary.
 
 
 \subsection*{HOL-Real\_Asymp and Laudau\_Symbols}
@@ -139,12 +140,12 @@ as well as many approaches to solve \SAT\ problem efficiently in certain scenari
 Thus, \SAT\ is one of the most studies \NPH\ problems, from which there are also many \NPH\ problems reduced. 
 Our first reduction also stems from \SAT, while all the other reductions are constructed upon novel introduced problems. 
 More details on the reduction and implementation are given in Chapter 3 and Chapter 4. 
-\begin{figure}
+\begin{figure}[!ht]
     \Snippet{cnf-sat-def}
     \caption{Definition of satisfiability problem in conjunctive normal form}
 \end{figure}
 
-\subsection*{Application of NREST and paradigms}
+\subsection{Application of NREST and paradigm}
 The NREST package offers an approach for approximating the complexity of non-deterministic processes.
 This is especially useful when iterating a set, a collection or any other unordered data structures. Thus,
 we use this package throughout this work. In our complexity analysis, the following commands are used. 
@@ -155,12 +156,26 @@ we use this package throughout this work. In our complexity analysis, the follow
     \item \textbf{$SPEC$ $P$ $Q$}. A command used for assignment. Should $P\ x$ hold for an object $x$, it is a valid object after the assignment,
     which takes $Q\ x$ time units.
 \end{itemize}
-To apply the NREST approach in the complexity analysis, we convert the algorithm into the NREST commands as described above. Then we show 
-that the complexity is above bounded in polynomial time. To clarify that the reduction is polynomial, we also show that the reduction
-costs polynomial space. Thus, a paradigms of performing complexity analysis on reductions using NREST can be concluded.
+To apply the NREST approach in the complexity analysis, we convert the algorithm into the NREST commands.
+During the conversion, we follow the following principles for counting the complexity.
 \begin{enumerate}
-    \item Proving that the reduction is correct.
-    \item Implementing the reduction in NREST commands.
-    \item Proving that the reduction costs polynomial time.
-    \item Proving that the algorithm costs polynomial space.
+    \item Checking the condition always costs only time unit. 
+    \item Per iteration it costs 1 time unit each for iteration, modification and insertion.
+    \item All other operations costs should cost one time unit, if not stated explicitly.
+\end{enumerate}
+Then, it is possible show a few property of this approach. 
+Let $f$ denote a polynomial reduction from $A$ to $B$, while $f_{alg}$ denotes the NREST version of the reduction.
+Furthermore, we define sizing functions $s_A$ and $s_B$ as metrics for the asymptotic classes.
+To show that the reduction is polynomial, we show that the reduction is polynomially bounded in terms 
+of time and space,which are respectively the \textit{refines} and the \textit{size} lemma.
+\begin{align}
+    refines: \quad f_{alg}(A) \leq \mathcal{O}((s_A(A))^k) \\
+    size: \quad s_B (f(A)) \leq \mathcal{O}((s_A(A))^k)
+\end{align}
+In the end, we can conclude the following implementation paradigm to show that a reduction is correct and polynomial.
+\begin{enumerate}
+    \item Prove that the reduction is correct.
+    \item Implement the reduction in NREST commands.
+    \item Prove that the reduction costs polynomial time.
+    \item Prove that the algorithm costs polynomial space.
 \end{enumerate}
