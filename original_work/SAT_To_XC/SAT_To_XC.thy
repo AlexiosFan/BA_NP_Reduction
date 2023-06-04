@@ -34,6 +34,7 @@ abbreviation "comp_S F \<equiv>
 definition sat_xc :: "'a three_sat \<Rightarrow> 'a xc_element set * 'a xc_element set set" where 
 "sat_xc F = (comp_X F, comp_S F)"
 
+
 lemma sat_xc_is_collection: "\<Union> (comp_S F) \<subseteq> (comp_X F)"
 proof -
   let ?vars = "vars_of_sat F"

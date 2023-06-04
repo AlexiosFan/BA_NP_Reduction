@@ -4,6 +4,8 @@
      document_output = "generated"]
   sessions 
     "HOL-Library"
+  directories
+     "../../original_work/SAT_To_XC"
    theories 
      [quick_and_dirty] importing
    document_files
