@@ -1,7 +1,7 @@
-\chapter{Weighted Problems}\label{chapter:weighted}
-In this chapter, we discuss the \textbf{NP-Hardness} of a few weighted problems. In weighted problems, 
+\chapter{Weighted Sum Problems}\label{chapter:weighted}
+In this chapter, we discuss the \textbf{NP-Hardness} of a few weighted problems. In weighted sum problems, 
 there is a weighting function $w$ over a set $S$. The problems ask about whether the weight of this elements 
-in $S$ fulfill a equality or inequality relationship. The weighted problems are also mathematical programming 
+in $S$ satisfies a equality or inequality relationship. The weighted sum problems are also mathematical programming 
 problems, which is another large discipline of \NPH\ problems. In Karp's paper, there were \XC, \SBS \footnote{What Karp presented was referred to as Knapsack, although
 the definition is closer to the subset sum nowadays}, and \KN introduced. 
 We present reductions from \XC\ to \SBS, from \SBS\ to \Part, \KN and \IP. 
@@ -10,27 +10,84 @@ We present reductions from \XC\ to \SBS, from \SBS\ to \Part, \KN and \IP.
 We define the subset sum problem with a set and a weighting function. There are also a few alternative definitions using a multiset or a list without 
 a weighting function, which is useful for our other reductions. More details follow in the number partition section. 
 \problem{\SBS}{A finite set $S$, a weighting function $w$, and an integer $B$}{Is there a subset $S' \subseteq S$ s.t. 
-\begin{align*}
-    \sum_{x \in S'} w(x) = B
-\end{align*}}
+\begin{equation}
+    \sum_{x \in S'} w(x) = B \tag{1}
+\end{equation}}
 
 \subsection{Reduction Details}
 We reduce the exact cover problem to the subset sum. We start with the exact cover problem over the sets of natural numbers. 
 Given $(X, S)$ an exact cover instance over natural numbers, let $S$ be the set in the entry of the subset sum problem. Then we
 define the weighting function $w$ and the sum $B$ by 
 \begin{align*}
-    w(s) = \sum_{x \in s} |S|^x , B = w(X)
+    w(s) = \sum_{x \in s} p^x , B = w(X)
 \end{align*}
+Where $p$ is a natural that is no less than $|S|$
 The triple $(S, w, B)$ is then an input for the subset sum problem.
 \begin{lemma}[Soundness]
     If $(X, S)$ is an instance of the exact cover. The reduced $(S, w, B)$ is then an instance of the subset sum problem. 
 \end{lemma}
 Apparently, the reduction is sound. Let the $S' \subseteq S$ be an exact cover of X. It then holds that
 \begin{align*}
-    \sum_{s \in S'} w(s) = \sum_{s \in S'} (\sum_{x \in s} |S|^x) = \sum_{x \in \bigcup S'} |S|^x = \sum_{x \in X} |S|^x = B
+    \sum_{s \in S'} w(s) = \sum_{s \in S'} (\sum_{x \in s} p^x) = \sum_{x \in \bigcup S'} p^x = \sum_{x \in X} p^x = B
 \end{align*}
+Thus, $(S, w, B)$ is an instance of the subset sum problem. 
 \begin{lemma}[Completeness]
     Let $(S, w, B)$ be reduced from $(X, S)$. If $(S, w, B)$ is a subset sum instance, $(X, S)$ has to be an exact cover instance. 
 \end{lemma}
-The proof of the completeness is unfortunately trivial. However, it suffices to show that 
+Obtain $S' \subseteq S$ for which \textbf{(1)} holds. We show the disjointness of $S'$ with contradiction. 
+Assume that $S'$ is not disjoint. Then there exist $s_1, s_2 \in S'$ s.t. $s_1 \cap s_2 \not= \emptyset$. Let $x \in s_1 \cap s_2$ be arbitrary. Then 
+there are two cases for the coefficient $c_x$ of $p^x$ in the polynomial $\sum_{x \in S'} w(x)$ of $p$. 
+\begin{enumerate}
+    \item $c_x \geq 2$. The corresponding coefficient $c_x'$ in the polynomial $w(X)$ is one. From \textbf{(1)} it is obvious that this case is not valid.
+    \item $c_x = 1$ or $c_x = 0$. Though \textbf{(1)} is satisfied, there are still at least two $p^x$ in the polynomial $\sum_{x \in S'} w(x)$.
+    Hence the number of $p^x$ in this polynomial is at least $p$. However, there are utmost $|S|$ elements in $S'$, meaning that there are utmost $|S|$ such $p^x$. From the 
+    fact the $p > |S|$, it is not possible that the number of $p^x$ is greater equal $p$. As a result, this case is also not valid.
+\end{enumerate}
+In conclusion, the assumption is false and $S'$ is thus disjoint. Then, it follows directly from the disjointness that $S'$ covers $X$, otherwise \textbf{(1)}
+is not satisfied. \\\\
+This reduction is, however, limited to the exact cover over natural numbers. It is still necessary to generalize the reduction to any arbitrary type. For this reason,
+we need to construct a mapping. 
+\begin{lemma}
+    Let $S$ be an arbitrary finite S. Then there exists a bijective function $f, S \rightarrow N$ s.t. the image of $f$ is empty when $S$ is empty, 
+    and is $\{1, 2, ..., |S| - 1\}$ otherwise.
+\end{lemma}
+The proof of this lemma is trivial. With this approach, we can covert each exact cover problem to an exact cover problem over the natural numbers and then 
+reduce it to the subset sum problem. 
+\begin{lemma}[Polynomial Complexity]
+    The construction of $(S, w, B)$ from $(X, S)$ is polynomial. 
+\end{lemma}
+When we map an arbitrary set into a natural number set as presented in Lemma 9, we have to iterate over the set $X$, which costs the complexity of $|X|$. 
+Furthremore, we have to iterate over $S$ to construct $w$ and $B$, resulting in the complexity of $2|S|$. In total, it only costs $|X| + 2|S| \in$\bigO{|X| + |S|}, 
+i.e. the linear complexity. 
 
+\subsection{Implemantation Deatails}
+\subsubsection{Reduction and Proof}
+In implementation, we started with the construction as presented in Lemma 9. The function \textbf{map\_to\_nat} returns 
+a function that maps $X$ to a corresponding set of natural numbers. Following this, we define the weighting function and 
+reduction function. Similar to what happened with the exact hitting set, we also check if $X$ is finite and if $S$ is 
+a collection before we perform a reduction, for these conditions are a requirement under our definition. 
+\Snippet{subset-sum-def}
+Apart from the definition, we need a lemma that converts the sum to a polynomial. To guarantee that $p^k$ is unique for an arbitrary $k$, 
+we require that $p \geq 2$ as in the lemma \textbf{weight\_eq\_poly}.
+\Snippet{subset-sum-aux1} 
+The main part of the proof is implemented as discussed in the reduction details. A problem occurred when showing the completeless of the reduction. 
+Besides the proof presented in the implementation details, it is necessary to show that the representation of a natural number in the form 
+of the polynomials with the base $p$ is unique. To achieve this, we imported the Archive of Formal Proofs entry DigitInBase and applied the theorem 
+\textbf{seq\_uniqueness}.
+\Snippet{subset-sum-aux2}
+Then, we can show that the reduction is correct.
+\Snippet{subset-sum-aux3}
+
+
+\subsubsection{Polynomial Complexity}
+The implementation of the proof of polynomial complexity is identical to what is introduced in reductio details. Fortunately, 
+there is not additional step to be stated, for all of the proof is automated. 
+\Snippet{subset-sum-poly}
+
+\section{Subset sum in list and number partition}
+The next problem that we want to reduce to is partition.
+\problem{\Part}{A finite sequence $s$ of natural numbers.}{Is there a sub-sequence $s' \subset s$ s.t. 
+\begin{align*} 
+    \sum_{x \in s'} x = \sum_{x \in  s - s'} x
+\end{align*}
+}

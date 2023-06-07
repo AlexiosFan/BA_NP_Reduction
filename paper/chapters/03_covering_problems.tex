@@ -92,7 +92,7 @@ With the linear complexity of the construction of $X$, we conclude that the redu
 
 \subsection{Implementation Details}
 \label{sec:sat-imp}
-\subsubsection*{Reduction and Proof}
+\subsubsection{Reduction and Proof}
 Intuitively, the variables, positions and clause can be represented by indices or tuples of indices. However, it it not easy 
 to unify the representation s.t. they are of the same type. One possible solution is introducing a new dimension in the tuple, 
 and use it to classify the representated objects. However, we might still have to introduce a new enumerate type for this purpose. 
@@ -113,7 +113,7 @@ the required property.
 To end with, we show that the reduction is sound, complete, and consequently correct. 
 \Snippet{exact-cover-correct}
 
-\subsubsection*{Polynomial Complexity}
+\subsubsection{Polynomial Complexity}
 To begin with, it is necessary to determine to metrics, on which the complexity is dependent. For 
 a logical formula $F$, we will iterate all of the variables, clauses and positions. Hence all of them are need for as metrics. 
 Nevertheless, the NREST implementation does not support a complexity bound with different metrics. As a result, it is necessary to 
@@ -171,14 +171,14 @@ Finally, we show that the reduction is polynomial. In our reduction, it is neces
 With the cardinality $|X|$ and $|S|$ as the metrics, it is obvious that the reduction costs the complexity of \bigO{|X||S|}.
 
 \subsection{Implementation Details}
-\subsubsection*{Reduction and Proof}
+\subsubsection{Reduction and Proof}
 Since the exact cover problem is defined over a finite set $X$ and a finite collection $S$, we have to check if the $X$ and $S$ are finite and 
 if $S$ is a collection of $X$. Thus, a condition statement, which checks this requirement, is added to the implementation. Furthermore,
 the proof of the correctness is implemented as described above. Following is a snippet of implemented definitions and lemmas.
 \Snippet{exact-hitting-set-def}
 \Snippet{exact-hitting-set-reduction}
 
-\subsubsection*{Polynomial Complexity}
+\subsubsection{Polynomial Complexity}
 We determine the size of the exact hitting set entry $C$ as $|C|$. According to the paradigm, 
 we define the NREST algorithm and show the \textit{refines} and \textit{size} lemma as follows
 
