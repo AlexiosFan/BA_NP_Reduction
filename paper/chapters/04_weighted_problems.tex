@@ -51,7 +51,7 @@ we need to construct a mapping.
     Let $S$ be an arbitrary finite S. Then there exists a bijective function $f, S \rightarrow N$ s.t. the image of $f$ is empty when $S$ is empty, 
     and is $\{1, 2, ..., |S| - 1\}$ otherwise.
 \end{lemma}
-The proof of this lemma is trivial. With this approach, we can covert each exact cover problem to an exact cover problem over the natural numbers and then 
+The proof for this lemma is trivial. With this approach, we can covert each exact cover problem to an exact cover problem over the natural numbers and then 
 reduce it to the subset sum problem. 
 \begin{lemma}[Polynomial Complexity]
     The construction of $(S, w, B)$ from $(X, S)$ is polynomial. 
@@ -70,7 +70,7 @@ a collection before we perform a reduction, for these conditions are a requireme
 Apart from the definition, we need a lemma that converts the sum to a polynomial. To guarantee that $p^k$ is unique for an arbitrary $k$, 
 we require that $p \geq 2$ as in the lemma \textbf{weight\_eq\_poly}.
 \Snippet{subset-sum-aux1} 
-The main part of the proof is implemented as discussed in the reduction details. A problem occurred when showing the completeless of the reduction. 
+The main part of the proof is implemented as discussed in the reduction details. A problem occurred when showing the completeness of the reduction. 
 Besides the proof presented in the implementation details, it is necessary to show that the representation of a natural number in the form 
 of the polynomials with the base $p$ is unique. To achieve this, we imported the Archive of Formal Proofs entry DigitInBase and applied the theorem 
 \textbf{seq\_uniqueness}.
@@ -80,14 +80,158 @@ Then, we can show that the reduction is correct.
 
 
 \subsubsection{Polynomial Complexity}
-The implementation of the proof of polynomial complexity is identical to what is introduced in reductio details. Fortunately, 
+The implementation of the proof for polynomial complexity is identical to what is introduced in reductio details. Fortunately, 
 there is not additional step to be stated, for all of the proof is automated. 
 \Snippet{subset-sum-poly}
 
 \section{Subset sum in list and number partition}
 The next problem that we want to reduce to is partition.
-\problem{\Part}{A finite sequence $s$ of natural numbers.}{Is there a sub-sequence $s' \subset s$ s.t. 
+\problem{\Part}{A finite sequence $as$ of natural numbers.}{Is there a sub-sequence $as' \subset s$ s.t. 
 \begin{align*} 
-    \sum_{x \in s'} x = \sum_{x \in  s - s'} x
+    \sum_{x \in as'} x = \sum_{x \in  as - as'} x \tag{2}
 \end{align*}
 }
+For the modeling of the sequence, we use the list. Although it is possible 
+to define the partition problem using the set and weighting function as in the subset
+sum problem, choose the presented definition for two reasons.
+\begin{enumerate}
+    \item Showing that the definition of the problem is not an important factor 
+    in reduction, i.e. both definition are valid and reducible under Isabelle.
+    \item Staying consistent with the available Archive of Formal Proof instance 
+    \textit{Hardness of Lattice Problems}, which is also the purpose of this work,
+    i.e. providing theoretical bases for a few other verification projects.
+\end{enumerate} 
+Thus, we need to perform the reduction from the list version of the subset sum problem. 
+We give the definition of the subset sum problem using a sequence. 
+\problem{\textbf{Subset Sum in Sequence}}{
+    A finite sequence $as$ of natural numbers, a natural number $s$}{
+    Is there a sub-sequence $as' \subset as$ s.t. 
+    \begin{align*}
+        \sum_{x \in as'} x = B \tag{3}
+    \end{align*}
+}
+Given the subset sum instance $(S, w, B)$, it is obvious that we can obtain a sequence $as$ by
+converting $S$ into a sequence and map the sequence with the weighting function $w$. Let $s = B$.
+The resulting pair $(as, s)$ is then an instance of the subset sum problem in sequence representation. 
+Then we reduce $(as, s)$ to a partition instance $bs$.
+\begin{align*}
+    bs = (1 - s + \sum_{x \in as} x) \# (s + 1) \# as
+\end{align*}
+\begin{lemma}[Soundness]
+    If there exists an $as'$ s.t. the equation \textbf{(3)} holds for $(as, B)$, \textbf{(2)} should hold for the reduced $bs$.
+\end{lemma}
+We construct a $bs'$ from $as'$ by 
+\begin{align*}
+    bs' &= (1 - s + \sum_{x \in as} x) \# as' \\
+    bs - bs' &=  (s + 1) \# (as - as')
+\end{align*}
+Where the sums of the sequences satisfy the equation 
+\begin{align*}
+    \sum_{x \in bs'} x = (1 - s + \sum_{x \in as} x) + \sum_{x \in as'} x
+    = (1 - s + \sum_{x \in as} x) + s = (s + 1) + (\sum_{x \in as} x - s)
+    = \sum_{x \in bs - bs'}
+\end{align*}
+Thus, the reduction is sound.
+\begin{lemma}[Completeness]
+    Let $bs$ be reduced from $(as, B)$. If there exists a $bs'$ s.t. \textbf{(2)} holds for $bs$, 
+    \textbf{(3)} should then hold for $(as, B)$.
+\end{lemma}
+It holds that
+\begin{align*}
+    (1 - s + \sum_{x \in as} x) + (s + 1) = \sum_{x \in as} x + 2 > \sum_{x \in as} x
+\end{align*}
+As a result, $(1 - s + \sum_{x \in as} x)$ and $s + 1$ are not supposed be simultaneously existent in $bs'$. 
+After separating the first two elements of bs into different subsequences, the $as'$ is constructed 
+by obtaining the tail of $bs'$, with which the completeness is proven. 
+\begin{lemma}[Polynomial Complexity]
+    The reduction from the subset sum to partition is polynomial.
+\end{lemma}
+The conversion between the definitions of the subset sum problem costs linear complexity w.r.t. the cardinality of the set,
+for it it necessary to iterate the set $S$ and map the sequence with the weighting function. More specifically it costs 
+the complexity of $|S| + 1$. Furthermore, we iterate the sequence similary when reducing the subset sum to partition, costing
+the complexity of $|as| + 2$. In total, the complexity is \bigO{(|S| + 1) + (|as| + 2)} $\in$ \bigO{|S|} because of $|as| = |S|$.
+
+\subsection{Implemantation Details of Subset Sum in Sequence}
+\subsubsection*{Reduction and Proof}
+Although the reduction is more straightforward compared to the previously introduced ones, the implementation is even lengthier. 
+The reason is that conversion of the set to a list also is a reduction, which we have to verify. The intermediate step is then
+defined by 
+\Snippet{ss-indices-def}
+Apparently, to map $S$ to an set of integers from 1 to $|S|$, we need to apply \textbf{Lemma 9} again. Additionally, we have to 
+check if $S$ is finite, for finiteness is a requirement of the reduction.
+Thus, the reduction and the proof 
+is given by
+\Snippet{ss-indices-red}
+Then, it suffices to convert the set into a list and perform the map, in which we used the function 
+\textbf{sorted\_list\_of\_set}, converting a set of ordered type to a sorted list. Similarly, we check if 
+$S$ is finite and if $S$ is of form $\{1, 2, .. , |S|\}$ as a requirement. The proof for the correctness is then mostly straightforward
+after unfolding the necessary definitions and using a few available lemmas in the list library, such as \textbf{nth\_equalityI} etc. 
+\Snippet{ss-list}
+
+\subsubsection*{Polynomial Complexity}
+Similar to the reduction from exact cover to subset sum, the proof for the polynomial complexity for two reductions 
+is rather trivial. 
+\Snippet{ss-indices-poly}
+\Snippet{ss-list-poly}
+
+\subsection{Implemantation Details of Partition}
+Instead of the original definition, where the sum a sub-sequence is equal to another, we use a different definition in the implementation,
+where the twice of the sum of a sub-sequence is equal to to the sum of the sequence. We have also shown that this definition is equivalent 
+to the original definition, i.e. \textbf{part\_alter} in implementation. 
+\Snippet{part-def}
+The reason was initially for the convenience of the proof. 
+In the original definition, it is necessary to consider the sum of the sub-sequence $(as - as')$ when showing the soundness lemma. This is, unfortunately, 
+rather complex under our definition, for we have to flip the list $xs$, the zero-one list that is used for multiplication. For this 
+flipping operation, we have show the lemma \textbf{sum\_\binary\_part}. If we use the new definition, this is avoidable.
+\Snippet{part-aux1}
+However, when showing the completeness lemma, we found out that we have to show the same statement for the new definition, too. 
+Thus, it is not a absolutely better definition. \\\\
+The proof of the polynomial complexity is also trivial. 
+\begin{quote}
+    Should I include the codes without much description, or leave them unincluded? 
+    Possible description: choice of the complexity and what is done in each step, but would be too lengthy.
+\end{quote}
+
+\section{Knapsack and Zero-One Integer Programming}
+Knapsack and zero-one integer programming are another two classical weighted sum problems. While subset sum was referred 
+to as knapsack in Karp's paper, its definition is nowadays different. Additionally, zero-one integer programming 
+was originally reduced from \SAT. Nevertheless, there exists a really trivial reductiom to both of the problems. Thus, 
+we include them in this chapter and present a reduction for them each. 
+Since the reduction is short and trivial, the implementation does not have 
+many meaningful details and is thus omitted. 
+
+\subsection{Knapsack}
+\problem{\KN}{A finite set S, a weighting function $w$, a limiting function $b$, a upperbound $W$, a lowerbound $B$}{
+    Is there a subset $S' \subseteq S$ s.t. 
+    \begin{align*}
+        \sum_{x \in S'} w(x) &\leq W \\ 
+        \sum_{x \in S'} b(x) &\geq B
+    \end{align*}
+}
+We reduce $\SS$ to $\KN$. With $(S, w, B)$ as an instance of the subset sum, $(S, w, w, B, B)$
+is then an instance of knapsack with 
+\begin{align*}
+    \sum_{x \in S'} w(x) &= W \\ 
+    \sum_{x \in S'} b(x) &= B
+\end{align*}
+where $b = w$ and $W = B$. Apparently, the reduction is constant, for no iteration is necessary. 
+
+\subsection{Zero-one Integer Programming}
+\problem{\IP}{A finite set $X$ of pairs $(x, b)$, where $x$ is an $m$-tuple of integers and $b$
+is an integer, an $m$-tuple $x$ and an integer $B$}{
+    Is there an $m$-tuple $y$ of integers s.t.
+    \begin{align*}
+        x^T \cdot y &\leq b \\ 
+        c^T \cdot y &\geq B, \forall (x, b) \in X
+    \end{align*}
+}
+Although most researchers tend to use matrix for the 
+definition of the zero-one integer programming, we follow the definition from the intractability book(to cite), because 
+it is convenient for our definition and consequently requires less effort. Given an instance of subset sum problem in sequence,
+(as, s), let 
+\begin{align*}
+    X = \{(as, s)\}, c = as, B = s
+\end{align*} 
+$(X, c, B)$ is then an instance of the zero-one integer programming problem,
+for there exists an $xs$ s.t. $xs^T \cdot as = s$. Since there is no iteration, the reduction is contant, too.
+
