@@ -1,36 +1,45 @@
-% !TeX root = ../main.tex
-% Add the above to each chapter to make compiling the PDF easier in some editors.
-
-\newcommand{\XC}{\textbf{Exact Cover}}
-\newcommand{\HS}{\textbf{Exact Hitting Set}}
-\newcommand{\SBS}{\textbf{Subset Sum}}
-\newcommand{\Part}{\textbf{Number Partition}}
-\newcommand{\IP}{\textbf{Integer Programming}}
-\newcommand{\KN}{\textbf{Knapsack}}
-
-
 \chapter{Introduction}\label{chapter:introduction}
 \section{Motivations}
 We may encounter many real-life problems that require a decision process to find a solution. 
-When shopping at a supermarket, for example, we always want to choose the shortest queue. 
-Another example is board games like go and chess. These problems are formally defined as decision problems.
-One of the most famous decision problem classes is the \NPH.
-\NPH\ problems have been a fundamental research topic in theoretical computer science since the 1970s, when Cook and Levin showed that the \SAT\ problem is \NPC\ and Karp gave a list of 21 \NPH\ problems. In the next few decades, many attempts were made to show that $\PN = \NP$ and to develop algorithms that computes \NP\ problems efficiently. Among many fields related to \textbf{NP-Hardness}, we focus on the polynomial reductions, which show the \textbf{NP-Hardness} of decision problems. \\\\
-All the existing proof of \textbf{NP-Hardness}\ were on-paper proofs, which lack the automated verification by a computer. With the existence of powerful interactive theorem provers, it is meaningful to formalize and verify the classical results of \textbf{NP-Hardness} in a computer, contributing to the theoretical basis of many existing formalisation results, e.g. cryptography, approximation algorithms etc. There has been an attempt to formalise \NPH\ problems that were given in Karp's paper in 1972. Our work benefits from this attempt and continues to formalise the rest of the 21 \NPH\ problems in the interactive theorem prover Isabelle. 
+For example, we always want to choose the shortest queue when shopping at a supermarket. 
+Another example is board games like Go and Chess. These problems are formally defined as decision problems.
+One of the most famous decision problem classes is the NP-hard problems. \\\\
+NP-hard problems are known be hard to be computed by a polynomial-time algorithm. 
+They have been a fundamental research topic in theoretical computer science since the 1970s
+when the first few results in NP-hardness were given by Cook, Levin and Karp. 
+In the next few decades, many attempts were made to show whether $\textbf{P} = \textbf{NP}$ and to develop algorithms that efficiently compute NP-hard problems. 
+Among many fields related to NP-hardness, we focus on the polynomial-time reductions, which show the NP-hardness of decision problems. \\\\
+All the existing proofs of the correctness of polynomial-time reductions were pen-and-paper proofs, 
+which lack automated verification by a computer. 
+With the help of interactive theorem provers, 
+it is possible to formalise and verify the classical results of NP-hardness on a computer.
+In this manner, we contribute to the theoretical basis of many existing formalisation results, 
+e.g. cryptography and approximation algorithms. \\\\ 
+There has been an attempt, known as the Karp21 project, to formalise NP-hard problems in Karp's paper in 1972. 
+Our work benefits from this attempt and continues to formalise some of the remaining problems in Karp's paper 
+with the interactive theorem prover Isabelle. 
 
 \section{Contributions}
-Our work contains 2 categories of problems. 
+Our work contains two categories of problems. 
 \begin{enumerate}
-    \item Set Covering problems: \XC, \HS
-    \item Weighted sum problems: \SBS, \Part, \IP, \KN
+    \item Set covering problems: Exact Cover, Exact Hitting Set
+    \item Weighted sum problems: Subset sum, Partition, Knapsack, Zero-One Integer Programming
 \end{enumerate}
-For each listed problem, we present a polynomial reduction either from \SAT\ or from another problem that is listed above. Thus, a reduction trace from \SAT\ is witnessed. Furthermore, a proof for the soundness, completeness, and the polynomial complexity of each polynomial reduction is also presented. 
+Set covering problems are problems in which we search for a set that contains all elements in another set. In weighted sum problems, 
+we look for a set of instances s.t. their weighted sum reaches another constant bound. While they are the basis of further reductions to problems like 
+3-dimensional matching, neither of the categories was formalised and verified in the existing project. 
+Thus, we chose these problems to complete the project and prepare for future work.\\\\ 
+For each listed problem, we present a polynomial-time reduction either from Satisfiability or another problem listed above. 
+Thus, a reduction trace from Satisfiability can be witnessed. 
+Furthermore, proofs of the soundness, completeness, 
+and the polynomial-time complexity of each polynomial-time reduction is also presented. 
 
 \section{Outline}
-In Chapter 2, we introduce the Isabelle dependencies and mathematical backgrounds of our work.\\\\
+In Chapter 2, we introduce Isabelle dependencies and mathematical backgrounds.\\\\
 Chapter 3 and Chapter 4 follow with the formalisation and verification of the listed problems. For each decision problem, 
-we present a definition of the problem and the reduction. Then, we sketch the proof of the correctness of the reduction and the polynomial bound. 
+we define the problem and the reduction. Then, we sketch the proof of the correctness of the reduction and the polynomial-time complexity. 
 Finally, we present a few concrete implementation details.
-In Chapter 3, we discuss the polynomial reduction of the set cover problems, while Chapter 4 consists of that of the weighted sum problems.\\\\
-To finish, we conclude the current status of the project of formalisation of Karp's 21 \NPH\ problems 
-and present a few possibilities for the verification of the rest of the problems in Chapter 5.
+In Chapter 3, we discuss the polynomial-time reduction of the set cover problems, while Chapter 4 consists of the weighted sum problems.
+A list of examples of reductions is also available in the appendix for better understanding.\\\\
+To finish, we conclude the current status of the Karp21 project
+and present a few possibilities for verifying the rest of the problems in Chapter 5.

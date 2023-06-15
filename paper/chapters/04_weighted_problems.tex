@@ -1,15 +1,15 @@
 \chapter{Weighted Sum Problems}\label{chapter:weighted}
-In this chapter, we discuss the \textbf{NP-Hardness} of a few weighted problems. In weighted sum problems, 
+In this chapter, we discuss the NP-Hardness of a few weighted problems. In weighted sum problems, 
 there is a weighting function $w$ over a set $S$. The problems ask about whether the weight of this elements 
 in $S$ satisfies a equality or inequality relationship. The weighted sum problems are also mathematical programming 
-problems, which is another large discipline of \NPH\ problems. In Karp's paper, there were \XC, \SBS \footnote{What Karp presented was referred to as Knapsack, although
-the definition is closer to the subset sum nowadays}, and \KN introduced. 
-We present reductions from \XC\ to \SBS, from \SBS\ to \Part, \KN and \IP. 
+problems, which is another large discipline of NP-hard problems. In Karp's paper, there were Exact Cover, Subset Sum \footnote{What Karp presented was referred to as Knapsack, although
+the definition is closer to the subset sum nowadays}, and Knapsack introduced. 
+We present reductions from Exact Cover to Subset Sum, from Subset Sum to Partition, Knapsack and Zero-one Integer Programming. 
 
 \section{Subset sum}
 We define the subset sum problem with a set and a weighting function. There are also a few alternative definitions using a multiset or a list without 
 a weighting function, which is useful for our other reductions. More details follow in the number partition section. 
-\problem{\SBS}{A finite set $S$, a weighting function $w$, and an integer $B$}{Is there a subset $S' \subseteq S$ s.t. 
+\problem{Subset Sum}{A finite set $S$, a weighting function $w$, and an integer $B$}{Is there a subset $S' \subseteq S$ s.t. 
 \begin{equation}
     \sum_{x \in S'} w(x) = B \tag{1}
 \end{equation}}
@@ -18,7 +18,7 @@ a weighting function, which is useful for our other reductions. More details fol
 We reduce the exact cover problem to the subset sum. We start with the exact cover problem over the sets of natural numbers. 
 Given $(X, S)$ an exact cover instance over natural numbers, let $S$ be the set in the entry of the subset sum problem. Then we
 define the weighting function $w$ and the sum $B$ by 
-\begin{align*}
+\begin{align*}-
     w(s) = \sum_{x \in s} p^x , B = w(X)
 \end{align*}
 Where $p$ is a natural that is no less than $|S|$
@@ -86,7 +86,7 @@ there is not additional step to be stated, for all of the proof is automated.
 
 \section{Subset sum in list and number partition}
 The next problem that we want to reduce to is partition.
-\problem{\Part}{A finite sequence $as$ of natural numbers.}{Is there a sub-sequence $as' \subset s$ s.t. 
+\problem{Partition}{A finite sequence $as$ of natural numbers.}{Is there a sub-sequence $as' \subset s$ s.t. 
 \begin{align*} 
     \sum_{x \in as'} x = \sum_{x \in  as - as'} x \tag{2}
 \end{align*}
@@ -103,7 +103,7 @@ sum problem, choose the presented definition for two reasons.
 \end{enumerate} 
 Thus, we need to perform the reduction from the list version of the subset sum problem. 
 We give the definition of the subset sum problem using a sequence. 
-\problem{\textbf{Subset Sum in Sequence}}{
+\problem{Subset Sum in Sequence}{
     A finite sequence $as$ of natural numbers, a natural number $s$}{
     Is there a sub-sequence $as' \subset as$ s.t. 
     \begin{align*}
@@ -201,14 +201,14 @@ Since the reduction is short and trivial, the implementation does not have
 many meaningful details and is thus omitted. 
 
 \subsection{Knapsack}
-\problem{\KN}{A finite set S, a weighting function $w$, a limiting function $b$, a upperbound $W$, a lowerbound $B$}{
+\problem{Knapsack}{A finite set S, a weighting function $w$, a limiting function $b$, a upperbound $W$, a lowerbound $B$}{
     Is there a subset $S' \subseteq S$ s.t. 
     \begin{align*}
         \sum_{x \in S'} w(x) &\leq W \\ 
         \sum_{x \in S'} b(x) &\geq B
     \end{align*}
 }
-We reduce $\SS$ to $\KN$. With $(S, w, B)$ as an instance of the subset sum, $(S, w, w, B, B)$
+We reduce Subset Sum to Knapsack. With $(S, w, B)$ as an instance of the subset sum, $(S, w, w, B, B)$
 is then an instance of knapsack with 
 \begin{align*}
     \sum_{x \in S'} w(x) &= W \\ 
@@ -217,7 +217,7 @@ is then an instance of knapsack with
 where $b = w$ and $W = B$. Apparently, the reduction is constant, for no iteration is necessary. 
 
 \subsection{Zero-one Integer Programming}
-\problem{\IP}{A finite set $X$ of pairs $(x, b)$, where $x$ is an $m$-tuple of integers and $b$
+\problem{Zero-one Integer Programming}{A finite set $X$ of pairs $(x, b)$, where $x$ is an $m$-tuple of integers and $b$
 is an integer, an $m$-tuple $x$ and an integer $B$}{
     Is there an $m$-tuple $y$ of integers s.t.
     \begin{align*}

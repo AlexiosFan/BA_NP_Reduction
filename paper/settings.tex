@@ -8,7 +8,7 @@
   backend=biber,
   url=true,
   style=numeric, % alphabetic, numeric
-  sorting=none, % default == nty, https://tex.stackexchange.com/questions/51434/biblatex-citation-order
+  sorting=nty, % default == nty, https://tex.stackexchange.com/questions/51434/biblatex-citation-order
   maxnames=4,
   minnames=3,
   maxbibnames=99,
@@ -25,7 +25,7 @@
 \usepackage{booktabs} % for better looking table creations, but bad with vertical lines by design (package creator despises vertical lines)
 \usepackage[final]{microtype}
 \usepackage{caption}
-\usepackage[hidelinks]{hyperref} % hidelinks removes colored boxes around references and links
+\usepackage{hyperref} % hidelinks removes colored boxes around references and links
 \usepackage{ifthen} % for comparison of the current language and changing of the thesis layout
 \usepackage{pdftexcmds} % string compare to work with all engines
 \usepackage{paralist} % for condensed enumerations or lists
@@ -47,13 +47,9 @@
 \newcommand{\xmark}{\ding{55}}%
 \usepackage{float}
 
-
 \usepackage[acronym,xindy,toc]{glossaries} % TODO: include "acronym" if glossary and acronym should be separated
 \makeglossaries
 \loadglsentries{pages/glossary.tex} % important update for glossaries, before document
-
-
-\bibliography{bibliography}
 
 \setkomafont{disposition}{\normalfont\bfseries} % use serif font for headings
 \linespread{1.05} % adjust line spread for mathpazo font

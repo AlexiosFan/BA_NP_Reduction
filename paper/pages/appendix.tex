@@ -1,13 +1,77 @@
-\chapter{General Addenda}
+\chapter{Examples for reductions}
+In this part we present examples for polynomial reductions to assist with the understanding. 
+\section{Example for polynomial reduction from Satisfiability To Exact Cover}
+\textbf{Input:} A logical formula in conjunctive normal form 
+\begin{align*}
+    F := (x_1 \lor x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2) \land (x_1 \lor x_3)
+\end{align*}
+\textbf{Output:}
+The constructed set is
+\begin{align*}
+    X := & \{ x_1 ,x_2, x_3\} \cup \{c_1, c_2, c_3\} \cup 
+    \{p_{11}, p_{12}, p_{13}, p_{21}, p_{22}, p_{31}, p_{32}\}
+\end{align*}
+The constructed collection is 
+\begin{align*}
+    S : = & \{\{p_{11}\}, \{p_{12}\}, \{p_{13}\}, \{p_{21}\}, \{p_{22}\}, \{p_{31}\}, \{p_{32}\}\} \\
+      & \cup  \{\{c_1, p_{11}\}, \{c_1, p_{12}\}, \{c_1, p_{13}\}, \{c_2, p_{21}\}, 
+      \{c_3, p_{31}\}, \{c_3, p_{32}\}\} \\ 
+      & \cup \{\{x_1, p_{11} p_{31}\}, \{x_1, p_{21}\}, \{x_2, p_{12}, p_{22}\}, \{x_2\},
+      \{x_3, p_{32}\}, \{x_3, p_{13}\}\}
+\end{align*}
+\textbf{Validity:} Apparently, the only valid assignment $\sigma$ of $F$ is given by 
+\begin{align*}
+    \sigma = \{x_1 \equiv \bot, x_2 \equiv \top, x_3 \equiv \top \}
+\end{align*}
+Wir construct an exact cover $S'$ by 
+\begin{align*}
+    S' = \{\{c_1, p_{22}\}, \{c_2, p_{21}\}, \{c_3, p_{32}\},
+    \{x_1, p_{11}, p_{31}\}, \{x_2\}, \{x_3, p_{31}\},
+    \{p_{22}\}\}
+\end{align*}
 
-If there are several additions you want to add, but they do not fit into the thesis itself, they belong here.
+\section{Example for polynomial reduction from Exact Cover To Subset Sum}
+\textbf{Input:} The instance of exact cover is given by 
+\begin{align*}
+    X &:= \{1, 2, 3, 4\} \\ 
+    S &:= \{\{1\}, \{2\}, \{2, 3\}, 
+    \{2, 4\}, \{3, 4\}, \{1, 2, 3\}\}
+\end{align*}
+\textbf{Output:} 
+While $S$ is not changed, the weighting function $w$ and the sum $B$ is given by 
+\begin{align*}
+    w(s) = \sum_{x \in s} 4^x,
+    B = w(X) = 4 + 4^2 + 4^3 + 4^4 = 340
+\end{align*}
+\textbf{Validity:} An exact cover $S'$ is given by 
+\begin{align*}
+    S' = \{\{1\}, \{2\}, \{3, 4\}\}
+\end{align*}
+Hence it holds that 
+\begin{align*}
+    w(\{1\}) + w(\{2\}) + w(\{3,4\}) = 4 + 4^2 + (4^3 + 4^4) = 340 = B
+\end{align*}
 
-\section{Detailed Addition}
+\section{Example for polynomial reduction from Subset Sum To Partition} 
+\textbf{Input:} We use the same subset sum entry as in the previous example. $(S, w, B)$ be 
+then converted to 
+\begin{align*}
+    as &:= [4, 16, 80, 272, 320, 72] \\ 
+    s &:= 340
+\end{align*}
+\textbf{Output:} The reduced $bs$ is then 
+\begin{align*}
+    bs := [425, 341, 4, 16, 80, 272, 320, 72]
+\end{align*}
+\textbf{Validity:} With $as' = [4, 16, 320]$, the corresponding $bs'$ is 
+\begin{align*}
+    bs' = [425, 4, 16, 320] \\ 
+    bs - bs' = [341, 80, 272, 72]
+\end{align*}
+with the equality
+\begin{align*}
+    425 + 4 + 16 + 320 = 765 = 341 + 80 + 272 + 72 
+\end{align*}
 
-Even sections are possible, but usually only used for several elements in, e.g.\ tables, images, etc.
+The other reductions are easier to understand, hence no example is provided here.
 
-\chapter{Figures}
-\section{Example 1}
-\cmark
-\section{Example 2}
-\xmark

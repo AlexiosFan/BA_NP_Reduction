@@ -41,11 +41,9 @@ definition "xc_to_ss_alg \<equiv> (\<lambda>(X, S).
   }
 )"
 
-definition "xc_to_ss_space n = 
-  1 + n + 1 + n + 1"
+definition "xc_to_ss_space n = 1 + n + 1 + n + 1"
 
-definition "xc_to_ss_time n = 
-  1 + (3 * n + 1) + (n + 3) + 1 + (3 * n + 1)"
+definition "xc_to_ss_time n = 1 + (3 * n + 1) + (n + 3) + 1 + (3 * n + 1)"
 
 subsection "proofs"
 

@@ -29,6 +29,8 @@ from 0 to the cardinality of the set*)
 
 subsection "contruction of a bijective function"
 
+find_theorems "\<exists>f. bij_betw f _ _"
+
 lemma bij_exist: 
   "finite S \<Longrightarrow> \<exists>f. (if S = {} then bij_betw f S {} else bij_betw f S {1..card S})"
 proof (induction S rule: finite_induct)

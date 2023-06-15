@@ -222,7 +222,7 @@ proof -
   "(\<forall>i<length xs. xs!i \<in> {0,1})" "(\<Sum>i<length ?as. ?as!i * xs!i) = B" "length xs = length ?as"
     unfolding subset_sum_list_def 
     by blast
-  with assms(1-2) obtain S' where S'_def: "S' = {i \<in> S. xs!(i-1) = 1}"
+  with assms(1) obtain S' where S'_def: "S' = {i \<in> S. xs!(i-1) = 1}"
     by blast
   hence "S' \<subseteq> S"
     by blast

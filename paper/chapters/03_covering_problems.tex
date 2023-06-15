@@ -1,24 +1,28 @@
 \chapter{Set Covering Problems}\label{chapter:covering}
-In this chapter, we discuss about the \textbf{NP-Hardness} of a few set covering problems. 
+In this chapter, we discuss about the NP-hardness of a few set covering problems. 
 Covering problems ask whether a certain combinatorical structure $A$ covers another structure $B$. 
 Alternatively, it may also ask for the minimal size of $A$ to cover $B$. 
 We focus on a subclass of covering problems, the exact covering problem. In this subclass, 
 $A$ covers $B$ exactly, i.e. no element in $B$ is covered twice in $A$. 
 In Karp's paper in 1972, the following covering problems were included: Exact Cover, Exact Hitting Set,
-3-Dimensional Matching, and Steiner Tree. In our implementation, we reduced \SAT\ to \XC, and then reduced \XC\ to \HS. 
+3-Dimensional Matching, and Steiner Tree. In our implementation, we reduced Satisfiability to Exact Cover, and then reduced Exact Cover to Exact Hitting Set. 
 
 \section{Exact Cover}
-The exact cover problem is a special case of the set cover problem. Besides the covering property, it also requires the uniqueness of the elements. 
-\problem{\XC}{A set $X$ and a collection $S$ of subsets of $X$.}{Is there a disjoint subset $S'$ of $S$ s.t. 
+The Exact Cover problem is a special case of the Set Cover. In Exact Cover, it not only looks for a cover, but also requires the existence of 
+cover elements to be unique. 
+\problem{Exact Cover}{A set $X$ and a collection $S$ of subsets of $X$.}{Is there a disjoint subset $S'$ of $S$ s.t. 
 each element in $X$ is contained in one of the elements of $S'$?}
 \Snippet{exact-cover-def}
 
 \subsection{Choice of reduction}
-Since \XC\ is a fundamental \NPH\ problem, there are many different reductions available. 
-Karp's reduction based on the chromatic number problem. 
-Although the chromatic number problem was formalized in Karp's 21 project, we did not choose this reduction
+Since Exact Cover is a fundamental NP-hard problem, there are many different reductions available. 
+Karp's reduction is based on the  Chromatic Number problem. 
+Although the Chromatic Number problem was formalised in Karp's 21 project, we did not choose this reduction
 because of the complexity of the graph traversal and the differences between Karp's definition and the available Isabelle's definition. 
-Additionaly, there is an easy reduction from \SAT\ to \XC. This reduction does not involve graph traversal.
+In the available definition of Chromatic Number, the Chromatic Number $k$ is limited to be at least three. Since 
+the Chromatic Number is in \textbf{P} in the case $k = 2$, the alternative definition is correct. However, this raises the difficulty of performing 
+a reduction, for it is necessary to consider a special case for $k = 2$. 
+On the contrary, there is an easy reduction from Satisfiability to Exact Cover. This reduction does not involve graph traversal.
 The only technical barrier is the typeless set. While Isabelle only supports typed sets, we resolve this problem
 by creating a container type. More details follow in the section \ref*{sec:sat-imp}. 
 
@@ -47,7 +51,7 @@ $S$ contains all of the four types of subsets.
     &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, x_i = p_{ij}\}\\
     &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, \neg x_i = p_{ij}\}
 \end{align*}
-The pair of $(X, S)$ is the input for the \XC\ problem. 
+The pair of $(X, S)$ is the input for the Exact Cover\ problem. 
 \begin{lemma}[Soundess]
     Let $F$ be satisfiable. The pair $(X, S)$ is then an instance of the exact cover.
 \end{lemma}
@@ -65,7 +69,6 @@ Hence $S'$ is disjoint. \\\\
 From this fact, we can also conclude that clauses and variables are covered in $S'$. 
 Now we only have to show that all the positions are covered. If a position $p_{ij}$ is false under $\sigma$, 
 it is covered in the first step. Otherwise it is either covered in the second step or the third step. 
-With the disjointness, we may conclude that $S'$ covers $X$ exactly and that the reduction is sound.
 \begin{lemma}[Completeness]
     Let $(X, S)$ be reduced from $F$. If $(X, S)$ is an instance of the exact cover, $F$ has to be satisfiable.
 \end{lemma}
@@ -117,7 +120,7 @@ To end with, we show that the reduction is sound, complete, and consequently cor
 To begin with, it is necessary to determine to metrics, on which the complexity is dependent. For 
 a logical formula $F$, we will iterate all of the variables, clauses and positions. Hence all of them are need for as metrics. 
 Nevertheless, the NREST implementation does not support a complexity bound with different metrics. As a result, it is necessary to 
-choose the maximum of all metrics and use it as our sole metrics\footnote{A few previous reductions from \SAT\ uses the number of clauses 
+choose the maximum of all metrics and use it as our sole metrics\footnote{A few previous reductions from Satisfiability uses the number of clauses 
 as a metrics. It was also corrrect for those reductions iterated only the clauses.}. Similarly, we define $max |X| |S|$ as the metrics 
 for the exact cover instance $(X, S)$. Then we can define the NREST algorithm.
 \Snippet{exact-cover-poly}  
@@ -133,7 +136,7 @@ The hitting set problems are variants of the set covering problems. Essentially,
 of viewing the same problem. Just as the hitting set\footnote{Note that the exact hitting set problem was referred to as the hitting set problem in Karp's work, whereas 
 it is generalized to be another problem nowadays.} is a variant of the set covering, the exact hitting set is 
 a variant of the exact cover. 
-\problem{\HS}{A collection of sets $S$}{Is there a finite set $W$ s.t. the intersection of $W$ and 
+\problem{Exact Hitting Set}{A collection of sets $S$}{Is there a finite set $W$ s.t. the intersection of $W$ and 
 each element $s \in S$ contains exactly one element?}
 \begin{align*}
    \textbf{Exact Hitting Set} := \{S\ |\ \exists W.\ \forall s \in S.\ |W \cap s| = 1\}
