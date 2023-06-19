@@ -5,9 +5,8 @@
 \documentclass[headsepline,footsepline,footinclude=false,oneside,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc,DIV=12]{scrbook} % one-sided
 
 % TODO: change citation style in settings
-\input{settings}
 \input{isabelle-snippets}
-\addbibresource{bibliography.bib}
+\input{settings}
 
 % TODO: change thesis information
 \newcommand*{\getUniversity}{Technische Universität München}
@@ -31,7 +30,7 @@
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
-\newtheorem{proof}{Proof}
+
 
 \begin{document}
 
@@ -66,7 +65,6 @@
 \listoffigures{}
 \listoftables{}
 \microtypesetup{protrusion=true}
-\printglossaries
-\printbibliography
+\printbibliography{}
 
 \end{document}

@@ -12,7 +12,9 @@ The Exact Cover problem is a special case of the Set Cover. In Exact Cover, it n
 cover elements to be unique. 
 \problem{Exact Cover}{A set $X$ and a collection $S$ of subsets of $X$.}{Is there a disjoint subset $S'$ of $S$ s.t. 
 each element in $X$ is contained in one of the elements of $S'$?}
-\Snippet{exact-cover-def}
+We call $(X, S)$ an instance of Exact Cover and $S'$ an exact cover of $X$. In other words, $S'$ covers $X$ 
+exactly.
+
 
 \subsection{Choice of reduction}
 Since Exact Cover is a fundamental NP-hard problem, there are many different reductions available. 
@@ -21,7 +23,7 @@ Although the Chromatic Number problem was formalised in Karp's 21 project, we di
 because of the complexity of the graph traversal and the differences between Karp's definition and the available Isabelle's definition. 
 In the available definition of Chromatic Number, the Chromatic Number $k$ is limited to be at least three. Since 
 the Chromatic Number is in \textbf{P} in the case $k = 2$, the alternative definition is correct. However, this raises the difficulty of performing 
-a reduction, for it is necessary to consider a special case for $k = 2$. 
+a reduction, for it is necessary to consider a special case for $k = 2$.
 On the contrary, there is an easy reduction from Satisfiability to Exact Cover. This reduction does not involve graph traversal.
 The only technical barrier is the typeless set. While Isabelle only supports typed sets, we resolve this problem
 by creating a container type. More details follow in the section \ref*{sec:sat-imp}. 
@@ -33,15 +35,15 @@ Given a propositional logical formula $F$, we index the variables and the clause
     \item $c_i$ denotes the $i$-th clause in the formula with $c_i \in F$
     \item $p_{ij}$ denotes the $j$-th position/literal in the $i$-th clause with $p_{ij} \in c_i$
 \end{enumerate} 
-Then we construct a set $X$ and which contains all 3 different kinds objects. 
+Then we construct a set $X$ and which contains all 3 different kinds of objects. 
 \begin{align*}
     X = vars\; F \cup F \cup \bigcup_{c_i \in F} c_i
 \end{align*}
 Furthermore, we construct $S$, a collection of subsets of $X$. We determine the following subsets
 \begin{enumerate}
     \item $\{p_{ij}\}$. The unary set of positions
-    \item $\{c_i, p_{ij}\}$. The binary set of a clause and a position in it.
-    \item $pos(x_i) := \{x_i\} \cup \{p_{ab} | p_{ab} = x_i\}$. The set of its positive occurrences as positions.
+    \item $\{c_i, p_{ij}\}$. The binary set of a clause and a position inside the clause.
+    \item $pos(x_i) := \{x_i\} \cup \{p_{ab} | p_{ab} = x_i\}$. The set of a variable with its positive occurrences as positions.
     \item $neg(x_i):= \{x_i\} \cup \{p_{ab} | p_{ab} = \neg x_i\}$. The set of a variable with  its negative occurrences as positions.
 \end{enumerate}
 $S$ contains all of the four types of subsets.
@@ -51,59 +53,98 @@ $S$ contains all of the four types of subsets.
     &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, x_i = p_{ij}\}\\
     &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, \neg x_i = p_{ij}\}
 \end{align*}
-The pair of $(X, S)$ is the input for the Exact Cover\ problem. 
+The pair of $(X, S)$ is the input for Exact Cover. 
 \begin{lemma}[Soundess]
     Let $F$ be satisfiable. The pair $(X, S)$ is then an instance of the exact cover.
 \end{lemma}
-Let $\sigma \models F$ be a valid assignment. We construct an exact cover $S' \subseteq S$ of $X$ in the following steps.
+\begin{proof}
+    Let $\sigma \models F$ be a valid assignment. We construct an exact cover $S' \subseteq S$ of $X$ in the following steps.
 \begin{enumerate}
-    \item For each $x_i \in vars\; F$, $pos(x)$ is included in $S'$ if $\sigma(pos(x)) \equiv \top$. Otherwise we insert $neg(x)$ into $S'$.
+    \item For each $x_i \in vars\; F$, $pos(x_i)$ is included in $S'$ when $\sigma(pos(x_i)) \equiv \bot$. Otherwise we insert $neg(x_i)$ into $S'$.
     \item For each $c_i \in F$, we choose the minimal $j$ with $\sigma(p_{ij}) \equiv \top$, and insert $\{c_i, p_{ij}\}$ into $S'$
     \item For each $p_{ij} \in c_i$, if $\sigma(p_{ij}) \equiv \top$ and $\{c_i, p_{ij}\}$ is not in $S'$, the unary set $\{p_{ij}\}$ is included. 
 \end{enumerate}
-Obviously, each position in $pos(x)$ and $neg(x)$ will be false under the assignment $\sigma$, 
+Obviously, each position in $pos(x_i)$ and $neg(x_i)$ is false under the assignment $\sigma$, 
 while the positions in the other sets are all true. By design, the positions in the second and the third steps never duplicate. 
 Thus, no same position occurs in two different sets in the collection $S'$. 
-Furthermore, each clause exists in exactly one set in the second step, which is also the case for the variables in the first step.
-Hence $S'$ is disjoint. \\\\
+Furthermore, each clause and variable is unique in the construction. Hence $S'$ is disjoint. \\\\
 From this fact, we can also conclude that clauses and variables are covered in $S'$. 
 Now we only have to show that all the positions are covered. If a position $p_{ij}$ is false under $\sigma$, 
 it is covered in the first step. Otherwise it is either covered in the second step or the third step. 
+\end{proof}
 \begin{lemma}[Completeness]
     Let $(X, S)$ be reduced from $F$. If $(X, S)$ is an instance of the exact cover, $F$ has to be satisfiable.
 \end{lemma}
-Given an exact cover pair $(X, S)$ reduced from $F$, it is easy to reconstruct the model $\sigma$ with the same approach as in the proof of the soundness, 
-showing that $F$ is satisfiable. Thus, the completeness of the reduction is proven. 
+\begin{proof}
+    Given an exact cover pair $(X, S)$ reduced from $F$, 
+    it is easy to reconstruct the model $\sigma$ with the same approach as in the proof of the soundness, 
+    showing that $F$ is satisfiable. Thus, the completeness of the reduction is proven. 
+\end{proof}
 \begin{lemma}[Polynomial Complexity]
     The construction of $(X, S)$ from $F$ is polynomial. 
 \end{lemma}
-In the reduction, we have to iterate all of the variables, the clauses and the positions. 
-Thus, we have to find a polynomial bound with regards to three metrics. Let $n, m$ and $k$ denotes 
-the number of variables, clauses and postitions respectively. To derive the three metrics, we have to iterate 
-all of the clauses, resulting the complexity of \bigO{m}. Unexpectedly, this results in the set $X$, 
-indicating a linear complexity for the construction. \\\\
-Now the interesting part is the collection $S$. For each type of subsets, we give a polynomial bound 
+\begin{proof}
+    In the reduction, we have to iterate all of the variables, the clauses and the positions. 
+    Thus, we have to find a polynomial bound with regards to all of the three metrics. Let $n, m$ and $k$ denote 
+    the number of variables, clauses and postitions. To obtain the three metrics, we have to iterate 
+    all of the clauses, resulting the complexity of \bigO{m}. With these iterations, we can construct the set $X$,
+    indicating a linear complexity. \\\\
+    Now the interesting part is the collection $S$. For each type of subsets, we present a polynomial bound 
 \begin{enumerate}
-    \item $\{p_{ij}\}$. It is sufficient to merely iterate the positions, which requires the complexity of $k$.
+    \item $\{p_{ij}\}$. It is sufficient to iterate the positions, requiring the complexity of $k$.
     \item $\{c_i, p_{ij}\}$. Each clause is iterated for $|c_i|$ times. Since $|c_i|$ is a constant, there is a $c \in \mathbb{N}$ 
-    s.t. $|c_i| \leq c$. Obviously, the complexity is above bounded by $c \cdot m$.
+    s.t. $|c_i| \leq c$. Apparently, the complexity is above bounded by $c \cdot m$.
     \item $pos(x)$ and $neg(x)$. For each variable $x$, it is required to iterate all of the positions, which produces the complexity 
     of $2 \cdot nk$ in total.
 \end{enumerate}
-Thus, the construction costs the polynomial complexity of $k + cm + nk \in \mathcal{O}(nk + m)$. 
-With the linear complexity of the construction of $X$, we conclude that the reduction has the polynomial complexity.
+Thus, the construction costs the polynomial complexity of $k + cm + 2nk \in \mathcal{O}(nk + m)$. 
+With the linear complexity of the construction of $X$, we conclude that the reduction has the quadratic complexity.
+\end{proof}
 
 \subsection{Implementation Details}
 \label{sec:sat-imp}
-\subsubsection{Reduction and Proof}
-Intuitively, the variables, positions and clause can be represented by indices or tuples of indices. However, it it not easy 
-to unify the representation s.t. they are of the same type. One possible solution is introducing a new dimension in the tuple, 
-and use it to classify the representated objects. However, we might still have to introduce a new enumerate type for this purpose. 
-On the contrary, a container type is exempted from the tedious handling of tuples, although it still introduces a new type. Thus, 
-we implement this container type with a few auxiliary functions \textbf{xc\_element} as folows. 
-\Snippet{exact-cover-basics}
-Then, it is possible to define the reduction function. 
-\Snippet{exact-cover-red}
+\subsubsection{Choice of Definitions}
+A most \hyperref[figure:3]{primary definition} of Exact Cover states the disjointness with nested quantifiers. 
+\begin{figure}[!h]
+    \Snippet{exact-cover-original}
+    \caption{A first definition of Exact Cover}
+    \label{figure:3}
+\end{figure}
+Three different conditions have be satisfied for an exact cover instance.
+The first condition $finite\ X$ checks if $X$ is a finite set, while the second 
+condition $\bigcup S \subseteq X$ limits $S$ to be a collection of $X$. The third 
+condition states about the existence of the exact cover. Although it gives us a direct 
+view of the exact cover, it is lengthy for the further implementation. Hence we choose to use 
+an \hyperref[figure:4]{alternative definition} with the help of the dependency \textbf{HOL-Library.Disjoint\_Sets}.
+\begin{figure}[!h]
+    \Snippet{exact-cover-def}
+    \caption{A second definition of Exact Cover}
+    \label{figure:4}
+\end{figure}
+With the pre-defined predicate \textbf{disjoint}, we managed to simplify the definition. Moreover, 
+we also benefitted from reusing the existing lemmas in the relating dependency.
+
+\subsubsection{A Container Type}
+Intuitively, the variables, positions and clause can be represented by tuple of indices. However, it is not easy 
+to unify the representation s.t. they are of the same type. For example, a unary set of position is representable with
+one single index, whereas a binary set of a clause and a position needs at least two indices. 
+On the contrary, a container type is exempted from the tedious handling of tuples. 
+Thus, we implement this container type \textbf{xc\_element} in \hyperref[figure:5]{Figure 3.3}
+\begin{figure}[h!]
+    \Snippet{exact-cover-basics}
+    \caption{Definition of the container type}
+    \label{figure:5}
+\end{figure}
+The constructor \textbf{V, C} and \textbf{L} stands for the variables, clauses and literals. \textbf{V} 
+encapsules the variable, while \textbf{C} encapsules the clauses. The definition of \textbf{L} is a bit different.
+To locate the literals exactly, we have to encapsule both the literal and the clause. 
+Then, it is possible to define the \hyperref[figure:6]{reduction function}. 
+\begin{figure}[h!]
+    \Snippet{exact-cover-red}
+    \caption{Definition of the reduction}
+    \label{figure:6}
+\end{figure}
+\subsection*{Problems in Proofs}
 Proof of the correctness of the reduction argues about the disjointness and covering property by showing that a specific type of element 
 is existent or non-existent in the constructed sets. Though the majority of the proof is lengthy, it does not require too many techniques 
 and is overall trivial after applying the corresponding lemmas and definitions.\\\\

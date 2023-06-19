@@ -43,6 +43,13 @@
 \end{isabelle}
 }
 
+\DefineSnippet{exact-cover-original}{
+    \isacommand{definition}\isamarkupfalse%
+\ {\isachardoublequoteopen}exact{\isacharunderscore}{\kern0pt}cover\ {\isasymequiv}\ \isanewline
+\ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}X{\isacharcomma}{\kern0pt}\ S{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\ finite\ X\ {\isasymand}\ {\isasymUnion}S\ {\isasymsubseteq}\ X\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}S{\isacharprime}{\kern0pt}\ {\isasymsubseteq}\ S{\isachardot}{\kern0pt}\ {\isasymforall}x\ {\isasymin}\ X{\isachardot}{\kern0pt}\ {\isasymexists}s\ {\isasymin}\ S{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ x\ {\isasymin}\ s\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}t\ {\isasymin}\ S{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ s\ {\isasymnoteq}\ t\ {\isasymlongrightarrow}\ x\ {\isasymnotin}\ t{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}
+}
+
 \DefineSnippet{exact-cover-def}{
     \isacommand{definition}\isamarkupfalse%
 \ {\isachardoublequoteopen}exact{\isacharunderscore}{\kern0pt}cover\ {\isasymequiv}\ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}X{\isacharcomma}{\kern0pt}\ S{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\ finite\ X\ {\isasymand}\ {\isasymUnion}S\ {\isasymsubseteq}\ X\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymexists}S{\isacharprime}{\kern0pt}\ {\isasymsubseteq}\ S{\isachardot}{\kern0pt}\ {\isasymUnion}S{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ X\ {\isasymand}\ disjoint\ S{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}
@@ -51,54 +58,10 @@
 
 \DefineSnippet{exact-cover-basics}{
     \isacommand{datatype}\isamarkupfalse%
-\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ {\isacharequal}{\kern0pt}\ V\ {\isacharprime}{\kern0pt}a\ {\isacharbar}{\kern0pt}\ C\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ lit\ set{\isachardoublequoteclose}\ {\isacharbar}{\kern0pt}\ L\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ lit{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ lit\ set{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{fun}\isamarkupfalse%
-\ var\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ lit\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a{\isachardoublequoteclose}\ \isakeyword{where}\ \isanewline
-{\isachardoublequoteopen}var\ {\isacharparenleft}{\kern0pt}Neg\ a{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ a{\isachardoublequoteclose}\ {\isacharbar}{\kern0pt}\ {\isachardoublequoteopen}var\ {\isacharparenleft}{\kern0pt}Pos\ a{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ a{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{definition}\isamarkupfalse%
-\ {\isachardoublequoteopen}vars\ F\ {\isasymequiv}\ {\isacharparenleft}{\kern0pt}var{\isacharparenright}{\kern0pt}\ {\isacharbackquote}{\kern0pt}\ {\isasymUnion}\ {\isacharparenleft}{\kern0pt}set\ F{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{definition}\isamarkupfalse%
-\ vars{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ three{\isacharunderscore}{\kern0pt}sat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ set{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}vars{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}V\ v\ {\isacharbar}{\kern0pt}v{\isachardot}{\kern0pt}\ v\ {\isasymin}\ vars\ F{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{definition}\isamarkupfalse%
-\ clauses{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ three{\isacharunderscore}{\kern0pt}sat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ set{\isachardoublequoteclose}\ \isakeyword{where}\ \isanewline
-\ \ {\isachardoublequoteopen}clauses{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}C\ c{\isacharbar}{\kern0pt}\ c{\isachardot}{\kern0pt}\ c{\isasymin}\ set\ F{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{definition}\isamarkupfalse%
-\ literals{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ three{\isacharunderscore}{\kern0pt}sat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ set{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-{\isachardoublequoteopen}literals{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}L\ l\ c{\isacharbar}{\kern0pt}\ l\ c{\isachardot}{\kern0pt}\ c\ {\isasymin}\ set\ F\ {\isasymand}\ l\ {\isasymin}\ c{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}
+\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ {\isacharequal}{\kern0pt}\ V\ {\isacharprime}{\kern0pt}a\ {\isacharbar}{\kern0pt}\ C\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ lit\ set{\isachardoublequoteclose}\ {\isacharbar}{\kern0pt}\ L\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ lit{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ lit\ set{\isachardoublequoteclose}
 }
 
 \DefineSnippet{exact-cover-red}{
-    \isacommand{definition}\isamarkupfalse%
-\ literal{\isacharunderscore}{\kern0pt}sets\isanewline
-\ \ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ three{\isacharunderscore}{\kern0pt}sat\ \ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ set\ set{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-{\isachardoublequoteopen}literal{\isacharunderscore}{\kern0pt}sets\ F\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}l{\isacharbraceright}{\kern0pt}{\isacharbar}{\kern0pt}\ l{\isachardot}{\kern0pt}\ l\ {\isasymin}\ {\isacharparenleft}{\kern0pt}literals{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{definition}\isamarkupfalse%
-\ clauses{\isacharunderscore}{\kern0pt}with{\isacharunderscore}{\kern0pt}literals\ \isanewline
-\ \ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ three{\isacharunderscore}{\kern0pt}sat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ set\ set{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-{\isachardoublequoteopen}clauses{\isacharunderscore}{\kern0pt}with{\isacharunderscore}{\kern0pt}literals\ F\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}C\ c{\isacharcomma}{\kern0pt}\ l{\isacharbraceright}{\kern0pt}\ {\isacharbar}{\kern0pt}c\ l{\isachardot}{\kern0pt}\ C\ c\ {\isasymin}\ {\isacharparenleft}{\kern0pt}clauses{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}\ {\isasymand}\ l\ {\isasymin}\ {\isacharparenleft}{\kern0pt}literals{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}\ \isanewline
-\ \ \ \ \ \ \ \ {\isasymand}\ l\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}L\ a\ c\ {\isacharbar}{\kern0pt}\ a{\isachardot}{\kern0pt}\ a\ {\isasymin}\ c{\isacharbraceright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{definition}\isamarkupfalse%
-\ var{\isacharunderscore}{\kern0pt}true{\isacharunderscore}{\kern0pt}literals\isanewline
-\ \ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ three{\isacharunderscore}{\kern0pt}sat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ set\ set{\isachardoublequoteclose}\ \isakeyword{where}\ \isanewline
-{\isachardoublequoteopen}var{\isacharunderscore}{\kern0pt}true{\isacharunderscore}{\kern0pt}literals\ F\ {\isacharequal}{\kern0pt}\ \isanewline
-\ \ {\isacharbraceleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}V\ v{\isacharbraceright}{\kern0pt}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}l{\isachardot}{\kern0pt}\ l\ {\isasymin}\ {\isacharparenleft}{\kern0pt}literals{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}\ \isanewline
-\ \ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymexists}c{\isachardot}{\kern0pt}\ C\ c{\isasymin}\ {\isacharparenleft}{\kern0pt}clauses{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}\ {\isasymand}\ L\ {\isacharparenleft}{\kern0pt}Neg\ v{\isacharparenright}{\kern0pt}\ c\ {\isacharequal}{\kern0pt}\ l{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\ {\isacharbar}{\kern0pt}v{\isachardot}{\kern0pt}\ V\ v\ {\isasymin}\ {\isacharparenleft}{\kern0pt}vars{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{definition}\isamarkupfalse%
-\ var{\isacharunderscore}{\kern0pt}false{\isacharunderscore}{\kern0pt}literals\isanewline
-\ \ \ \ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ three{\isacharunderscore}{\kern0pt}sat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ xc{\isacharunderscore}{\kern0pt}element\ set\ set{\isachardoublequoteclose}\ \isakeyword{where}\ \isanewline
-{\isachardoublequoteopen}var{\isacharunderscore}{\kern0pt}false{\isacharunderscore}{\kern0pt}literals\ F\ {\isacharequal}{\kern0pt}\ \isanewline
-\ \ {\isacharbraceleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}V\ v{\isacharbraceright}{\kern0pt}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}l{\isachardot}{\kern0pt}\ l\ {\isasymin}\ {\isacharparenleft}{\kern0pt}literals{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}\ \isanewline
-\ \ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymexists}c{\isachardot}{\kern0pt}\ C\ c{\isasymin}\ {\isacharparenleft}{\kern0pt}clauses{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}\ {\isasymand}\ L\ {\isacharparenleft}{\kern0pt}Pos\ v{\isacharparenright}{\kern0pt}\ c\ {\isacharequal}{\kern0pt}\ l{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\ {\isacharbar}{\kern0pt}v{\isachardot}{\kern0pt}\ V\ v\ {\isasymin}\ {\isacharparenleft}{\kern0pt}vars{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
-\isanewline
 \isacommand{abbreviation}\isamarkupfalse%
 \ {\isachardoublequoteopen}comp{\isacharunderscore}{\kern0pt}X\ F\ {\isasymequiv}\ \isanewline
 \ \ vars{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F\ {\isasymunion}\ clauses{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F\ {\isasymunion}\ literals{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}sat\ F{\isachardoublequoteclose}\isanewline
