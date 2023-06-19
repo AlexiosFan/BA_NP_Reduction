@@ -11,24 +11,25 @@
 \chapter{Preliminaries}\label{chapter:preliminaries}
 \section{Isabelle and Dependencies}
 \subsection*{Isabelle/HOL and Archive of Formal Proofs}
-Isabelle is a generic interactive theorem prover. HOL is the Isabelle's formalization of Higher-Order Logic, 
+Isabelle\cite{wenzel2004isabelle} is a generic interactive theorem prover. HOL is the Isabelle's formalization of Higher-Order Logic, 
 a logical system with inductive sets, types , well-founded recursion etc. Archive of Formal Proofs is a library
 of projects developed by Isabelle. Our work is implemented by Isabelle and used many entries from the Archive of Formal 
 Proofs.
 
 \subsection*{HOL-Real\_Asymp and Laudau\_Symbols}
 HOL-Real\_Asymp is a component of the Isabelle/HOL, in which the asymptotic 
-classes are defined. Moreover, the Archive of Formal Proof entry, Landau\_Symbols, 
+classes are defined. Moreover, the Archive of Formal Proof entry, Landau\_Symbols\cite{Landau_Symbols-AFP}, 
 defines the Landau's symbols and provides tool for reasoning about the asympototic
 growth of the functions, especially for sufficiently large inputs. 
 
 \subsection*{NREST}
-NREST is part of the verification frame work Isabelle-LLVM with time. It enables 
-the simultaneous verification of correctness. We apply this framework 
+NREST is part of the verification frame work Isabelle-LLVM with time\cite{haslbeck2021verified}. It enables 
+the systematic verification of asympototic complexity of imperative algorithms in Isabelle\cite{zhan2018verifying}. 
+We apply this framework 
 to verify the polynomial-time complexity of iteration of unordered data structures, such as sets.
 
 \subsection*{The Karp21 Project}
-The project aims to formalise all of the twenty-one NP-hard problems in Karp's paper in 1972\parencite{karp2010reducibility}. 
+The project aims to formalise all of the twenty-one NP-hard problems in Karp's paper in 1972\cite{karp2010reducibility}. 
 Up till now, there are eight problems of them finished, with a few related NP-hard problems that are not in Karp's list. 
 Our work also contributes to this project, formalising six of the remaining problems. 
 Though dependent on this project, our work only reuses a few existing definitions, 
@@ -41,7 +42,7 @@ The reusable part stems from the reduction from 3CNF-Satisfiabitliy to other pro
 \label{figure:1}
 \end{figure}
 
-\subsection*{DigitsInBase}
+\subsection*{DigitsInBase\cite{DigitsInBase-AFP}}
 This entry of Archive of Formal Proofs shows the uniqueness of representation of natural numbers with an arbitrary base. 
 In other words, it proves the well-definedness of the n-ary counting systems. 
 Our implementation benefits from this repository in showing the correctness of the polynomial-time reduction from Exact Cover to Subset Sum.
