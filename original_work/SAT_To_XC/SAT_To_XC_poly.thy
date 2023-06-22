@@ -28,9 +28,9 @@ definition "size_SAT_max \<equiv> (\<lambda>x. max (max (sz_cls x) (sz_lit x)) (
 
 subsection "forging the X"
 
-definition "mop_vars_of_sat F \<equiv> SPEC (\<lambda>v. v = vars_of_sat F) (\<lambda>_. 3 * sz_vars F)"
-definition "mop_clauses_of_sat F \<equiv> SPEC (\<lambda>c. c = clauses_of_sat F) (\<lambda>_. 3 * sz_cls F)"
-definition "mop_literals_of_sat F \<equiv> SPEC (\<lambda>l. l = literals_of_sat F) (\<lambda>_. sz_cls F + 3 * sz_lit F)"
+definition "mop_vars_of_sat F \<equiv> SPEC (\<lambda>v. v = vars_of_sat F) (\<lambda>_. 3 * size_SAT_max F)"
+definition "mop_clauses_of_sat F \<equiv> SPEC (\<lambda>c. c = clauses_of_sat F) (\<lambda>_. 3 * size_SAT_max F)"
+definition "mop_literals_of_sat F \<equiv> SPEC (\<lambda>l. l = literals_of_sat F) (\<lambda>_. size_SAT_max F + 3 * size_SAT_max F)"
 
 (*
 1 * x for checking the existence
@@ -40,13 +40,13 @@ definition "mop_literals_of_sat F \<equiv> SPEC (\<lambda>l. l = literals_of_sat
 subsection "forging the S"
 
 
-definition "mop_literal_sets F \<equiv> SPEC (\<lambda>s. s = literal_sets F) (\<lambda>_. (3 + 1) * sz_lit F)"
+definition "mop_literal_sets F \<equiv> SPEC (\<lambda>s. s = literal_sets F) (\<lambda>_. (3 + 1) * size_SAT_max F)"
 definition "mop_clauses_with_literals F 
-  \<equiv> SPEC (\<lambda>s. s = clauses_with_literals F) (\<lambda>_. (3 + 1 + 1) * sz_lit F + sz_cls F)"
+  \<equiv> SPEC (\<lambda>s. s = clauses_with_literals F) (\<lambda>_. (3 + 1 + 1) * size_SAT_max F + size_SAT_max F)"
 definition "mop_var_true_literals F 
-  \<equiv> SPEC (\<lambda>s. s = var_true_literals F) (\<lambda>_. (3 + 1) * sz_vars F + (3 + 1) * sz_lit F + (1 + 1) * sz_cls F + 1)"
+  \<equiv> SPEC (\<lambda>s. s = var_true_literals F) (\<lambda>_. (3 + 1) * size_SAT_max F + (3 + 1) * size_SAT_max F + (1 + 1) * size_SAT_max F + 1)"
 definition "mop_var_false_literals F 
-  \<equiv> SPEC (\<lambda>s. s = var_false_literals F) (\<lambda>_. (3 + 1) * sz_vars F + (3 + 1) * sz_lit F + (1 + 1) * sz_cls F + 1)"
+  \<equiv> SPEC (\<lambda>s. s = var_false_literals F) (\<lambda>_. (3 + 1) * size_SAT_max F + (3 + 1) * size_SAT_max F + (1 + 1) * size_SAT_max F + 1)"
 
 subsection "algorithmic in NREST"
 
@@ -369,7 +369,7 @@ qed
 
 lemma sat_to_xc_refines_aux1:
 "sat_to_xc_alg F \<le> 
-  SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time_aux  (sz_vars F) (sz_cls F) (sz_lit F))"
+  SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time_aux  (size_SAT_max F) (size_SAT_max F) (size_SAT_max F))"
 unfolding SPEC_def
 unfolding sat_to_xc_alg_def sat_xc_def
   mop_get_vars_def mop_get_cls_def mop_vars_of_sat_def
@@ -382,41 +382,18 @@ apply(vcg' \<open>-\<close> rules: T_SPEC)
 apply (auto simp add: sat_to_xc_time_aux_def size_SAT_def sz_vars_def sz_lit_def sz_cls_def
   one_enat_def)
 by (simp add: add.assoc eval_nat_numeral(3) numeral_Bit0 numeral_eq_enat)+
- 
-lemma sat_to_xc_refines_aux2:
-"sat_to_xc_time_aux (sz_vars F) (sz_cls F) (sz_lit F) \<le> 
-   sat_to_xc_time (size_SAT_max F)"
-proof -
-  have *: "sz_cls F \<le> size_SAT_max F" "sz_lit F \<le> size_SAT_max F" "sz_vars F \<le> size_SAT_max F"
-    unfolding size_SAT_max_def max_def 
-    by auto
 
-  have "sat_to_xc_time_aux (sz_vars F) (sz_cls F) (sz_lit F) 
-    \<le> sat_to_xc_time_aux (sz_vars F) (sz_cls F) (size_SAT_max F)"
-    using * sat_to_xc_time_aux_mono
-    by auto
-  also have "... \<le> sat_to_xc_time_aux (sz_vars F) (size_SAT_max F) (size_SAT_max F)"
-    using * sat_to_xc_time_aux_mono
-    by auto
-  also have "... \<le> sat_to_xc_time_aux (size_SAT_max F) (size_SAT_max F) (size_SAT_max F)"
-    using * sat_to_xc_time_aux_mono
-    by auto
-  finally show ?thesis 
-    unfolding sat_to_xc_time_def 
-    by blast
-qed 
-
-corollary sat_to_xc_refines_aux3:
-"SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time_aux  (sz_vars F) (sz_cls F) (sz_lit F)) 
+corollary sat_to_xc_refines_aux2:
+"SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time_aux  (size_SAT_max F) (size_SAT_max F) (size_SAT_max F)) 
   \<le> SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time (size_SAT_max F))"
-using sat_to_xc_refines_aux2[of F]
+unfolding sat_to_xc_time_def
 unfolding SPEC_def 
 by (simp add: le_funI)
   
 lemma sat_to_xc_refines:
 "sat_to_xc_alg F \<le> 
   SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time (size_SAT_max F))"
-using sat_to_xc_refines_aux1[of F] sat_to_xc_refines_aux3[of F] 
+using sat_to_xc_refines_aux1[of F] sat_to_xc_refines_aux2[of F] 
 by simp
 
 theorem sat_to_xc_ispolyred:
