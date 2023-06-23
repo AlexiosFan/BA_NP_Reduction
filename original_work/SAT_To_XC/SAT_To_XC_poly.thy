@@ -40,13 +40,13 @@ definition "mop_literals_of_sat F \<equiv> SPEC (\<lambda>l. l = literals_of_sat
 subsection "forging the S"
 
 
-definition "mop_literal_sets F \<equiv> SPEC (\<lambda>s. s = literal_sets F) (\<lambda>_. (3 + 1) * size_SAT_max F)"
+definition "mop_literal_sets F \<equiv> SPEC (\<lambda>s. s = literal_sets F) (\<lambda>_. 3 * size_SAT_max F)"
 definition "mop_clauses_with_literals F 
-  \<equiv> SPEC (\<lambda>s. s = clauses_with_literals F) (\<lambda>_. (3 + 1 + 1) * size_SAT_max F + size_SAT_max F)"
+  \<equiv> SPEC (\<lambda>s. s = clauses_with_literals F) (\<lambda>_. 3 * (size_SAT_max F + size_SAT_max F))"
 definition "mop_var_true_literals F 
-  \<equiv> SPEC (\<lambda>s. s = var_true_literals F) (\<lambda>_. (3 + 1) * size_SAT_max F + (3 + 1) * size_SAT_max F + (1 + 1) * size_SAT_max F + 1)"
+  \<equiv> SPEC (\<lambda>s. s = var_true_literals F) (\<lambda>_. 0)"
 definition "mop_var_false_literals F 
-  \<equiv> SPEC (\<lambda>s. s = var_false_literals F) (\<lambda>_. (3 + 1) * size_SAT_max F + (3 + 1) * size_SAT_max F + (1 + 1) * size_SAT_max F + 1)"
+  \<equiv> SPEC (\<lambda>s. s = var_false_literals F) (\<lambda>_. 3 * size_SAT_max F * size_SAT_max F * size_SAT_max F)"
 
 subsection "algorithmic in NREST"
 
@@ -68,58 +68,17 @@ definition "sat_to_xc_alg \<equiv> (\<lambda>F.
     }
 )"
 
-definition "sat_to_xc_time_aux l m n = 
-  2 * m + 3 * n + 1 + 1
-+ 3 * l + 3 * m + m + 3 * n
-+ (3 + 1) * n + (3 + 1 + 1) * n + m
-+ (3 + 1) * l + (3 + 1 + 1) * n + (1 + 1) * m + 1
-+ (3 + 1) * l + (3 + 1 + 1) * n + (1 + 1) * m + 1
+definition "sat_to_xc_time n = 
+  3 * n + 3 * n + n + 3 * n
++ 3 * n + 3 * (n + n)
++ 0
++ 3 * n * n * n
 + 2 + 3"
 
-definition "sat_to_xc_space_aux l m n = 
-l + m + n
+definition "sat_to_xc_space n = 
+n + n + n
 + n + n
-+ l + l"
-
-lemma sat_to_xc_time_aux_mono1: 
-"(a::nat) \<le> b \<Longrightarrow> sat_to_xc_time_aux a x y \<le> sat_to_xc_time_aux b x y"
- unfolding sat_to_xc_time_aux_def
- by auto
-
-lemma sat_to_xc_time_aux_mono2: 
-"(a::nat) \<le> b \<Longrightarrow> sat_to_xc_time_aux x a y \<le> sat_to_xc_time_aux x b y"
- unfolding sat_to_xc_time_aux_def
- by auto
-
-lemma sat_to_xc_time_aux_mono3: 
-"(a::nat) \<le> b \<Longrightarrow> sat_to_xc_time_aux x y a \<le> sat_to_xc_time_aux x y b"
- unfolding sat_to_xc_time_aux_def
- by fastforce
-
-lemmas sat_to_xc_time_aux_mono = 
-  sat_to_xc_time_aux_mono1 sat_to_xc_time_aux_mono2 sat_to_xc_time_aux_mono3
-
-lemma sat_to_xc_space_aux_mono1: 
-"(a::nat) \<le> b \<Longrightarrow> sat_to_xc_space_aux a x y \<le> sat_to_xc_space_aux b x y"
- unfolding sat_to_xc_space_aux_def
- by linarith
-
-lemma sat_to_xc_space_aux_mono2: 
-"(a::nat) \<le> b \<Longrightarrow> sat_to_xc_space_aux x a y \<le> sat_to_xc_space_aux x b y"
- unfolding sat_to_xc_space_aux_def
- by (simp add: add_mono) 
-
-lemma sat_to_xc_space_aux_mono3: 
-"(a::nat) \<le> b \<Longrightarrow> sat_to_xc_space_aux x y a \<le> sat_to_xc_space_aux x y b"
- unfolding sat_to_xc_space_aux_def
- by (simp add: add_mono) 
-
-lemmas sat_to_xc_space_aux_mono=
- sat_to_xc_space_aux_mono1 sat_to_xc_space_aux_mono2 sat_to_xc_space_aux_mono3
-
-
-definition "sat_to_xc_time n = sat_to_xc_time_aux n n n"
-definition "sat_to_xc_space n = sat_to_xc_space_aux n n n"
++ n + n"
 
 subsubsection "auxiliary lemmas about the cardinality"
 
@@ -334,42 +293,15 @@ qed
 
 subsubsection "the main proof"
 
-lemma sat_to_xc_size_aux:
-"size_XC (sat_xc F) \<le> sat_to_xc_space_aux (sz_vars F) (sz_cls F) (sz_lit F)"
-unfolding size_XC_def sat_xc_def
-apply (cases " F = []")
-apply (auto simp add: comp_X_Nil comp_S_Nil sat_to_xc_space_aux_def )
-using add_mono[OF card_comp_X card_comp_S, of F F]
-by auto
-
 lemma sat_to_xc_size:
 "size_XC (sat_xc F) \<le> sat_to_xc_space (size_SAT_max F)"
-proof -
-  have *: "sz_cls F \<le> size_SAT_max F" "sz_lit F \<le> size_SAT_max F" "sz_vars F \<le> size_SAT_max F"
-    unfolding size_SAT_max_def max_def 
-    by auto
+ unfolding size_XC_def sat_xc_def sat_to_xc_space_def size_SAT_max_def max_def 
+using card_comp_X[of F] card_comp_S[of F] 
+by auto 
 
-  from sat_to_xc_size_aux have 
-    "size_XC (sat_xc F) \<le> sat_to_xc_space_aux (sz_vars F) (sz_cls F) (sz_lit F)"
-    by blast 
-  also have "... \<le> sat_to_xc_space_aux (sz_vars F) (sz_cls F) (size_SAT_max F)"
-    using * sat_to_xc_space_aux_mono
-    by auto
-  also have "... \<le> sat_to_xc_space_aux (sz_vars F) (size_SAT_max F) (size_SAT_max F)"
-    using * sat_to_xc_space_aux_mono
-    by auto
-  also have "... \<le> sat_to_xc_space_aux (size_SAT_max F) (size_SAT_max F) (size_SAT_max F)"
-    using * sat_to_xc_space_aux_mono
-    by auto
-  finally show ?thesis 
-    unfolding sat_to_xc_space_def 
-    by blast
-qed 
-
-
-lemma sat_to_xc_refines_aux1:
+lemma sat_to_xc_refines:
 "sat_to_xc_alg F \<le> 
-  SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time_aux  (size_SAT_max F) (size_SAT_max F) (size_SAT_max F))"
+  SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time (size_SAT_max F))"
 unfolding SPEC_def
 unfolding sat_to_xc_alg_def sat_xc_def
   mop_get_vars_def mop_get_cls_def mop_vars_of_sat_def
@@ -379,22 +311,9 @@ unfolding sat_to_xc_alg_def sat_xc_def
   mop_union_x_def mop_union_s_def
 apply(rule T_specifies_I)
 apply(vcg' \<open>-\<close> rules: T_SPEC)
-apply (auto simp add: sat_to_xc_time_aux_def size_SAT_def sz_vars_def sz_lit_def sz_cls_def
+apply (auto simp add: sat_to_xc_time_def size_SAT_def sz_vars_def sz_lit_def sz_cls_def
   one_enat_def)
 by (simp add: add.assoc eval_nat_numeral(3) numeral_Bit0 numeral_eq_enat)+
-
-corollary sat_to_xc_refines_aux2:
-"SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time_aux  (size_SAT_max F) (size_SAT_max F) (size_SAT_max F)) 
-  \<le> SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time (size_SAT_max F))"
-unfolding sat_to_xc_time_def
-unfolding SPEC_def 
-by (simp add: le_funI)
-  
-lemma sat_to_xc_refines:
-"sat_to_xc_alg F \<le> 
-  SPEC (\<lambda>y. y = sat_xc F) (\<lambda>_. sat_to_xc_time (size_SAT_max F))"
-using sat_to_xc_refines_aux1[of F] sat_to_xc_refines_aux2[of F] 
-by simp
 
 theorem sat_to_xc_ispolyred:
   "ispolyred sat_to_xc_alg cnf_sat exact_cover size_SAT_max size_XC"
@@ -410,11 +329,11 @@ theorem sat_to_xc_ispolyred:
     using sat_to_xc_size 
     by blast
   subgoal 
-    unfolding poly_def sat_to_xc_time_def sat_to_xc_time_aux_def 
-    apply(intro exI[where x=2]) 
+    unfolding poly_def sat_to_xc_time_def sat_to_xc_time_def 
+    apply(intro exI[where x=3])
     by auto
   subgoal 
-    unfolding poly_def sat_to_xc_space_def sat_to_xc_space_aux_def 
+    unfolding poly_def sat_to_xc_space_def sat_to_xc_space_def 
     apply(intro exI[where x=2]) 
     by auto
   subgoal using is_reduction_sat_xc
