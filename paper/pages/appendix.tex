@@ -1,77 +1,31 @@
-\chapter{Examples for reductions}
-In this part we present examples for polynomial reductions to assist with the understanding. 
-\section{Example for polynomial reduction from Satisfiability To Exact Cover}
-\textbf{Input:} A logical formula in conjunctive normal form 
-\begin{align*}
-    F := (x_1 \lor x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2) \land (x_1 \lor x_3)
-\end{align*}
-\textbf{Output:}
-The constructed set is
-\begin{align*}
-    X := & \{ x_1 ,x_2, x_3\} \cup \{c_1, c_2, c_3\} \cup 
-    \{p_{11}, p_{12}, p_{13}, p_{21}, p_{22}, p_{31}, p_{32}\}
-\end{align*}
-The constructed collection is 
-\begin{align*}
-    S : = & \{\{p_{11}\}, \{p_{12}\}, \{p_{13}\}, \{p_{21}\}, \{p_{22}\}, \{p_{31}\}, \{p_{32}\}\} \\
-      & \cup  \{\{c_1, p_{11}\}, \{c_1, p_{12}\}, \{c_1, p_{13}\}, \{c_2, p_{21}\}, 
-      \{c_3, p_{31}\}, \{c_3, p_{32}\}\} \\ 
-      & \cup \{\{x_1, p_{11} p_{31}\}, \{x_1, p_{21}\}, \{x_2, p_{12}, p_{22}\}, \{x_2\},
-      \{x_3, p_{32}\}, \{x_3, p_{13}\}\}
-\end{align*}
-\textbf{Validity:} Apparently, the only valid assignment $\sigma$ of $F$ is given by 
-\begin{align*}
-    \sigma = \{x_1 \equiv \bot, x_2 \equiv \top, x_3 \equiv \top \}
-\end{align*}
-Wir construct an exact cover $S'$ by 
-\begin{align*}
-    S' = \{\{c_1, p_{22}\}, \{c_2, p_{21}\}, \{c_3, p_{32}\},
-    \{x_1, p_{11}, p_{31}\}, \{x_2\}, \{x_3, p_{31}\},
-    \{p_{22}\}\}
-\end{align*}
+\chapter{Karp's Definition of NP-hard problems mentioned}
+In this part, we present Karp's original definition of the NP-hard problems included in this work.
+Readers are encouraged to compare them with the definitions in the previous chapters.
+\problem{Satisfiability}{Clauses $C_1, C_2, ..., C_p$}{Is there a set 
+  $S \subset \{x_1, x_2, ..., x_n, \overline{x_1}, \overline{x_2}, ..., \overline{x_n}\}$ s.t. 
+\begin{enumerate}
+    \item S does not contain a complementary pair of literals.
+    \item $S \cap C_k \neq \emptyset$, for all $k$ from $1$ to $p$.
+\end{enumerate}}
+\problem{Exact Cover}{
+    Family $\{S_j\}$ of subsets of a set $\{u_i | i = 1, 2, ... ,t\}$
+}{
+    Is there a subfamily $\{T_h\} \subseteq \{S_j\}$ such that the sets $T_h$ are disjoint 
+    and $\bigcup T_h = \bigcup S_j = \{u_i | i = 1, 2, ... ,t\}$?
+}
+\problem{(Exact) Hitting Set}{Family $\{U_j\}$ of subsets of $\{s_j | j = 1, 2, ..., r\}$}{
+    Is there a set $W$ s.t. for each $i$, $|W \cap U_i| = 1$?
+}
+\problem{Subset Sum, Knapsack in Karp's definition}{
+    $(a_1, a_2, ..., a_n, b) \in Z^{n+1}$
+}{Does $\sum a_j x_j = b$ have a zero-one solution?}
+\problem{Partition}{
+    $(c_1, ..., c_s) \in Z^s$
+}{
+    Is there a subset $I \subseteq \{1, 2, ..., s\}$ s.t. $\sum_{h \in I}c_h = \sum_{h \not\in I} c_h$?
+}
+\problem{Zero-One Integer Programming}{
+    Integer Matrix C and integer vector d
+}{Does there exist a zero-one vector x s.t. $Cx = d$?}
 
-\section{Example for polynomial reduction from Exact Cover To Subset Sum}
-\textbf{Input:} The instance of exact cover is given by 
-\begin{align*}
-    X &:= \{1, 2, 3, 4\} \\ 
-    S &:= \{\{1\}, \{2\}, \{2, 3\}, 
-    \{2, 4\}, \{3, 4\}, \{1, 2, 3\}\}
-\end{align*}
-\textbf{Output:} 
-While $S$ is not changed, the weighting function $w$ and the sum $B$ is given by 
-\begin{align*}
-    w(s) = \sum_{x \in s} 4^x,
-    B = w(X) = 4 + 4^2 + 4^3 + 4^4 = 340
-\end{align*}
-\textbf{Validity:} An exact cover $S'$ is given by 
-\begin{align*}
-    S' = \{\{1\}, \{2\}, \{3, 4\}\}
-\end{align*}
-Hence it holds that 
-\begin{align*}
-    w(\{1\}) + w(\{2\}) + w(\{3,4\}) = 4 + 4^2 + (4^3 + 4^4) = 340 = B
-\end{align*}
-
-\section{Example for polynomial reduction from Subset Sum To Partition} 
-\textbf{Input:} We use the same subset sum entry as in the previous example. $(S, w, B)$ be 
-then converted to 
-\begin{align*}
-    as &:= [4, 16, 80, 272, 320, 72] \\ 
-    s &:= 340
-\end{align*}
-\textbf{Output:} The reduced $bs$ is then 
-\begin{align*}
-    bs := [425, 341, 4, 16, 80, 272, 320, 72]
-\end{align*}
-\textbf{Validity:} With $as' = [4, 16, 320]$, the corresponding $bs'$ is 
-\begin{align*}
-    bs' = [425, 4, 16, 320] \\ 
-    bs - bs' = [341, 80, 272, 72]
-\end{align*}
-with the equality
-\begin{align*}
-    425 + 4 + 16 + 320 = 765 = 341 + 80 + 272 + 72 
-\end{align*}
-
-The other reductions are easier to understand, hence no example is provided here.
 

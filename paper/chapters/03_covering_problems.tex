@@ -3,39 +3,55 @@ In this chapter, we discuss about the NP-hardness of a few set covering problems
 Covering problems ask whether a certain combinatorical structure $A$ covers another structure $B$. 
 Alternatively, it may also ask for the minimal size of $A$ to cover $B$. 
 We focus on a subclass of covering problems, the exact covering problem. In this subclass, 
-$A$ covers $B$ exactly, i.e. no element in $B$ is covered twice in $A$. 
-In Karp's paper in 1972, the following covering problems were included: Exact Cover, Exact Hitting Set,
+$A$ covers $B$ exactly, i.e.\ no element in $B$ is covered twice in $A$. 
+In Karp's paper in 1972 \cite{karp2010reducibility}, the following covering problems were included: Exact Cover, Exact Hitting Set,
 3-Dimensional Matching, and Steiner Tree. In our implementation, we reduced Satisfiability to Exact Cover, and then reduced Exact Cover to Exact Hitting Set. 
 
 \section{Exact Cover}
-The Exact Cover problem is a special case of the Set Cover. In Exact Cover, it not only looks for a cover, but also requires the existence of 
-cover elements to be unique. 
-\problem{Exact Cover}{A set $X$ and a collection $S$ of subsets of $X$.}{Is there a disjoint subset $S'$ of $S$ s.t. 
-each element in $X$ is contained in one of the elements of $S'$?}
+The Exact Cover problem is a special case of the Set Cover. 
+Exact Cover problems not only look for a cover, 
+but also require the existence of covered elements to be unique. 
+\problem{Exact Cover}{A set $X$ and a collection $S$ of subsets of $X$.}{Is there a disjoint subset $S'$ of $S$ s.t.\ 
+each element in $X$ is contained in one of the elements of $S'$?
+\label{eq:1} }
+\begin{myalign}
+    \textbf{Exact Cover} &:= \{(X, S) | \bigcup S \subseteq X \land \exists S' \subseteq S.\\
+    & \forall x \in X. \exists s \in S'. x \in s\\
+    & \land\forall s\ t \in S'. s \neq t \longrightarrow s \cap t = \emptyset
+    \}
+\end{myalign}
 We call $(X, S)$ an instance of Exact Cover and $S'$ an exact cover of $X$. In other words, $S'$ covers $X$ 
 exactly.
 
 
-\subsection{Choice of reduction}
-Since Exact Cover is a fundamental NP-hard problem, there are many different reductions available. 
+\subsection{Choice of Reduction}
+Since the Exact Cover problem is a fundamental NP-hard problem, there are many different reductions found by different researchers. 
 Karp's reduction\cite{karp2010reducibility} is based on the  Chromatic Number problem. 
 Although the Chromatic Number problem was formalised in Karp's 21 project, we did not choose this reduction
 because of the complexity of the graph traversal and the differences between Karp's definition and the available Isabelle's definition. 
 In the available definition of Chromatic Number, the Chromatic Number $k$ is limited to be at least three. Since 
-the Chromatic Number is in \textbf{P} in the case $k = 2$, the alternative definition is correct. However, this raises the difficulty of performing 
-a reduction, for it is necessary to consider a special case for $k = 2$.
+the Chromatic Number is in \textbf{\textit{P}} in the case $k = 2$, the alternative definition is correct. However, this raises the difficulty of performing 
+a reduction, for it is necessary to consider a special case for $k = 2$.\\\\ 
 On the contrary, there is an easy reduction from Satisfiability to Exact Cover. This reduction does not involve graph traversal.
 The only technical barrier is the typeless set. While Isabelle only supports typed sets, we resolve this problem
-by creating a container type. More details follow in the section \ref*{sec:sat-imp}. 
+by creating an encapsulation type. More details follow in the section \ref*{sec:sat-imp}. 
 
 \subsection{Reduction Details}
-Given a propositional logical formula $F$, we index the variables and the clauses and use the following notations.
+Now we present the reduction from Satisfiability to Exact Cover. 
+Before defining the reduction function, we first state the notations that we use for this part. 
+Given a propositional logical formula $F$, $vars\; F$ denotes the set of variables in $F$. 
+An assignment $\sigma$ is a function that maps a variable to a true-false value. 
+With $\top$ as true and $\bot$ as false, $\sigma(x_i) = \top$ reads $x_1$ is true under the assignment $\sigma$. \\\\
+The assignment is also defined over the formula $F$. 
+$F$ is satisfiable under $\sigma$ if there is at least one variable that is true under $\sigma$ in each clause of $F$. 
+This is represented by $\sigma \models F$. \\\\
+Additionally, we index the variables and the clauses and use the following notations.
 \begin{enumerate}
     \item $x_i$ denotes the $i$-th variable in the formula with $x_i \in vars\; F$
     \item $c_i$ denotes the $i$-th clause in the formula with $c_i \in F$
     \item $p_{ij}$ denotes the $j$-th position/literal in the $i$-th clause with $p_{ij} \in c_i$
 \end{enumerate} 
-Then we construct a set $X$ and which contains all 3 different kinds of objects. 
+Then we construct a set $X$ and which contains all three different kinds of objects. 
 \begin{align*}
     X = vars\; F \cup F \cup \bigcup_{c_i \in F} c_i
 \end{align*}
@@ -53,70 +69,89 @@ $S$ contains all of the four types of subsets.
     &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, x_i = p_{ij}\}\\
     &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, \neg x_i = p_{ij}\}
 \end{align*}
-The pair of $(X, S)$ is the input for Exact Cover. 
+The pair of $(X, S)$ is the input for Exact Cover. After definiting the reduction function,
+we also show that the reduction is correct and in polynomial-time.
 \begin{lemma}[Soundess]
-    Let $F$ be satisfiable. The pair $(X, S)$ is then an instance of the exact cover.
+    Let $F$ be a satisfiable propositional logical formula. The pair $(X, S)$ is then an instance of the exact cover.
 \end{lemma}
 \begin{proof}
     Let $\sigma \models F$ be a valid assignment. We construct an exact cover $S' \subseteq S$ of $X$ in the following steps.
 \begin{enumerate}
     \item For each $x_i \in vars\; F$, $pos(x_i)$ is included in $S'$ when $\sigma(pos(x_i)) \equiv \bot$. Otherwise we insert $neg(x_i)$ into $S'$.
-    \item For each $c_i \in F$, we choose the minimal $j$ with $\sigma(p_{ij}) \equiv \top$, and insert $\{c_i, p_{ij}\}$ into $S'$
+    This steps covers all variables and all positions that are false under $\sigma$.
+    \item For each $c_i \in F$, we choose the minimal $j$ with $\sigma(p_{ij}) \equiv \top$, and insert $\{c_i, p_{ij}\}$ into $S'$.
+    This steps covers all clauses and one position that is true under $\sigma$ in each clause.
     \item For each $p_{ij} \in c_i$, if $\sigma(p_{ij}) \equiv \top$ and $\{c_i, p_{ij}\}$ is not in $S'$, the unary set $\{p_{ij}\}$ is included. 
+    This steps covers all positions that are true under $\sigma$ and are not covered in the previous step.
 \end{enumerate}
+Now it suffices to show that $S'$ is disjoint in our construction.
 Obviously, each position in $pos(x_i)$ and $neg(x_i)$ is false under the assignment $\sigma$, 
 while the positions in the other sets are all true. By design, the positions in the second and the third steps never duplicate. 
 Thus, no same position occurs in two different sets in the collection $S'$. 
-Furthermore, each clause and variable is unique in the construction. Hence $S'$ is disjoint. \\\\
-From this fact, we can also conclude that clauses and variables are covered in $S'$. 
-Now we only have to show that all the positions are covered. If a position $p_{ij}$ is false under $\sigma$, 
-it is covered in the first step. Otherwise it is either covered in the second step or the third step. 
+Furthermore, since each clause and variable is unique in the construction, no two sets contain the same clause or the same variable.
+Hence $S'$ is disjoint.
 \end{proof}
+For the correctness, we have to show the completeness, too.
 \begin{lemma}[Completeness]
-    Let $(X, S)$ be reduced from $F$. If $(X, S)$ is an instance of the exact cover, $F$ has to be satisfiable.
+    Let $(X, S)$ be reduced from $F$. If $(X, S)$ is an instance of the Exact Cover, $F$ has to be satisfiable.
 \end{lemma}
 \begin{proof}
-    Given an exact cover pair $(X, S)$ reduced from $F$, 
-    it is easy to reconstruct the model $\sigma$ with the same approach as in the proof of the soundness, 
-    showing that $F$ is satisfiable. Thus, the completeness of the reduction is proven. 
+    Given an instance of Exact Cover $(X, S)$ reduced from $F$, 
+    it is easy to reconstruct the model $\sigma$ with the same approach as in the proof of the soundness. 
+    We iterate over the variables. For each variable $x_i$, if $pos(x_i) \in S'$, we set $\sigma(x_i) = \bot$. 
+    Otherwise, $neg(x_i)$ has to be in $S'$, for $x_i$ is covered exactly. In this case, we set $\sigma(x_i) = \top$. \\\\
+    Now, we show that this assignment is valid. For each clause $c_i$, we obtain the unique set $\{c_i, p_{ij}\} \in S'$.
+    There are two cases for $p_{ij}$.
+    \begin{enumerate}
+        \item $p_{ij} = x_k$. $neg(x_k)$ is then covered in $S'$, resulting in $\sigma(p_{ij}) = \sigma(x_k) = \top$.
+        \item $p_{ij} = \neg x_k$. $pos(x_k)$ is then covered in $S$. resulting in $\sigma(p_{ij}) = \sigma(\neg x_k) = \neg \sigma(x_k) = \top$
+    \end{enumerate}
+    Thus, for each clause, there is at least one position that is true under $\sigma$. 
+    Consequently, $\sigma$ is a valid assignment of $F$.
 \end{proof}
+In the end, we present a complexity analysis.
 \begin{lemma}[Polynomial Complexity]
-    The construction of $(X, S)$ from $F$ is polynomial. 
+    The construction of $(X, S)$ from $F$ can be computed within polynomial time. 
 \end{lemma}
 \begin{proof}
     In the reduction, we have to iterate all of the variables, the clauses and the positions. 
     Thus, we have to find a polynomial bound with regards to all of the three metrics. Let $n, m$ and $k$ denote 
     the number of variables, clauses and postitions. To obtain the three metrics, we have to iterate 
-    all of the clauses, resulting the complexity of \bigO{m}. With these iterations, we can construct the set $X$,
-    indicating a linear complexity. \\\\
+    all of the clauses, resulting the complexity of $\bigO{m}$. With these iterations, we can construct the set $X$,
+    indicating a linear complexity for the construction of $X$. \\\\
     Now the interesting part is the collection $S$. For each type of subsets, we present a polynomial bound 
 \begin{enumerate}
     \item $\{p_{ij}\}$. It is sufficient to iterate the positions, requiring the complexity of $k$.
     \item $\{c_i, p_{ij}\}$. Each clause is iterated for $|c_i|$ times. Since $|c_i|$ is a constant, there is a $c \in \mathbb{N}$ 
-    s.t. $|c_i| \leq c$. Apparently, the complexity is above bounded by $c \cdot m$.
+    s.t. $|c_i| \leq c$. Then, the complexity is above bounded by $c \cdot m$.
     \item $pos(x)$ and $neg(x)$. For each variable $x$, it is required to iterate all of the positions, which produces the complexity 
     of $2 \cdot nk$ in total.
 \end{enumerate}
-Thus, the construction costs the polynomial complexity of $k + cm + 2nk \in \mathcal{O}(nk + m)$. 
+Thus, the construction of S costs the polynomial complexity of $k + cm + 2nk \in \mathcal{O}(nk + m)$. 
 With the linear complexity of the construction of $X$, we conclude that the reduction has the quadratic complexity.
 \end{proof}
+In the end, we summarize the lemmas to obtain the central theorem.
+\begin{theorem}
+    The presented reduction is a polynomial-time reduction from Satisfiability to Exact Cover.
+\end{theorem}
 
 \subsection{Implementation Details}
 \label{sec:sat-imp}
 \subsubsection{Choice of Definitions}
-A most \hyperref[figure:3]{primary definition} of Exact Cover states the disjointness with nested quantifiers. 
-\begin{figure}[!h]
+A definition of Exact Cover, as shown in \hyperref[figure:3]{Figure 3.1}, states the disjointness with nested quantifiers.
+It is an implementation of the mathematical definition in \hyperref[eq:1]{Definition 6}.
+\begin{figure}[h!]
     \Snippet{exact-cover-original}
     \caption{A first definition of Exact Cover}
     \label{figure:3}
 \end{figure}
-Three different conditions have be satisfied for an exact cover instance.
+Three different conditions have be satisfied for an instance of exact cover.
 The first condition $finite\ X$ checks if $X$ is a finite set, while the second 
 condition $\bigcup S \subseteq X$ limits $S$ to be a collection of $X$. The third 
-condition states about the existence of the exact cover. Although it gives us a direct 
-view of the exact cover, it is lengthy for the further implementation. Hence we choose to use 
-an \hyperref[figure:4]{alternative definition} with the help of the dependency \textbf{HOL-Library.Disjoint\_Sets}.
-\begin{figure}[!h]
+condition states about the existence of the exact cover. Although this definition gives us a direct 
+view of the problem, it is lengthy for the further implementation. Hence we choose to use 
+an alternative definition in \hyperref[figure:4]{Figure 3.2} with the help of the dependency \textbf{HOL-Library.Disjoint\_Sets}.
+\begin{figure}[h!]
     \Snippet{exact-cover-def}
     \caption{A second definition of Exact Cover}
     \label{figure:4}
@@ -124,125 +159,249 @@ an \hyperref[figure:4]{alternative definition} with the help of the dependency \
 With the pre-defined predicate \textbf{disjoint}, we managed to simplify the definition. Moreover, 
 we also benefitted from reusing the existing lemmas in the relating dependency.
 
-\subsubsection{A Container Type}
-Intuitively, the variables, positions and clause can be represented by tuple of indices. However, it is not easy 
-to unify the representation s.t. they are of the same type. For example, a unary set of position is representable with
+\subsubsection{Encapsulation Type for the Construction}
+Intuitively, the variables, positions and clauses can be represented by tuple of indices. However, it is not easy 
+to unify the representation such that they are of the same type. For example, a unary set of position is representable with
 one single index, whereas a binary set of a clause and a position needs at least two indices. 
-On the contrary, a container type is exempted from the tedious handling of tuples. 
-Thus, we implement this container type \textbf{xc\_element} in \hyperref[figure:5]{Figure 3.3}
+On the contrary, an encapsulation type is exempted from the tedious handling of tuples.
+Thus, we implement this encapsulation type \textbf{xc\_element} with the help of \textbf{datatype} keyword from Isabelle, 
+as shown in \hyperref[figure:5]{Figure 3.3}
 \begin{figure}[h!]
     \Snippet{exact-cover-basics}
-    \caption{Definition of the container type}
+    \caption{Definition of the encapsulation type}
     \label{figure:5}
 \end{figure}
 The constructor \textbf{V, C} and \textbf{L} stands for the variables, clauses and literals. \textbf{V} 
 encapsules the variable, while \textbf{C} encapsules the clauses. The definition of \textbf{L} is a bit different.
-To locate the literals exactly, we have to encapsule both the literal and the clause. 
-Then, it is possible to define the \hyperref[figure:6]{reduction function}. 
-\begin{figure}[h!]
-    \Snippet{exact-cover-red}
-    \caption{Definition of the reduction}
-    \label{figure:6}
-\end{figure}
-\subsection*{Problems in Proofs}
-Proof of the correctness of the reduction argues about the disjointness and covering property by showing that a specific type of element 
-is existent or non-existent in the constructed sets. Though the majority of the proof is lengthy, it does not require too many techniques 
-and is overall trivial after applying the corresponding lemmas and definitions.\\\\
-The only exception is the construction of $\{c_i, p_{ij}\}$ in the second step. $p_{ij}$ is chosen as the position with the least index. However, 
-in our definition, there is no such indexing property in the \textbf{xc\_element} datatype, meaning that such construction is not possible. 
-Fortunately, the choice of the $p_{ij}$ does not necessarily require a minimal index. Any arbitrary $p_{ij}$ that is true under the assignment 
-$\sigma$ is a valid choice. For this reason, we chose to use the \textbf{SOME} predicate in Isabelle, which obtains an arbitrary instance that fulfills
-the required property. 
-\Snippet{exact-cover-prf} 
-To end with, we show that the reduction is sound, complete, and consequently correct. 
-\Snippet{exact-cover-correct}
+To locate the literals exactly, we have to encapsule both the literal and the clause. The reason is that literals are 
+also located by clauses. If we discard the clauses, the same literal may exist in many clauses, 
+whereas there is only one literal covered in our construction.
 
-\subsubsection{Polynomial Complexity}
-To begin with, it is necessary to determine to metrics, on which the complexity is dependent. For 
-a logical formula $F$, we will iterate all of the variables, clauses and positions. Hence all of them are need for as metrics. 
-Nevertheless, the NREST implementation does not support a complexity bound with different metrics. As a result, it is necessary to 
-choose the maximum of all metrics and use it as our sole metrics\footnote{A few previous reductions from Satisfiability uses the number of clauses 
-as a metrics. It was also corrrect for those reductions iterated only the clauses.}. Similarly, we define $max |X| |S|$ as the metrics 
-for the exact cover instance $(X, S)$. Then we can define the NREST algorithm.
-\Snippet{exact-cover-poly}  
-The proof of the polynomial bound is, however, hardly automated. Part of the reason is that Isabelle fails to find and apply the monotonicity 
-of the space function, time function and the cardinality. For this reason, it is necessary to show such relationships. For example, one of them is about the 
-cardinality
-\Snippet{exact-cover-polyaux}
-Finally, we show the \textit{refines} and \textit{size} lemma as well as that the reduction is polynomial.
-\Snippet{exact-cover-final}
+
+\subsection*{Non-deterministic Construction of a Sub-collection}
+When constructing a cover $S'$, we have included $\{c_i, p_{ij}\}$, where $j$ is the smallest number 
+such that $p_{ij}$ is true under the assignment $\sigma$. However, in our implementation, 
+we did not use an integer to index the positions. For this reason, we cannot deterministically choose 
+a suitable $p_{ij}$. The predicate \textbf{SOME} resolves this problem---\textbf{SOME} \textit{x. P x}
+returns an arbitrary $x$ that satisfies the predicate $P$.
+\begin{figure}[h!]
+\Snippet{exact-cover-prf} 
+\caption{Non-deterministic Construction using SOME}
+\label{figure:7}
+\end{figure} 
+Using this predicate, we are able to choose $\{c_i, p_{ij}\}$ non-deterministically, as defined in \textbf{constr\_cover\_clause} in \hyperref[fig:7]{Figure 3.4}. 
+Another benefit of this approach is that we can also include $\{p_{ij}\}$ simultaneously. Thus, we are exempted from introducing another function 
+to compute this sub-collection. Apart from the definition, the lemma \textbf{constr\_cover\_clause\_unfold} is also proven to remove the \textbf{SOME}
+predicate and obtain the property of the encapsuled sub-collections. \\\\
+The rest of the proof of the correctness follows the mathematical proof precisely. 
+It involves showing the disjointness and covering of each part of the construction. 
+Though it is bit lengthy, the general idea is clear and straightforward.
+
+\subsubsection{Polynomial-time Complexity}
+In the complexity analysis, it is necessary to determine the metrics on which the complexity is dependent. For 
+a logical formula $F$, we will iterate all variables, clauses and positions. Hence all of them are needed as metrics. 
+Nevertheless, the NREST implementation does not support a complexity bound with different metrics. 
+As a result, we choose the maximum of all metrics and use it as our sole metrics\footnote{A few previous reductions in Karp21 project use the number of clauses 
+as a metric. Since those reductions iterated only the clauses, this choice of metric is not an issue.}. Similarly, we define $max |X| |S|$ as the metrics 
+for the instance of exact cover  $(X, S)$. Then we can define the NREST algorithm in \hyperref[fig:3.5]{Figure 3.5}.
+\begin{figure}[!h]
+    \centering
+    \Snippet{exact-cover-poly}
+    \caption{The NREST version of the reduction, SAT to XC}
+    \label{fig:3.5}
+\end{figure}
+Let $n$ be the metric for the Satisfiability problem.
+A comprehensive list of the complexity of each operation is given in \hyperref[table:3.1]{Table 3.1}. 
+Since we follow the principles as stated in \hyperref[para1]{Chapter 2}, all complexity are easy to follow 
+except for \textbf{mop\_literals\_of\_sat}, \textbf{mop\_var\_true\_literals} and \textbf{mop\_var\_false\_literals}. 
+In all cases, we have to iterate the set of clauses, even though it is not necessary in the mathematical reduction, 
+because we defined the literals with the help of the clauses instead of the indices. Consequently, the resulting 
+complexity is cubic instead of quadratic as stated in the reduction details. However, it is still 
+a polynomial class, which is an acceptable result.
+\begin{table}[!h]
+    \centering 
+    \begin{tabular}{| c | c | c |}
+        \hline 
+        Operation & Functionality & Complexity \\ 
+        \hhline{|=|=|=|}
+        mop\_vars\_of\_sat & collecting variables & $3n$ \\ 
+        \hline 
+        mop\_clauses\_of\_sat & collecting clauses & $3n$ \\ 
+        \hline 
+        mop\_literals\_of\_sat & collecting literals & $4n$ \\ 
+        \hline 
+        mop\_literal\_sets & encapsuling literals & $3n$ \\
+        \hline 
+        mop\_clauses\_with\_literals & non-deterministic construction & $6n$ \\ 
+        \hline 
+        mop\_var\_true\_literals & obtaining variables with negative existences & $3n^3$ \\ 
+        \hline
+        mop\_var\_false\_literals & obtaining variables with positive existences & $3n^3$ \\ 
+        \hline
+    \end{tabular}
+    \caption{Complexity of operations in reduction SAT to XC.}
+    \label{table:3.1}
+\end{table}
+\\\\
+The main part of the proof of the polynomial-time complexity is automated following 
+the style of previous works from the Karp21 project. 
+Nevertheless, the proof was not automated and required much efforts, 
+when it came to show the upperbound of the cardinality of the constructed sets, such as 
+\textbf{card\_comp\_S} in \hyperref[fig:3.6]{Figure 3.6}. The function \textbf{comp\_S}
+constructs the collection $S$ in the instance of exact cover. This lemma shows that 
+the cardinality of the collection $S$ is above bounded by the quardruple of our metric.
+\\\\
+We analyzed the proof and found out the reason to be cardinality function. 
+Whenever we want to show the (in)equality of cardinality between two sets, there are a few assumptions 
+for the usable lemmas.
+In most cases, these premises need to be manually passed to the lemmas. One frequently used lemma 
+with such property is \textbf{card\_image} in \hyperref[fig:3.6]{Figure 3.6}. It requires to find 
+an injective function between the preimage and the image. Then we can obtain an inequality relationship.
+\begin{figure}
+    \centering
+    \Snippet{exact-cover-polyaux}
+    \caption{Details in the proof of the polynomial-time complexity, SAT to XC}
+    \label{fig:3.6}
+\end{figure}
+
+\subsection{Example of the reduction}
+In this final part, we present an example with a bried explanation how the reduction is correct for 
+this certain example.\\\\
+\textbf{Input:} A logical formula in conjunctive normal form 
+\begin{align*}
+    F := (x_1 \lor x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2) \land (x_1 \lor x_3)
+\end{align*}
+\textbf{Output:}
+The constructed set is
+\begin{align*}
+    X := & \{ x_1 ,x_2, x_3\} \cup \{c_1, c_2, c_3\} \cup 
+    \{p_{11}, p_{12}, p_{13}, p_{21}, p_{22}, p_{31}, p_{32}\}
+\end{align*}
+The constructed collection is 
+\begin{align*}
+    S : = & \{\{p_{11}\}, \{p_{12}\}, \{p_{13}\}, \{p_{21}\}, \{p_{22}\}, \{p_{31}\}, \{p_{32}\}\} \\
+      & \cup  \{\{c_1, p_{11}\}, \{c_1, p_{12}\}, \{c_1, p_{13}\}, \{c_2, p_{21}\}, 
+      \{c_3, p_{31}\}, \{c_3, p_{32}\}\} \\ 
+      & \cup \{\{x_1, p_{11} p_{31}\}, \{x_1, p_{21}\}, \{x_2, p_{12}, p_{22}\}, \{x_2\},
+      \{x_3, p_{32}\}, \{x_3, p_{13}\}\}
+\end{align*}
+\textbf{Validity:} Apparently, the only valid assignment $\sigma$ of $F$ is given by 
+\begin{align*}
+    \sigma = \{x_1 \equiv \bot, x_2 \equiv \top, x_3 \equiv \top \}
+\end{align*}
+We construct an exact cover $S'$ by 
+\begin{align*}
+    S' = \{\{c_1, p_{22}\}, \{c_2, p_{21}\}, \{c_3, p_{32}\},
+    \{x_1, p_{11}, p_{31}\}, \{x_2\}, \{x_3, p_{31}\},
+    \{p_{22}\}\}
+\end{align*}
 
 \section{Exact Hitting Set}
-The hitting set problems are variants of the set covering problems. Essentially, they are two different ways 
-of viewing the same problem. Just as the hitting set\footnote{Note that the exact hitting set problem was referred to as the hitting set problem in Karp's work, whereas 
-it is generalized to be another problem nowadays.} is a variant of the set covering, the exact hitting set is 
-a variant of the exact cover. 
+The Hitting Set problems are variants of the set covering problems. Essentially, they are two different ways 
+of viewing the same problem. Just as the Hitting Set\footnote{Note that the exact hitting set problem was referred to as the hitting set problem in Karp's work, whereas 
+it is generalized to be another problem nowadays.} is a variant of the set covering, the Exact Hitting Set is 
+a variant of Exact Cover. 
 \problem{Exact Hitting Set}{A collection of sets $S$}{Is there a finite set $W$ s.t. the intersection of $W$ and 
 each element $s \in S$ contains exactly one element?}
-\begin{align*}
+\begin{myalign}
    \textbf{Exact Hitting Set} := \{S\ |\ \exists W.\ \forall s \in S.\ |W \cap s| = 1\}
-\end{align*}
+\end{myalign}
+We call $W$ to hit $S$ exactly.
  
 
 \subsection{Reduction Details}
-Given an exact cover pair $(X, S)$, the hitting set input $C$ is constructed by 
+Given an instance of Exact Cover $(X, S)$, the instance of Exact Hitting Set $C$ is constructed by 
 \begin{align*}
     C = \{\{s | u \in s, s \in S \} | u \in X\}
 \end{align*}
-Thus, $C$ is the set of sub-collections denoted by $c_u$. All sets in $c_u$ share the same element $u$.
+Thus, $C$ is the set of sub-collections denoted by $c_u$. All elements in $c_u$ share the same element $u$.
 \begin{lemma}[Soundess]
-    Let $(X, S)$ be an exact cover instance. A collection $C$ reduced from $(X, S)$ is then an instance of the exact hitting set.
+    Let $(X, S)$ be an instance of Exact Cover. A collection $C$ reduced from $(X, S)$ is then an instance of the exact hitting set.
 \end{lemma}
-The soundness of this reduction is straightforwardly proven with the existence of $S'$ that covers $X$ exactly.
 For the soundness of the reduction, it suffices to show 
 \begin{align*}
     \exists W.\ \forall c_u \in C.\ |W \cap c_u| = 1
 \end{align*}
+\begin{proof}
 Let $W = S'$ and $c_u = \{s | u \in s, s \in S \} \in C$ be an arbitrary element. 
 Since $S'$ covers $X$ exactly, there is exactly one $s \in S'$ that contains $u$. Moreover, this $s$
-is also included in the $c_u$, for $s \in S'$ and $S' \subseteq S$. Thus, it holds that $W \cap c_u = S' \cap c_u = \{s\}$ and consequently $|W \cap c_u| = 1$.
+is also included in the $c_u$, for $s \in S'$ and $S' \subseteq S$. Thus, it is the only element in the set 
+$W \cap c_u$. Consequently, $W$ hits $S$ exactly.
+\end{proof}
 \begin{lemma}[Completeness]
     Let the collection $C$ be a collection reduced from a pair $(X, S)$. If $C$ is an instance of the exact hitting set, 
-    $(X, S)$ has to be an instance of the exact cover.
+    $(X, S)$ has to be an instance of Exact Cover.
 \end{lemma}
-The proof of the completeness shares a similar construction. The only difference is that $W$ is not 
-necessarily a subset of $S$. Nevertheless, there exists a subset $W' \subseteq W$ s.t. it is not only a subset of $S'$, but it
+The proof of the completeness shares a similar construction. 
+\begin{proof}
+The only difference is that $W$ is not necessarily a subset of $S$. 
+Nevertheless, there exists a subset $W' \subseteq W$ s.t. it is not only a subset of $S'$, but it
 also fulfills the same property as $W$. Let $S' = W'$, the completeness is then proven analogously as the soundness. 
+\end{proof}
+
+Finally, we show that the reduction is polynomial. 
 \begin{lemma}[Polynomial Complexity]
-    The construction of $C$ from $(X, S)$ is polynomial. 
+    The construction of $C$ from $(X, S)$ can be computed within polynomial time. 
 \end{lemma}
-Finally, we show that the reduction is polynomial. In our reduction, it is necessary to iterate the set $X$ and the collection $S$ in a nested loop. 
-With the cardinality $|X|$ and $|S|$ as the metrics, it is obvious that the reduction costs the complexity of \bigO{|X||S|}.
+\begin{proof}
+    In our reduction, it is necessary to iterate the set $X$ and the collection $S$ in a nested loop. 
+With the cardinality $|X|$ and $|S|$ as the metrics, it is obvious that the reduction costs the complexity of $\bigO{|X||S|}$.
+\end{proof}
+In the end, we summarize the lemmas to obtain the central theorem.
+\begin{theorem}
+    The presented reduction is a polynomial-time reduction from Exact Cover to Exact Hitting Set.
+\end{theorem}
+
+\begin{figure}[!ht]
+    \Snippet{exact-hitting-set-def}
+    \Snippet{exact-hitting-set-reduction}
+    \caption{Definition of the reduction, XC to XHS}
+    \label{fig:8}
+\end{figure}
 
 \subsection{Implementation Details}
-\subsubsection{Reduction and Proof}
-Since the exact cover problem is defined over a finite set $X$ and a finite collection $S$, we have to check if the $X$ and $S$ are finite and 
-if $S$ is a collection of $X$. Thus, a condition statement, which checks this requirement, is added to the implementation. Furthermore,
-the proof of the correctness is implemented as described above. Following is a snippet of implemented definitions and lemmas.
-\Snippet{exact-hitting-set-def}
-\Snippet{exact-hitting-set-reduction}
-
-\subsubsection{Polynomial Complexity}
-We determine the size of the exact hitting set entry $C$ as $|C|$. According to the paradigm, 
-we define the NREST algorithm and show the \textit{refines} and \textit{size} lemma as follows
-
-\Snippet{exact-hitting-set-poly}
-
-The proof of is mostly automated after unfolding the necessary definitions. 
+\subsubsection{Definition of the reduction}
+Since the Exact Cover problem is defined over a finite set $X$ and a finite collection $S$, we have to check if the $X$ and $S$ are finite and 
+if $S$ is a collection of $X$. Thus, a condition statement which checks this requirement is added to the implementation in \hyperref[fig:8]{Figure 3.7}
+\subsubsection{Polynomial-time Complexity}
+\begin{figure}[!ht]
+    \Snippet{exact-hitting-set-poly}
+    \caption{The NREST version of the reduction, XC to XHS}
+    \label{fig:3.9}
+\end{figure}
+\begin{table}[!ht]
+    \centering 
+    \begin{tabular}{| c | c | c |}
+        \hline 
+        Operation & Functionality & Complexity \\ 
+        \hhline{|=|=|=|}
+        mop\_check\_finiteness\_and\_is\_collection & checking the requirement & $1$ \\ 
+        \hline 
+        mop\_construct\_sets & constructing the new instance & $3n^2$ \\
+        \hline
+    \end{tabular}
+    \caption{Complexity of operations in reduction XC to XHS.}
+    \label{table:3.2}
+\end{table}
+We determine the size of the instance of Exact Hitting Set $C$ as $|C|$. According to the paradigm, 
+we define the NREST algorithm in \hyperref[fig:3.9]{Figure 3.9}. In the same way as the
+implementation for the reduction from Satisfiability to Exact Cover, we can only use one single metric. 
+Let $n = max |X| |S|$ be the metric for Exact cover. 
+The complexity of each operation is given in \hyperref[table:3.2]{Table 3.2}. 
+Just as concluded in the pen-and-paper proof, the reduction costs quadratic time.
+\begin{figure}[!h]
+    \Snippet{exact-hitting-set-aux}
+    \caption{Details in the proof of the polynomial-time complexity, XC to XHS}
+    \label{fig:3.10}
+\end{figure}\\\\
+The proof of the polynomial complexity is mostly automated after unfolding the necessary definitions. 
 However, an additional step is required for indicating the relationship between the sizing functions. 
 While it holds $|C| = |X|$, 
-the size of the exact cover is defined by $max |X| |S|$ instead of $|X|$. Hence we can
-only conclude that the size of the exact hitting set is less equal than the size of the exact cover. 
+the size of the Exact Cover problem is defined by $max |X| |S|$ instead of $|X|$. Hence we can
+only conclude that the size of the Exact Hitting Set is less equal than the size of the Exact Chapterover. 
 The proof automation will then fails in showing $|C| \leq |S| \cdot |S| + 1$ when $|S| \geq |X|$. 
 For this reason, we have to prove one additional lemma about the cardinality of the 
-exact hitting set.
-
-\Snippet{exact-hitting-set-aux}
-
-Finally, we show that the reduciton is correct and polynomial. 
-
-\Snippet{exact-hitting-set-final}
-
+Exact Hitting Set as in \hyperref[fig:3.10]{Figure 3.9}.
 
 
 

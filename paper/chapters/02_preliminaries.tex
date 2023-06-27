@@ -6,49 +6,50 @@
     \textbf{Output}: {#3}
 \end{definition}
 }
-\newcommand{\bigO}[1]{$\mathcal{O}({#1})$}
+\newcommand{\bigO}[1]{\mathcal{O}({#1})}
 
 \chapter{Preliminaries}\label{chapter:preliminaries}
 \section{Isabelle and Dependencies}
 \subsection*{Isabelle/HOL and Archive of Formal Proofs}
-Isabelle\cite{wenzel2004isabelle} is a generic interactive theorem prover. HOL is the Isabelle's formalization of Higher-Order Logic, 
-a logical system with inductive sets, types , well-founded recursion etc. Archive of Formal Proofs is a library
-of projects developed by Isabelle. Our work is implemented by Isabelle and used many entries from the Archive of Formal 
+Isabelle \cite{wenzel2004isabelle} is a generic interactive theorem prover. HOL is the Isabelle's formalization of Higher-Order Logic, 
+a logical system with inductive sets, types , well-founded recursion etc. 
+Archive of Formal Proofs \cite{AFP} is a library of verification projects developed by Isabelle. 
+Our work is implemented with Isabelle and used many entries from Archive of Formal 
 Proofs.
 
 \subsection*{HOL-Real\_Asymp and Laudau\_Symbols}
 HOL-Real\_Asymp is a component of the Isabelle/HOL, in which the asymptotic 
-classes are defined. Moreover, the Archive of Formal Proof entry, Landau\_Symbols\cite{Landau_Symbols-AFP}, 
+classes are defined. Moreover, the Archive of Formal Proof entry, Landau\_Symbols \cite{Landau_Symbols-AFP}, 
 defines the Landau's symbols and provides tool for reasoning about the asympototic
 growth of the functions, especially for sufficiently large inputs. 
 
 \subsection*{NREST}
-NREST is part of the verification frame work Isabelle-LLVM with time\cite{haslbeck2021verified}. It enables 
-the systematic verification of asympototic complexity of imperative algorithms in Isabelle\cite{zhan2018verifying}. 
+NREST is part of the verification frame work Isabelle-LLVM with time \cite{haslbeck2021verified}. It enables 
+the systematic verification of asympototic complexity of imperative algorithms in Isabelle \cite{zhan2018verifying}. 
 We apply this framework 
 to verify the polynomial-time complexity of iteration of unordered data structures, such as sets.
 
-\subsection*{The Karp21 Project}
-The project aims to formalise all of the twenty-one NP-hard problems in Karp's paper in 1972\cite{karp2010reducibility}. 
+\subsection*{The Karp21 Project \cite{polyred}}
+The project aims to formalise all of the twenty-one NP-hard problems in Karp's paper in 1972 \cite{karp2010reducibility}. 
 Up till now, there are eight problems of them finished, with a few related NP-hard problems that are not in Karp's list. 
 Our work also contributes to this project, formalising six of the remaining problems. 
 Though dependent on this project, our work only reuses a few existing definitions, 
 while the most formalisation and verification is original. An overview of the project is given \hyperref[figure:1]{Figure 2.1}.
 The reusable part stems from the reduction from 3CNF-Satisfiabitliy to other problems, for our work starts from Satisfiabitliy.
-\begin{figure}[h!]
+\begin{oldfigure}[h!]
 \centering
 \includegraphics[scale=0.4]{figures/reductions.png}
 \caption{The reduction graph of the Karp21 project}
 \label{figure:1}
-\end{figure}
+\end{oldfigure}
 
-\subsection*{DigitsInBase\cite{DigitsInBase-AFP}}
-This entry of Archive of Formal Proofs shows the uniqueness of representation of natural numbers with an arbitrary base. 
+\subsection*{Positional Notation for Natural Numbers in an Arbitrary Base \cite{DigitsInBase-AFP}}
+This entry of Archive of Formal Proofs, short for DigitInBase, shows the uniqueness of representation of natural numbers with an arbitrary base. 
 In other words, it proves the well-definedness of the n-ary counting systems. 
 Our implementation benefits from this repository in showing the correctness of the polynomial-time reduction from Exact Cover to Subset Sum.
 
-\section{NP-Hardness and polynomial-time reductions}
-\subsection{Asymptotic Notation}
+\section{Mathematical Backgrounds}
+\subsection*{Asymptotic Notation}
 Conventionally, the asymptotic notation is used to define complexity classes and perform the algorithm analysis. 
 We follow this convention and choose the big $\mathcal{O}$ notation for algorithm analysis. To begin with, we present a brief
 introduction to the asymptotic notation.
@@ -94,11 +95,12 @@ except for the factorial class. For simplicity, we did not
 formalise the theory of asymptotic classes and big $\mathcal{O}$ notation but used the 
 available \textsc{Isabelle} dependencies of \textbf{HOL-Real\_Asymp} and \textbf{Landau\_Symbols}.
 
-\subsection{Decision problems}
+\subsection*{Decision Problems}
 \begin{definition}
     A decision problem is a yes-no question on an infinite set of fixed type of inputs.
 \end{definition}
 Generally, if we refer to a decision problem $A$, we refer to the set of inputs whose answer to the yes-no question is yes. 
+We follow this convention throughout this work.
 The handling of a decision problem usually involves two questions:
 \begin{enumerate}
     \item Is there a terminating algorithm which computes the solution to this problem?
@@ -110,9 +112,9 @@ the optimal complexity for the algorithm. While some problems are possible to be
 an optimal compleixty by a deterministic algorithm, there are also a few problems, for which 
 no deterministic polynomial-time algorithm is found. We define them formally as NP.
 \begin{definition}
-    If there is a non-deterministic algorithm 
-    that decides the solution to the problem in polynomial time, it is in the complexity 
-    class \NP. 
+    If there is a deterministic algorithm that decides the solution 
+    to the problem in polynomial time, the problem is in the complexity class \textbf{P}.
+    If this polynomial algorithm is non-deterministic, the problem is in the complexity class \textbf{NP}. 
 \end{definition}
 \begin{definition}
 If a problem is at least as complex as the most complex problems in \NP. It is 
@@ -123,7 +125,7 @@ Instead of trying to prove or reject the existence of a non-deterministic algori
 for the NP problems, we focus on the NP-hardness. We would like to formally prove 
 that many classical decision problems are NP-hard. For this reason, we have to introduce polynomial-time reductions.
 
-\subsection{Polynomial-time reductions}
+\subsection*{Polynomial-time Reductions}
 Given two decision problems $A$ and $B$, 
 a reduction is a function $f: A \rightarrow B$, 
 which maps the instances of $A$ to those of $B$. A reduction is a polynomial-time reduction
@@ -132,21 +134,21 @@ For a polynomial-time reduction from $A$ to $B$, we write $A \red B$. \\ \\
 Let $M$ and $N$ denote the universe of $A$ and $B$. 
 A function $g: M \rightarrow N$ is a polynomial-time reduction 
 if and only if the following conditions are satisfied.
-\begin{align}  
+\begin{align*}  
     &x \in A \iff g(x) \in B \\
     &\exists k\in \mathbb{N}. g \in \mathcal{O}(n^k)
-\end{align}
+\end{align*}
 For convenience, we separate (2.1) into the soundness and completeness of the reduction.
-\begin{align}
+\begin{align*}
     soundness: \quad x \in A \Longrightarrow g(x) \in B \\
     completeness: \quad g(x) \in B \Longrightarrow x \in A
-\end{align}
+\end{align*}
 
-\subsection{NP-Hardness and Satisfiability}
+\subsection*{NP-Hardness and Satisfiability}
 To show a decision problem $B$ is NP-hard, 
 we have to find a NP-hard problem $A$ and polynomial-time reduction 
 s.t. $A \red B$. The first proven NP-hard problem is Satisfiability, 
-which was independently proven by Cook in 1971 and Levin in 1973. 
+which was independently proven by Cook in 1971 \cite{cook2023complexity} and Levin in 1973 \cite{levin1973universal}. 
 The Satisfiability problem is defined by 
 \problem{Satisfiability}{A propositional logical formula in 
 conjunctive normal form. }{Is there a valid assignment for this formula?}
@@ -165,7 +167,7 @@ logical formula. Finally, we add the definition of \textbf{cnf\_sat}, upon which
     \label{figure:2}
 \end{figure}
 
-\section{Application of NREST and paradigm}
+\section{Application of NREST and Paradigm}
 The NREST package offers an approach for approximating the complexity of non-deterministic processes.
 This is especially useful when iterating a set, a collection or any other unordered data structures. Thus,
 we use this package throughout this work. In our complexity analysis, the following commands are used. 
@@ -180,9 +182,10 @@ To apply the NREST approach in the complexity analysis, it is necessary to rewri
 In our implementation, it means to convert the reduction function into an algorithm implemented with NREST commands.
 During the conversion, we follow the following principles for complexity analysis.
 \begin{enumerate}
-    \item Checking the condition always costs only time unit. 
-    \item During the iteration, it costs 1 time unit each for access, modification and insertion.
-    \item All other operations should cost one time unit, if not stated explicitly.
+    \label{para1}
+    \item Checking the condition always costs exactly one unit of time. 
+    \item During the iteration, it costs one unit of tim each for access, modification and insertion.
+    \item All other operations should cost one unit of time, if not stated explicitly.
 \end{enumerate}
 Then, it is possible show the property of the reduction with this approach. In addition to the polynomial-time complexity, 
 the existing definition of polynomial reduction in the Karp21 project requires a polynomial-space complexity, too. 
@@ -191,10 +194,10 @@ Let $f$ denote a polynomial-time reduction from $A$ to $B$, while $f_{alg}$ deno
 Furthermore, we define sizing functions $s_A$ and $s_B$ as metrics for the asymptotic classes.
 To show that the reduction is polynomial, we show that the reduction is polynomially bounded in terms 
 of time and space, which are respectively the \textit{refines} and the \textit{size} lemma.
-\begin{align}
+\begin{align*}
     refines: \quad f_{alg}(A) \leq \mathcal{O}((s_A(A))^k) \\
     size: \quad s_B (f(A)) \leq \mathcal{O}((s_A(A))^k)
-\end{align}
+\end{align*}
 In the end, we can conclude the following implementation paradigm to show that a reduction is correct and polynomial.
 \begin{enumerate}
     \item Implement the reduction in Isabelle/HOL.

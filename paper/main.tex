@@ -31,6 +31,15 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 
+\let\oldfigure\figure% Store old figure environment start
+\let\endoldfigure\endfigure% 
+\renewenvironment{figure}[1][htbp]% Redefine figure
+  {\oldfigure[#1]\mdframed[backgroundcolor=blue!15]}
+  {\endmdframed\endoldfigure}
+
+
+\newtcolorbox{myalign}[1][]{ams align*,colback=black!20!white,colframe=gray,#1}
+
 
 \begin{document}
 
@@ -42,7 +51,7 @@
 
 \input{pages/title}
 \input{pages/disclaimer}
-\input{pages/acknowledgements} % TODO: if you don't have anyone to thank for or don't wish to publish it, comment this line out.
+\input{pages/acknowledgements}
 \input{pages/abstract}
 \microtypesetup{protrusion=false}
 \tableofcontents{}

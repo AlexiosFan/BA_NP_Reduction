@@ -2,21 +2,26 @@
 \section{Motivations}
 We may encounter many real-life problems that require a decision process to find a solution. 
 For example, we always want to choose the shortest queue when shopping at a supermarket. 
-Another example is board games like Go and Chess. These problems are formally defined as decision problems.
-One of the most famous decision problem classes is the NP-hard problems. \\\\
-NP-hard problems are known be hard to be computed by a polynomial-time algorithm. 
-They have been a fundamental research topic in theoretical computer science since the 1970s
-when the first few results in NP-hardness were given by Cook\cite{cook2023complexity}, Levin\cite{levin1973universal} 
-and Karp\cite{karp2010reducibility}. 
-In the next few decades, many attempts were made to show whether $\textbf{P} = \textbf{NP}$ and to develop algorithms that efficiently compute NP-hard problems. 
+Another example is Seven Bridges of Königsberg-is there a way to iterate all seven bridges 
+without visiting a bridge twice? These problems are formally defined as decision problems.\\\\
+NP-hard problems is one of the most famous decision problem classes.
+NP-hard problems are hard to be computed by a polynomial-time algorithm. Choosing the shortest queue, 
+know as scheduling, is a well-known example for NP-hard problems. There also many other real-life examples
+such as map colouring and sudoko.
+NP-hardness has been a fundamental research topic in theoretical computer science since the 1970s
+when the first few results in NP-hardness were given by Cook \cite{cook2023complexity}, Levin \cite{levin1973universal} 
+and Karp \cite{karp2010reducibility}. 
+In the next few decades, many attempts were made to show whether NP-hard problems can be computed by a polynomial-time algorithm and to develop approximation algorithms that compute NP-hard problems optimally. 
 Among many fields related to NP-hardness, we focus on the polynomial-time reductions, which show the NP-hardness of decision problems. \\\\
 All the existing proofs of the correctness of polynomial-time reductions were pen-and-paper proofs, 
 which lack automated verification by a computer. 
+While human researchers may make mistakes in a proof, the computers are accurate once the system is correctly defined. In addition, 
+it is also interesting to show that the computers are able to verify the first few theories that grow into modern computers today.
 With the help of interactive theorem provers, 
 it is possible to formalise and verify the classical results of NP-hardness on a computer.
 In this manner, we contribute to the theoretical basis of many existing formalisation results, 
 e.g. cryptography and approximation algorithms. \\\\ 
-There has been an attempt, known as the Karp21 project, to formalise NP-hard problems in Karp's paper in 1972. 
+There has been an attempt, known as the Karp21 project \cite{polyred}, to formalise NP-hard problems in Karp's paper in 1972 \cite{karp2010reducibility}. 
 Our work benefits from this attempt and continues to formalise some of the remaining problems in Karp's paper 
 with the interactive theorem prover Isabelle. 
 
@@ -26,21 +31,24 @@ Our work contains two categories of problems.
     \item Set covering problems: Exact Cover, Exact Hitting Set
     \item Weighted sum problems: Subset sum, Partition, Knapsack, Zero-One Integer Programming
 \end{enumerate}
-Set covering problems are problems in which we search for a set that contains all elements in another set. In weighted sum problems, 
-we look for a set of instances s.t. their weighted sum reaches another constant bound. While they are the basis of further reductions to problems like 
+Set covering problems are problems in which we search for cover of a given set. In weighted sum problems, 
+we look for a set of instances such that their weighted sum reaches another constant bound. While they are the basis of further reductions to problems like 
 3-dimensional matching, neither of the categories was formalised and verified in the existing project. 
 Thus, we chose these problems to complete the project and prepare for future work.\\\\ 
 For each listed problem, we present a polynomial-time reduction either from Satisfiability or another problem listed above. 
 Thus, a reduction trace from Satisfiability can be witnessed. 
 Furthermore, proofs of the soundness, completeness, 
-and the polynomial-time complexity of each polynomial-time reduction is also presented. 
+and the polynomial-time complexity of each polynomial-time reduction is also presented. \\\\
+On the basis of our contribution, it is possible to create polynomial-time reduction to other NP-hard problems. 
+Additionally, it also provides the theoretical background for other formalisation works related to complexity theory, e.g. 
+approximation algorithms, combinatorical optimization etc. 
 
 \section{Outline}
 In Chapter 2, we introduce Isabelle dependencies and mathematical backgrounds.\\\\
 Chapter 3 and Chapter 4 follow with the formalisation and verification of the listed problems. For each decision problem, 
-we define the problem and the reduction. Then, we sketch the proof of the correctness of the reduction and the polynomial-time complexity. 
-Finally, we present a few concrete implementation details.
+we define the problem and the reduction. Then, we sketch the proof of the correctness of the reduction and the polynomial-time complexity.
+Examples are also offered for reductions that are rather complicated. Finally, we present a few concrete implementation details.
 In Chapter 3, we discuss the polynomial-time reduction of the set cover problems, while Chapter 4 consists of the weighted sum problems.
-A list of examples of reductions is also available in the appendix for better understanding.\\\\
+A list of examples of reductions is also available in the appendix for better understanding. \\\\
 To finish, we conclude the current status of the Karp21 project
 and present a few possibilities for verifying the rest of the problems in Chapter 5.
