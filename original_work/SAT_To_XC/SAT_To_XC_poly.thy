@@ -44,7 +44,7 @@ definition "mop_literal_sets F \<equiv> SPEC (\<lambda>s. s = literal_sets F) (\
 definition "mop_clauses_with_literals F 
   \<equiv> SPEC (\<lambda>s. s = clauses_with_literals F) (\<lambda>_. 3 * (size_SAT_max F + size_SAT_max F))"
 definition "mop_var_true_literals F 
-  \<equiv> SPEC (\<lambda>s. s = var_true_literals F) (\<lambda>_. 0)"
+  \<equiv> SPEC (\<lambda>s. s = var_true_literals F) (\<lambda>_.  3 * size_SAT_max F * size_SAT_max F * size_SAT_max F)"
 definition "mop_var_false_literals F 
   \<equiv> SPEC (\<lambda>s. s = var_false_literals F) (\<lambda>_. 3 * size_SAT_max F * size_SAT_max F * size_SAT_max F)"
 
@@ -71,7 +71,7 @@ definition "sat_to_xc_alg \<equiv> (\<lambda>F.
 definition "sat_to_xc_time n = 
   3 * n + 3 * n + n + 3 * n
 + 3 * n + 3 * (n + n)
-+ 0
++ 3 * n * n * n
 + 3 * n * n * n
 + 2 + 3"
 
@@ -81,21 +81,6 @@ n + n + n
 + n + n"
 
 subsubsection "auxiliary lemmas about the cardinality"
-
-lemma card_Un_le_3:
-"card (a \<union> b \<union> c) \<le> card a + card b + card c"
-  using card_Un_le[of "a \<union> b" c] card_Un_le[of a b]
-  by simp   
-
-lemma card_Un_le_4:
-"card (a \<union> b \<union> c \<union> d) \<le> card a + card b + card c + card d"
-  using card_Un_le[of "a \<union> b \<union> c" d] card_Un_le_3[of a b c]
-  by linarith
-
-lemma card_Union_upper: 
-  "\<forall>c \<in> s. card c \<le> a \<Longrightarrow> card (\<Union>s) \<le> card s * a"
-  by (metis Orderings.order_eq_iff card.infinite 
-  card_union_if_all_subsets_card_i finite_UnionD mult.commute mult_is_0)
 
 lemma card_finite_sat:
 "card (literals_of_sat F) \<le> length F * (Max_nat (card ` (set F)))"
@@ -150,7 +135,7 @@ unfolding literal_sets_def clauses_with_literals_def
 by simp 
 
 lemma card_comp_X:
-  "card (comp_X F) \<le> sz_vars F + sz_cls F + sz_lit F"
+  "card (comp_X F) \<le> 3 * size_SAT_max F"
 proof -
   have *: "inj_on V (vars F)" "V ` (vars F) = vars_of_sat F"
         unfolding inj_on_def vars_of_sat_def
@@ -160,8 +145,7 @@ proof -
         by blast+
 
   have "card (comp_X F) \<le> card (vars_of_sat F) + card (clauses_of_sat F) + card (literals_of_sat F)"
-    using card_Un_le_3 
-    by blast
+     by (meson add_le_cancel_right card_Un_le le_trans) 
   also have "... = sz_vars F + card (clauses_of_sat F) + card (literals_of_sat F)"
     unfolding  sz_vars_def 
     using card_image * 
@@ -170,14 +154,17 @@ proof -
     unfolding sz_cls_def size_SAT_def 
     using card_image ** card_length
     by fastforce
-  finally show ?thesis
-    unfolding sz_lit_def
+  also have "... \<le> sz_vars F + sz_cls F + sz_lit F"
+    unfolding sz_lit_def 
     using card_finite_sat[of F] add_mono
     by linarith
+  finally show ?thesis
+    unfolding size_SAT_max_def max_def 
+    by auto
 qed
 
 lemma card_comp_S:
-  "card (comp_S F) \<le> (sz_lit F) + (sz_lit F) + (sz_vars F) + (sz_vars F)"
+  "card (comp_S F) \<le> 4 * size_SAT_max F"
 proof -
   have *: "inj_on 
   (\<lambda>v. {V v} \<union> {l. l \<in> (literals_of_sat F) \<and> (\<exists>c. C c\<in> (clauses_of_sat F) \<and> L (Neg v) c = l)}) (vars F)" 
@@ -263,9 +250,8 @@ proof -
     
 
   have "card (comp_S F) \<le> card (literal_sets F) + card (clauses_with_literals F) 
-     + card (var_true_literals F) + card (var_false_literals F)"
-    using card_Un_le_4
-    by blast
+     + card (var_true_literals F) + card (var_false_literals F)" 
+     by (meson add_le_cancel_right card_Un_le le_trans) 
   also have "... = card (literal_sets F) + card (clauses_with_literals F) 
      + sz_vars F + card (var_false_literals F)"
      unfolding sz_vars_def
@@ -287,7 +273,8 @@ proof -
     using *****
     by auto
   finally show ?thesis 
-    by blast
+    unfolding size_SAT_max_def max_def
+    by simp
 qed
 
 
@@ -295,7 +282,7 @@ subsubsection "the main proof"
 
 lemma sat_to_xc_size:
 "size_XC (sat_xc F) \<le> sat_to_xc_space (size_SAT_max F)"
- unfolding size_XC_def sat_xc_def sat_to_xc_space_def size_SAT_max_def max_def 
+ unfolding size_XC_def sat_xc_def sat_to_xc_space_def 
 using card_comp_X[of F] card_comp_S[of F] 
 by auto 
 

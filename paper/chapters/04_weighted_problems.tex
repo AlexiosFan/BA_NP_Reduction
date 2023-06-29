@@ -1,14 +1,14 @@
 \chapter{Weighted Sum Problems}\label{chapter:weighted}
 In this chapter, we discuss the NP-Hardness of a few weighted problems. In weighted sum problems, 
 there is a weighting function $w$ over a set $S$. The problems ask about whether the weight of elements 
-in $S$ satisfies a equality or inequality relationship. The weighted sum problems are also mathematical programming 
+in $S$ satisfies an equality or inequality relationship. The weighted sum problems are also mathematical programming 
 problems, which is another large discipline of NP-hard problems. In Karp's paper, there were Partition, Subset Sum \footnote{What Karp presented was referred to as Knapsack, although
 the definition is closer to the Subset Sum nowadays}, and Knapsack introduced. 
 We present reductions from Exact Cover to Subset Sum, from Subset Sum to Partition, Knapsack and Zero-one Integer Programming. 
 
 \section{Subset sum}
-We define the Subset Sum problem with a set and a weighting function. There is also an alternative definition using a multiset or a list without 
-a weighting function, which is useful for our other reductions. More details follow in the Partition section. 
+We define Subset Sum with a set and a weighting function. There is also an alternative definition using a multiset or a sequence without 
+a weighting function, which is useful for other reductions in this work. More details follow in the \hyperref[sec:partition]{Partition} section. 
 \problem{Subset Sum}{A finite set $S$, a weighting function $w$, and an integer $B$}{Is there a subset $S' \subseteq S$ s.t. 
 \begin{equation}
     \sum_{x \in S'} w(x) = B \tag{1}
@@ -18,37 +18,45 @@ a weighting function, which is useful for our other reductions. More details fol
 \end{myalign}
 
 \subsection{Reduction Details}
-We reduce Exact Cover to the Subset Sum. We start with Exact Cover over natural numbers. 
-Given $(X, S)$ an Exact Cover instance over natural numbers, let $S$ be the set in the entry of the subset sum problem. Then we
+We reduce Exact Cover to Subset Sum. We start with Exact Cover problems over natural numbers. 
+Given $(X, S)$ an instance of Exact Cover over natural numbers, let $S$ be the set in the entry of Subset Sum. Then we
 define the weighting function $w$ and the sum $B$ by 
 \begin{align*}
     w(s) = \sum_{x \in s} p^x , B = w(X)
 \end{align*}
-Where $p$ is a natural number no less than $|S|$
-The triple $(S, w, B)$ is then an input for Subset Sum. With the definition, we show the correctness of the reduction.
+where $p$ is a natural number no less than $|S|$
+\begin{definition}[Reduction XC to SS]
+    Given an instance of Exact Cover over natural numebers $(X, S)$, 
+    it is reduced to an instance of Subset Sum $(S, w, B)$ as presented above.
+\end{definition}
+With this definition, we show the correctness of the reduction.
 \begin{lemma}[Soundness]
     If $(X, S)$ is an instance of Exact Cover. The reduced $(S, w, B)$ is then an instance of Subset Sum. 
 \end{lemma}
 \begin{proof}
-    Apparently, the reduction is sound. Let the $S' \subseteq S$ be an exact cover of X. It then holds that
+    Let the $S' \subseteq S$ be an exact cover of X. It then holds that
 \begin{align*}
     \sum_{s \in S'} w(s) = \sum_{s \in S'} (\sum_{x \in s} p^x) = \sum_{x \in \bigcup S'} p^x = \sum_{x \in X} p^x = B
 \end{align*}
-Thus, $(S, w, B)$ is an instance of the Subset Sum. 
+Thus, $(S, w, B)$ is an instance of Subset Sum. 
 \end{proof}
 \begin{lemma}[Completeness]
     Let $(S, w, B)$ be reduced from $(X, S)$. If $(S, w, B)$ is an instance of Subset Sum, 
     $(X, S)$ has to be an instance of Exact Cover. 
 \end{lemma}
 \begin{proof}
+    \label{lemma:sscompl}
     Obtain $S' \subseteq S$ for which \textbf{(1)} holds. We show the disjointness of $S'$ by contradiction. 
-Assume that $S'$ is not disjoint. Then there exist $s_1, s_2 \in S'$ s.t. $s_1 \cap s_2 \not= \emptyset$. Let $x \in s_1 \cap s_2$ be arbitrary. Then 
-there are two cases for the coefficient $c_x$ of $p^x$ in the polynomial $\sum_{x \in S'} w(x)$ of $p$. 
+Assume that $S'$ is not disjoint. Then there exist $s_1, s_2 \in S'$ s.t. $s_1 \cap s_2 \not= \emptyset$. Let $a \in s_1 \cap s_2$ be arbitrary. Then 
+there are two cases for the coefficient $c_a$ of $p^a$ in the polynomial $\sum_{x \in S'} w(x)$ of $p$. 
 \begin{enumerate}
-    \item $c_x \geq 2$. The corresponding coefficient $c_x'$ in the polynomial $w(X)$ is one. From \textbf{(1)} it is obvious that this case is not valid.
-    \item $c_x = 1$ or $c_x = 0$. Though \textbf{(1)} is satisfied, there are still at least two $p^x$ in the polynomial $\sum_{x \in S'} w(x)$.
-    Hence the number of $p^x$ in this polynomial is at least $p$. However, there are utmost $|S|$ elements in $S'$, meaning that there are utmost $|S|$ such $p^x$. From the 
-    fact the $p > |S|$, it is not possible that the number of $p^x$ is greater equal $p$. As a result, this case is also not valid.
+    \item $c_a \neq 1$. This case is invalid. It is obvious that the $p$-nary representation of 
+    a natural number is unique. Since \textbf{(1)} holds and $B = \sum_{x \in X}^{p^X}$, the coefficient 
+    $c_a$ has to be exactly one.
+    \item $c_a = 1$. Though \textbf{(1)} is satisfied, there are still at least two $p^a$ in the polynomial $\sum_{x \in S'} w(x)$.
+    One of them stems from $s_1$, the other from $s_2$.
+    Hence the number of $p^a$ in this polynomial is at least $p$. However, there are utmost $|S|$ elements in $S'$, meaning that there are utmost $|S|$ such $p^a$. From the 
+    fact the $p > |S|$, it is not possible that the number of $p^a$ is greater equal $p$. As a result, this case is also invalid.
 \end{enumerate}
 In conclusion, the assumption is false, and $S'$ is disjoint. Then, it follows directly from the disjointness that $S'$ covers $X$ exactly, otherwise \textbf{(1)}
 is not satisfied.
@@ -68,16 +76,22 @@ For this reason, we need to construct a mapping.
     Trivial.
 \end{proof}
 With this approach, we are able to generalize Exact Cover and covert each instance to an equivalent instance 
-over natural numbers. Then, we perform a complexity analysis over the whole construction.
+over natural numbers. 
+\begin{definition}[Reduction XC to SS, updated]
+    Given an instance of Exact Cover $(X, S)$, 
+    we first map it into natural numbers using the bijective function $f$. 
+    The resulting instance of Exact Cover $(X_f, S_f)$ is reduced to an instance of Subset Sum $(S_f, w, B)$ as presented above.
+\end{definition}
+Then, we perform a complexity analysis over the whole construction.
 \begin{lemma}[Polynomial Complexity]
-    The construction of $(S, w, B)$ from $(X, S)$ can be computed within polynomial time. 
+    The construction of $(S_f, w, B)$ from $(X, S)$ can be computed within polynomial time. 
 \end{lemma}
 \begin{proof}
     When we map an arbitrary set into a natural number set as presented in Lemma 9, we have to iterate over the set $X$, which costs the complexity of $|X|$. 
 Furthremore, we have to iterate $S$ to construct $w$ and $B$, resulting in the complexity of $2|S|$. In total, it costs $|X| + 2|S| \in\bigO{|X| + |S|}$, 
 i.e. the linear complexity. 
 \end{proof}
-Then we summarize to obtain the main theorem.
+Finally, we summarize to obtain the main theorem.
 \begin{theorem}
     The presented reduction is a polynomial-time reduction from Exact Cover to Subset Sum.
 \end{theorem}
@@ -92,7 +106,7 @@ It is easy to notice that the definition is identical to the pen-and-paper defin
 \end{figure}
 \subsubsection{Definition of the Reduction}
 In implementation shown in \hyperref[fig:4.2]{Figure 4.2}, we started with the construction as presented in Lemma 9. The function \textbf{map\_to\_nat} returns 
-a mapping with the property in Lemma 9, in whose definition the predicate \textbf{SOME} is used again.
+a mapping function with the property in Lemma 9, in whose definition the predicate \textbf{SOME} is used again.
 Following this, we define the weighting function and reduction function. 
 Similar to what happened to Exact Hitting Set, we also check if $X$ is finite and if $S$ is 
 a collection before we perform a reduction, for these conditions are a requirement under our definition. 
@@ -112,17 +126,31 @@ we require that $p \geq 2$ as in \hyperref[fig:4.3]{Figure 4.3}.
 \subsubsection{Uniqueness of Polynomials}
 The main part of the proof is implemented as discussed in the reduction details. A problem occurred when showing the completeness of the reduction. 
 Besides the proof presented in the implementation details, it is necessary to show that the representation of a natural number as
- polynomials with the base $p$ is unique. To achieve this, we imported the Archive of Formal Proofs entry DigitInBase and applied the theorem 
-in \hyperref[fig:4.4]{Figure 4.4}.
+polynomial with the base $p$ is unique. To achieve this, we imported the Archive of Formal Proofs entry DigitInBase and applied the theorem 
+in \hyperref[fig:4.4]{Figure 4.4}.\\\\
+$m$ is computed by $\sum \textbf{D j} \cdot b^i$, hence \textbf{D j} should be exactly the $i$-th 
+digit of $m$ with base $b$, i.e. $\textbf{D j} = \textbf{ith\_digit m j}$. 
+In our proof by contradiction as in \hyperref[lemma:sscompl]{Lemma 8}, 
+we found an $m = \sum_{x \in S'} w(x) = B$ that can be represented with two coefficient functions \textbf{D j} and \textbf{E j}. 
+\textbf{D j} is a representation resulted from $\sum_{x \in S'} w(x)$, 
+while \textbf{E j} is a representation resulted from $B$.
+Hence it holds that 
+\begin{align*}
+    \textbf{D j} = \textbf{ith\_digit m j} = \textbf{E j}
+\end{align*}
+However, due to the existence of $a \in s_1 \cap s_2$, it holds that $\textbf{D a} \geq 2$ and $\textbf{E a} = 1$ simultaneously. 
+By this contradiction, we are able to show the completeness.
 \begin{figure}[!h]
     \Snippet{subset-sum-aux2}
     \caption{Snippets from DigitInBase}
     \label{fig:4.4}
 \end{figure}
-
 \subsubsection{Polynomial-time Complexity}
-The implementation of the proof for polynomial complexity is identical to what is introduced in reductio details. 
-Fortunately,the proof is automated, hence we only present and discuss about complexity in \hyperref[fig:4.5]{Figure 4.5} and \hyperref[table:4.1]{Table 4.1}.
+The implementation of the proof for polynomial complexity is identical to what is introduced in reduction details. 
+Fortunately, the proof is automated, hence we only present and discuss about complexity in \hyperref[fig:4.5]{Figure 4.5} and \hyperref[table:4.1]{Table 4.1}.
+Different from the previous reductions, this reduction returns not only a set but also two constants,
+resulting a few constant operations during the reduction. Overall, the reduction has linear complexity,
+which is the same as the pen-and-paper proof.
 \begin{figure}[!h]
     \Snippet{subset-sum-poly}
     \caption{The NREST version of the reduction, XC to SS}
@@ -148,13 +176,9 @@ Fortunately,the proof is automated, hence we only present and discuss about comp
     \caption{Complexity of operations in reduction XC to SS.}
     \label{table:4.1}
 \end{table}
-Different from the previous reductions, this reduction returns not only a set but also two constants,
-resulting a few constant operations during the reduction. Overall, the reduction has linear complexity,
-which is the same as the pen-and-paper proof.
 
 \subsection{Example}
-Again, we present an example for the reduction from Exact Cover to Subset Sum for better understanding and 
-readability.\\\\
+Again, we present an example for the reduction from Exact Cover to Subset Sum for better understanding.\\\\
 \textbf{Input:} The instance of exact cover is given by 
 \begin{align*}
     X &:= \{1, 2, 3, 4\} \\ 
@@ -176,7 +200,7 @@ Hence it holds that
     w(\{1\}) + w(\{2\}) + w(\{3,4\}) = 4 + 4^2 + (4^3 + 4^4) = 340 = B
 \end{align*}
 
-\section{Subset Sum in Sequence and Partition}
+\section{Subset Sum in Sequence and Partition}\label{sec:partition}
 The next problem that we want to reduce to is Partition. 
 For convenience, we use $as - as'$ to demonstrate the difference between two sequences.
 Since all of the valid inputs require the sequences to be finite, we model the sequences using lists in all implementations.
@@ -204,7 +228,7 @@ We choose the presented definition for two reasons.
 Thus, we need to perform the reduction from the sequence version of Subset Sum. 
 We give the definition of Subset Sum using a sequence. 
 \problem{Subset Sum in Sequence}{
-    A finite sequence $as$ of natural numbers, a natural number $s$}{
+    A finite natural number sequence $as$, a natural number $s$}{
     Is there a sub-sequence $as' \subset as$ s.t. 
     \begin{align*}
         \sum_{x \in as'} x = B \tag{3}
@@ -278,7 +302,7 @@ As always, we have to check if $S$ is finite, because finiteness is a requiremen
     \caption{Intermediate step of the reduction I, SS to Part}
     \label{fig:4.6}
 \end{figure}
-Then, it suffices to convert the set into a list and perform the map, in which we used the function 
+Then, it suffices to convert the set into a list and perform the mapping, in which we used the function 
 \textbf{sorted\_list\_of\_set}, converting a set of ordered type to a sorted list. Similarly, we check if 
 $S$ is finite and if $S$ is of form $\{1, 2, .. , |S|\}$ as a requirement. The proof for the correctness is then mostly straightforward
 after unfolding the necessary definitions and using a few available lemmas in the list library, such as \textbf{nth\_equalityI} etc. 
@@ -339,8 +363,8 @@ to the original definition, i.e. \textbf{part\_alter} in \hyperref[fig:4.8]{Figu
     \label{fig:4.8}
 \end{figure}\\\\
 The reason was initially the convenience of the proof. 
-In the original definition, it is necessary to consider the sum of the sub-sequence $(as - as')$ when showing the soundness lemma. This is, unfortunately, 
-rather complex under our definition, for we have to flip the list $xs$, the zero-one list that is used for multiplication. For this 
+In \textbf{part\_alter}, it is necessary to consider the sum of the sub-sequence $(as - as')$ when showing the soundness lemma. 
+Unfortunately, this is rather complex under our definition, for we have to flip the list $xs$, the zero-one list that is used for multiplication. For this 
 flipping operation, we have shown the lemma \textbf{sum\_binary\_part} in \hyperref[fig:4.9]{Figure 4.9}. If we use the new definition, this is avoidable.
 \begin{figure}[!h]
     \Snippet{part-aux1}

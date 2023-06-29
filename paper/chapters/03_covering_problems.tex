@@ -69,7 +69,11 @@ $S$ contains all of the four types of subsets.
     &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, x_i = p_{ij}\}\\
     &\cup \{\{x_i\} \cup \{p_{ij} | p_{ij} \in c_i, c_i \in F\} | x_i \in vars\; F, \neg x_i = p_{ij}\}
 \end{align*}
-The pair of $(X, S)$ is the input for Exact Cover. After definiting the reduction function,
+\begin{definition}[Reduction SAT to XC]
+    Given an instance of Satisfiability $F$, 
+    it is reduced to an instance of Exact Cover $(X, S)$ as presented above.
+\end{definition}
+After definiting the reduction function,
 we also show that the reduction is correct and in polynomial-time.
 \begin{lemma}[Soundess]
     Let $F$ be a satisfiable propositional logical formula. The pair $(X, S)$ is then an instance of the exact cover.
@@ -214,7 +218,7 @@ Let $n$ be the metric for the Satisfiability problem.
 A comprehensive list of the complexity of each operation is given in \hyperref[table:3.1]{Table 3.1}. 
 Since we follow the principles as stated in \hyperref[para1]{Chapter 2}, all complexity are easy to follow 
 except for \textbf{mop\_literals\_of\_sat}, \textbf{mop\_var\_true\_literals} and \textbf{mop\_var\_false\_literals}. 
-In all cases, we have to iterate the set of clauses, even though it is not necessary in the mathematical reduction, 
+In all cases, we have to iterate the set of clauses, even though it is not necessary in the pen-and-paper reduction, 
 because we defined the literals with the help of the clauses instead of the indices. Consequently, the resulting 
 complexity is cubic instead of quadratic as stated in the reduction details. However, it is still 
 a polynomial class, which is an acceptable result.
@@ -245,7 +249,7 @@ a polynomial class, which is an acceptable result.
 \\\\
 The main part of the proof of the polynomial-time complexity is automated following 
 the style of previous works from the Karp21 project. 
-Nevertheless, the proof was not automated and required much efforts, 
+Nevertheless, automation failed 
 when it came to show the upperbound of the cardinality of the constructed sets, such as 
 \textbf{card\_comp\_S} in \hyperref[fig:3.6]{Figure 3.6}. The function \textbf{comp\_S}
 constructs the collection $S$ in the instance of exact cover. This lemma shows that 
@@ -256,7 +260,8 @@ Whenever we want to show the (in)equality of cardinality between two sets, there
 for the usable lemmas.
 In most cases, these premises need to be manually passed to the lemmas. One frequently used lemma 
 with such property is \textbf{card\_image} in \hyperref[fig:3.6]{Figure 3.6}. It requires to find 
-an injective function between the preimage and the image. Then we can obtain an inequality relationship.
+an injective function between the preimage and the image. 
+Without passing the premises to this lemma, we cannot obtain an inequality relationship.
 \begin{figure}
     \centering
     \Snippet{exact-cover-polyaux}
@@ -287,7 +292,7 @@ The constructed collection is
 \end{align*}
 \textbf{Validity:} Apparently, the only valid assignment $\sigma$ of $F$ is given by 
 \begin{align*}
-    \sigma = \{x_1 \equiv \bot, x_2 \equiv \top, x_3 \equiv \top \}
+    \sigma = \{x_1 = \bot, x_2 = \top, x_3 = \top \}
 \end{align*}
 We construct an exact cover $S'$ by 
 \begin{align*}
@@ -297,9 +302,9 @@ We construct an exact cover $S'$ by
 \end{align*}
 
 \section{Exact Hitting Set}
-The Hitting Set problems are variants of the set covering problems. Essentially, they are two different ways 
+The hitting set problems are variants of the set covering problems. Essentially, they are two different ways 
 of viewing the same problem. Just as the Hitting Set\footnote{Note that the exact hitting set problem was referred to as the hitting set problem in Karp's work, whereas 
-it is generalized to be another problem nowadays.} is a variant of the set covering, the Exact Hitting Set is 
+it is generalized to be another problem nowadays.} is a variant of Set Cover, the Exact Hitting Set is 
 a variant of Exact Cover. 
 \problem{Exact Hitting Set}{A collection of sets $S$}{Is there a finite set $W$ s.t. the intersection of $W$ and 
 each element $s \in S$ contains exactly one element?}
@@ -314,32 +319,42 @@ Given an instance of Exact Cover $(X, S)$, the instance of Exact Hitting Set $C$
 \begin{align*}
     C = \{\{s | u \in s, s \in S \} | u \in X\}
 \end{align*}
-Thus, $C$ is the set of sub-collections denoted by $c_u$. All elements in $c_u$ share the same element $u$.
+Thus, $C$ is the set of sub-collections denoted by $c_u = \{s | u \in s, s \in S\}$. All sets in $c_u$ share the same element $u$.
+\begin{definition}[Reduction XC to XHS]
+    Given an instance of Exact Cover $F$, 
+    it is reduced to an instance of Exact Hitting Set $C$ as presented above.
+\end{definition}
+It is possible to show the correctness of the reduction with this defintiion.
 \begin{lemma}[Soundess]
     Let $(X, S)$ be an instance of Exact Cover. A collection $C$ reduced from $(X, S)$ is then an instance of the exact hitting set.
 \end{lemma}
+\begin{proof}
 For the soundness of the reduction, it suffices to show 
 \begin{align*}
     \exists W.\ \forall c_u \in C.\ |W \cap c_u| = 1
 \end{align*}
-\begin{proof}
-Let $W = S'$ and $c_u = \{s | u \in s, s \in S \} \in C$ be an arbitrary element. 
-Since $S'$ covers $X$ exactly, there is exactly one $s \in S'$ that contains $u$. Moreover, this $s$
-is also included in the $c_u$, for $s \in S'$ and $S' \subseteq S$. Thus, it is the only element in the set 
-$W \cap c_u$. Consequently, $W$ hits $S$ exactly.
+Let $W = S'$, where $S'$ covers $X$ exactly. Moreover, let $c_u$ be an arbitrary element of $C$. 
+Since $S'$ covers $X$ exactly, there is exactly one $s \in S'$ that contains $u$. 
+$c_u$ is a collection of sets in $S$ that contain $u$.
+Thus, $s$ is the only element in the set $S' \cap c_u$. 
+Consequently, $S'$ hits $C$ exactly.
 \end{proof}
+Then, we show the completeness.
 \begin{lemma}[Completeness]
     Let the collection $C$ be a collection reduced from a pair $(X, S)$. If $C$ is an instance of the exact hitting set, 
     $(X, S)$ has to be an instance of Exact Cover.
 \end{lemma}
-The proof of the completeness shares a similar construction. 
 \begin{proof}
-The only difference is that $W$ is not necessarily a subset of $S$. 
-Nevertheless, there exists a subset $W' \subseteq W$ s.t. it is not only a subset of $S'$, but it
-also fulfills the same property as $W$. Let $S' = W'$, the completeness is then proven analogously as the soundness. 
+The proof of the completeness shares a similar construction. 
+The only difference is that $W$ is not necessarily a subset of $S$.
+Nevertheless, there exists a subset $W' \subseteq W$ s.t. it is not only a subset of $S$, but it
+also satisfies the property $\forall c_u \in C. |W' \cap c_u| = 1$. \\\\
+Let $S' = W'$. For each $u \in X$, there is exactly one set $s \in W'$ s.t. $u \in s$. 
+This ensures that $X$ is fully covered and each element in $X$ is existent in only one set.
+Moreover, $W'$ is a subset of $S$, indicating that all sets in $W$ only contain elements of $X$. 
+Hence $W'$ is also disjoint.  
 \end{proof}
-
-Finally, we show that the reduction is polynomial. 
+With the correctness proven, we show that the reduction is in polynomial time. 
 \begin{lemma}[Polynomial Complexity]
     The construction of $C$ from $(X, S)$ can be computed within polynomial time. 
 \end{lemma}
@@ -347,7 +362,7 @@ Finally, we show that the reduction is polynomial.
     In our reduction, it is necessary to iterate the set $X$ and the collection $S$ in a nested loop. 
 With the cardinality $|X|$ and $|S|$ as the metrics, it is obvious that the reduction costs the complexity of $\bigO{|X||S|}$.
 \end{proof}
-In the end, we summarize the lemmas to obtain the central theorem.
+In the end, we summarize the lemmas to obtain the main theorem.
 \begin{theorem}
     The presented reduction is a polynomial-time reduction from Exact Cover to Exact Hitting Set.
 \end{theorem}

@@ -21,13 +21,9 @@ definition "xc_to_ehs_alg \<equiv> \<lambda>(X, S).
     if b 
     then do {
       S' \<leftarrow> mop_construct_sets (X, S);
-      RETURNT S'
-    }
+      RETURNT S' }
     else do {
-      RETURNT {{}}
-    }
-  }
-"
+      RETURNT {{}} }}"
 
 definition "xc_to_ehs_space n \<equiv> 1 + n*n"
 definition "xc_to_ehs_time n \<equiv> 1 + 3 * n * n"
