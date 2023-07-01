@@ -93,7 +93,7 @@ i.e. the linear complexity.
 \end{proof}
 Finally, we summarize to obtain the main theorem.
 \begin{theorem}
-    The presented reduction is a polynomial-time reduction from Exact Cover to Subset Sum.
+    Subset Sum is NP-hard.
 \end{theorem}
 
 \subsection{Implemantation Deatails}
@@ -290,7 +290,7 @@ Thus, the reduction has linear complexity.
 \end{proof}
 Then, we conclude the the main theorem with all the lemmas proven.
 \begin{theorem}
-    The presented reduction is a polynomial-time reduction from Subset Sum to Partition.
+    Partition is NP-hard.
 \end{theorem}
 \subsection{Implemantation Details of Subset Sum in Sequence}
 \subsubsection*{Intermediate Step}
@@ -444,7 +444,7 @@ and largely automated. Hence a discussion for implementation details is omitted 
 We reduce Subset Sum to Knapsack. With $(S, w, B)$ as an instance of Subset Sum, $(S, w, w, B, B)$
 is then an instance of knapsack.
 \begin{theorem}[Polynomial-time Reduction]
-    The presented reduction from Subset Sum to Knapsack is correct and polynomial-time bounded.
+    Knapsack is NP-hard.
 \end{theorem}
 \begin{proof}
     Trivially, it holds that 
@@ -474,7 +474,7 @@ it is convenient for our definition and consequently requires less effort. Given
 \end{align*} 
 The triple $(X, c, B)$ is then an instance of Zero-One Integer Programming.
 \begin{theorem}[Polynomial-time Reduction]
-    The presented reduction from Subset Sum to Zero-One Integer Programming is correct and polynomial-time bounded.
+    Zero-One Integer Programming is NP-hard.
 \end{theorem}
 \begin{proof}
     $(X, c, B)$ is then an instance of the zero-one integer programming problem,
