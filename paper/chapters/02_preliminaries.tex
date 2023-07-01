@@ -21,7 +21,7 @@ Proofs.
 HOL-Real\_Asymp is a component of the Isabelle/HOL, in which the asymptotic 
 classes are defined. Moreover, the Archive of Formal Proof entry, Landau\_Symbols \cite{Landau_Symbols-AFP}, 
 defines the Landau's symbols and provides tool for reasoning about the asympototic
-growth of the functions, especially for sufficiently large inputs. 
+growth of the functions. 
 
 \subsection*{NREST}
 NREST is part of the verification frame work Isabelle-LLVM with time \cite{haslbeck2021verified}. It enables 
@@ -90,8 +90,7 @@ in \hyperref[table:1]{Table 1}.
     \label{table:1}
 \end{table}
 
-In this work, we only consider the polynomial class, which contains most classes listed above 
-except for the factorial class. For simplicity, we did not 
+In this work, we only consider the polynomial class. For simplicity, we did not 
 formalise the theory of asymptotic classes and big $\mathcal{O}$ notation but used the 
 available \textsc{Isabelle} dependencies of \textbf{HOL-Real\_Asymp} and \textbf{Landau\_Symbols}.
 
@@ -108,9 +107,10 @@ The handling of a decision problem usually involves two questions:
 \end{enumerate}
 If the answer to the first question is yes for a problem, it is a decidable problem, otherwise it is non-decidable. 
 We do not expect a yes-no answer for the second question, but would like to find 
-the optimal complexity for the algorithm. While some problems are possible to be computed in 
-an optimal compleixty by a deterministic algorithm, there are also a few problems, for which 
-no deterministic polynomial-time algorithm is found. We define them formally as NP.
+the optimal complexity for the algorithm, e.g. logarithmic complexity, polynomial complexity, etc. 
+While some problems are possible to be computed in an optimal compleixty by a deterministic algorithm, 
+there are also a few problems, for which no deterministic polynomial-time algorithm is found. 
+We limit these problems and given them a formal definition.
 \begin{definition}
     If there is a deterministic algorithm that decides the solution 
     to the problem in polynomial time, the problem is in the complexity class \textbf{P}.
@@ -147,7 +147,7 @@ For convenience, we separate (2.1) into the soundness and completeness of the re
 \subsection*{NP-Hardness and Satisfiability}
 To show a decision problem $B$ is NP-hard, 
 we have to find a NP-hard problem $A$ and polynomial-time reduction 
-s.t. $A \red B$. The first proven NP-hard problem is Satisfiability, 
+such that $A \red B$. The first proven NP-hard problem is Satisfiability, 
 which was independently proven by Cook in 1971 \cite{cook2023complexity} and Levin in 1973 \cite{levin1973universal}. 
 The Satisfiability problem is defined by 
 \problem{Satisfiability}{A propositional logical formula in 
@@ -172,11 +172,11 @@ The NREST package offers an approach for approximating the complexity of non-det
 This is especially useful when iterating a set, a collection or any other unordered data structures. Thus,
 we use this package throughout this work. In our complexity analysis, the following commands are used. 
 \begin{itemize}
-    \item \textbf{$RETURNT$ res}. A command that returns the result \textbf{res}. It costs exactly one time unit.
+    \item \textbf{$RETURNT$ res}. A command that returns the result \textbf{res}. It costs exactly one unit of time.
     \item \textbf{$SPECT$ [cond $\rightarrow$ cost]}. A command used for checking a condition. Checking the condition \textbf{cond}
-    take \textbf{cost} time units.
+    take \textbf{cost} units of time.
     \item \textbf{$SPEC$ $P$ $Q$}. A command used for assignment. Should $P\ x$ hold for an object $x$, it is a valid object after the assignment
-    The assignment then takes $Q\ x$ time units.
+    The assignment then takes $Q\ x$ units of time.
 \end{itemize}
 To apply the NREST approach in the complexity analysis, it is necessary to rewrite the algorithm with the NREST commands.
 In our implementation, it means to convert the reduction function into an algorithm implemented with NREST commands.
@@ -184,11 +184,11 @@ During the conversion, we follow the following principles for complexity analysi
 \begin{enumerate}
     \label{para1}
     \item Checking the condition always costs exactly one unit of time. 
-    \item During the iteration, it costs one unit of tim each for access, modification and insertion.
+    \item During the iteration, it costs one unit of time each for access, modification and insertion of the set elements.
     \item All other operations should cost one unit of time, if not stated explicitly.
 \end{enumerate}
 Then, it is possible show the property of the reduction with this approach. In addition to the polynomial-time complexity, 
-the existing definition of polynomial reduction in the Karp21 project requires a polynomial-space complexity, too. 
+the existing definition of polynomial-time reduction in the Karp21 project requires a polynomial-space complexity, too. 
 We are consistent with this definition, and hence verified the polynomial-space complexity in each reduction as well.
 Let $f$ denote a polynomial-time reduction from $A$ to $B$, while $f_{alg}$ denotes the NREST version of the reduction.
 Furthermore, we define sizing functions $s_A$ and $s_B$ as metrics for the asymptotic classes.

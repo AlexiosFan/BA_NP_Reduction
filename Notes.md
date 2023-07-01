@@ -90,3 +90,19 @@ Solutions to the cons:
 1. TSP, examples in the introduction
 1. Laudau notations
 1. No Isabelle proof details unless it is a worth-mentioning technical problem
+
+
+## Questions Meeting 21th of June
+1. Teriminology. If a function needs $n$ operations, do we say it costs time of $n$ or time of $n$ time units.
+2. Handling of polynomial-time complexity: a table for costs of all functions or the status quo?
+3. Locations of examples?
+4. Snippets for final theorems, or only describe parts?
+5. Source of reduction, not in published literature?
+
+## Colloquim 
+1. 15 min.
+2. No details, intuitive, general
+3. Problems, mathematical defintion vs formalisation
+4. Main achievement
+5. No codes in slides, depends
+
