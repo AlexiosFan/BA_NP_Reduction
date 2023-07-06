@@ -7,7 +7,8 @@ the definition is closer to the Subset Sum nowadays}, and Knapsack introduced.
 We present reductions from Exact Cover to Subset Sum, from Subset Sum to Partition, Knapsack and Zero-one Integer Programming. 
 
 \section{Subset sum}
-We define Subset Sum with a set and a weighting function. There is also an alternative definition using a multiset or a sequence without 
+We define Subset Sum with a set and a weighting function. The definition stems from the book \textit{The design and analysis of algorithms} \cite{kozen1992design}.
+There is also an alternative definition using a multiset or a sequence without 
 a weighting function, which is useful for other reductions in this work. More details follow in the \hyperref[sec:partition]{Partition} section. 
 \problem{Subset Sum}{A finite set $S$, a weighting function $w$, and an integer $B$}{Is there a subset $S' \subseteq S$ s.t. 
 \begin{equation}
@@ -426,8 +427,6 @@ with the equality
     425 + 4 + 16 + 320 = 765 = 341 + 80 + 272 + 72 
 \end{align*}
 
-The other reductions are easier to understand, hence no example is provided here.
-
 \section{Knapsack and Zero-One Integer Programming}
 Knapsack and Zero-One Integer Programming are another two classical weighted sum problems. While Subset Sum was referred 
 to as Knapsack in Karp's paper, its definition is nowadays different. Additionally, Zero-One Integer Programming 
@@ -444,6 +443,7 @@ and largely automated. Hence a discussion for implementation details is omitted 
         \sum_{x \in S'} b(x) &\geq B \tag{4}
     \end{align*}
 }
+This definition also stems from the book \textit{The design and analysis of algorithms} \cite{kozen1992design}. 
 We reduce Subset Sum to Knapsack. With $(S, w, B)$ as an instance of Subset Sum, $(S, w, w, B, B)$
 is then an instance of knapsack.
 \begin{theorem}[Polynomial-time Reduction]
