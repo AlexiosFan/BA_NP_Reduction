@@ -76,17 +76,18 @@ $S_F$ contains all of the four types of subsets.
 After definiting the reduction function,
 we also show that the reduction is correct and in polynomial-time.
 \begin{lemma}[Soundess]
+    \label{lemma:xcsound}
     Let $F$ be a satisfiable propositional logical formula. The pair $(X_F, S_F)$ is then an instance of the exact cover.
 \end{lemma}
 \begin{proof}
     Let $\sigma \models F$ be a valid assignment. We construct an exact cover $S' \subseteq S_F$ of $X_F$ in the following steps.
 \begin{enumerate}
-    \item For each $x_i \in vars\; F$, $pos(x_i)$ is included in $S'$ when $\sigma(pos(x_i)) \equiv \bot$. Otherwise we insert $neg(x_i)$ into $S'$.
-    This steps covers all variables and all positions that are false under $\sigma$.
-    \item For each $c_i \in F$, we choose the minimal $j$ with $\sigma(p_{ij}) \equiv \top$, and insert $\{c_i, p_{ij}\}$ into $S'$.
-    This steps covers all clauses and one position that is true under $\sigma$ in each clause.
-    \item For each $p_{ij} \in c_i$, if $\sigma(p_{ij}) \equiv \top$ and $\{c_i, p_{ij}\}$ is not in $S'$, the unary set $\{p_{ij}\}$ is included. 
-    This steps covers all positions that are true under $\sigma$ and are not covered in the previous step.
+    \item For each $x_i \in vars\; F$, $pos(x_i)$ is included in $S'$ when $\sigma(pos(x_i)) = \bot$. Otherwise we insert $neg(x_i)$ into $S'$.
+    This step covers all variables and all positions that are false under $\sigma$.
+    \item For each $c_i \in F$, we choose the minimal $j$ with $\sigma(p_{ij}) = \top$, and insert $\{c_i, p_{ij}\}$ into $S'$.
+    This step covers all clauses and one position that is true under $\sigma$ in each clause.
+    \item For each $p_{ij} \in c_i$, if $\sigma(p_{ij}) = \top$ and $\{c_i, p_{ij}\}$ is not in $S'$, the unary set $\{p_{ij}\}$ is included. 
+    This step covers all positions that are true under $\sigma$ and are not covered in the previous step.
 \end{enumerate}
 Now it suffices to show that $S'$ is disjoint in our construction.
 Obviously, each position in $pos(x_i)$ and $neg(x_i)$ is false under the assignment $\sigma$, 
@@ -182,7 +183,7 @@ whereas there is only one literal covered in our construction.
 
 
 \subsection*{Non-deterministic Construction of a Sub-collection}
-When constructing a cover $S'$, we have included $\{c_i, p_{ij}\}$, where $j$ is the smallest number 
+When constructing a cover $S'$ in proof of \hyperref[lemma:xcsound]{Lemma 1}, we have included $\{c_i, p_{ij}\}$, where $j$ is the smallest number 
 such that $p_{ij}$ is true under the assignment $\sigma$. However, in our implementation, 
 we did not use an integer to index the positions. For this reason, we cannot deterministically choose 
 a suitable $p_{ij}$. The predicate \textbf{SOME} resolves this problem---\textbf{SOME} \textit{x. P x}
@@ -403,7 +404,7 @@ implementation for the reduction from Satisfiability to Exact Cover, we can only
 Let $n = max |X| |S|$ be the metric for Exact cover. 
 The complexity of each operation is given in \hyperref[table:3.2]{Table 3.2}. 
 Just as concluded in the pen-and-paper proof, the reduction costs quadratic time.
-\begin{figure}[!h]
+\begin{figure}[!ht]
     \Snippet{exact-hitting-set-aux}
     \caption{Details in the proof of the polynomial-time complexity, XC to XHS}
     \label{fig:3.10}

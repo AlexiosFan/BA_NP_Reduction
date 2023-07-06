@@ -19,7 +19,7 @@ a weighting function, which is useful for other reductions in this work. More de
 
 \subsection{Reduction Details}
 We reduce Exact Cover to Subset Sum. We start with Exact Cover problems over natural numbers. 
-Given $(X, S)$ an instance of Exact Cover over natural numbers, let $S$ be the set in the entry of Subset Sum. Then we
+Given $(X, S)$ an instance of Exact Cover over natural numbers, let $S$ be the set in the instance of Subset Sum. Then we
 define the weighting function $w_{p}$ and the sum $B_{X}$ by 
 \begin{align*}
     w_p(s) = \sum_{x \in s} p^x , B_X = w(X)
@@ -36,7 +36,9 @@ With this definition, we show the correctness of the reduction.
 \begin{proof}
     Let the $S' \subseteq S$ be an exact cover of X. It then holds that
 \begin{align*}
-    \sum_{s \in S'} w_p(s) = \sum_{s \in S'} (\sum_{x \in s} p^x) = \sum_{x \in \bigcup S'} p^x = \sum_{x \in X} p^x = B_X
+    \sum_{s \in S'} w_p(s) = \sum_{s \in S'} (\sum_{x \in s} p^x) 
+    \stackrel{\text{S' disjoint}}{=} \sum_{x \in \bigcup S'} p^x 
+    \stackrel{X = \bigcup S'}{=} \sum_{x \in X} p^x = B_X
 \end{align*}
 Thus, $(S, w_p, B_X)$ is an instance of Subset Sum. 
 \end{proof}
@@ -64,6 +66,7 @@ is not satisfied.
 This reduction is, however, limited to the Exact Cover over natural numbers. It is still necessary to generalize the reduction. 
 For this reason, we need to construct a mapping.
 \begin{lemma}
+    \label{lemma:9}
     Let $S$ be an arbitrary finite set. Then there exists a bijective function $f, S \rightarrow N$ s.t. 
     \begin{align*}
         f(S) = \begin{cases}
@@ -105,7 +108,7 @@ It is easy to notice that the definition is identical to the pen-and-paper defin
     \label{fig:4.1}
 \end{figure}
 \subsubsection{Definition of the Reduction}
-In implementation shown in \hyperref[fig:4.2]{Figure 4.2}, we started with the construction as presented in Lemma 9. The function \textbf{map\_to\_nat} returns 
+In implementation shown in \hyperref[fig:4.2]{Figure 4.2}, we started with the construction as presented in \hyperref[lemma:9]{Lemma 9}. The function \textbf{map\_to\_nat} returns 
 a mapping function with the property in Lemma 9, in whose definition the predicate \textbf{SOME} is used again.
 Following this, we define the weighting function and reduction function. 
 Similar to what happened to Exact Hitting Set, we also check if $X$ is finite and if $S$ is 
@@ -272,7 +275,7 @@ Similarly, we can show the completeness of the reduction.
 \begin{proof}
     It holds that
 \begin{align*}
-    (1 - s + \sum_{x \in as} x) + (s + 1) = \sum_{x \in as} x + 2 > \sum_{x \in as} x
+    (1 - s + \sum_{x \in as} x) + (s + 1) = 2 + \sum_{x \in as} x > \sum_{x \in as} x
 \end{align*}
 As a result, $(1 - s + \sum_{x \in as} x)$ and $s + 1$ are not supposed be simultaneously existent in $bs'$. 
 After separating the first two elements of bs into different subsequences, the $as'$ is constructed 
@@ -297,7 +300,7 @@ Then, we conclude the the main theorem with all the lemmas proven.
 Although the reduction is more straightforward compared to the previously introduced ones, the implementation is even lengthier. 
 The reason is that conversion of the set to a list also needs an additional reduction for indexing. For this reason, we introduce 
 a intermediate step, \textbf{subset\_sum\_indices} in \hyperref[fig:4.5]{Figure 4.5}.
-Apparently, to map $S$ to an set of integers from 1 to $|S|$, we need to apply \textbf{Lemma 9} again. 
+Apparently, to map $S$ to an set of integers from 1 to $|S|$, we need to apply \hyperref[lemma:9]{Lemma 9} again. 
 As always, we have to check if $S$ is finite, because finiteness is a requirement of the reduction.
 \begin{figure}[!h]
     \Snippet{ss-indices-def}
@@ -356,7 +359,7 @@ constant steps taken because of the structure of the instances.
 
 \subsection{Implemantation Details of Partition}
 \subsubsection{Choice of Definitions}
-Instead of the original definition, where the sum a sub-sequence is equal to its complement, we use a different definition in the implementation,
+Instead of the original definition, where the sum of a sub-sequence is equal to its complement, we use a different definition in the implementation,
 where the double of the sum of a sub-sequence is equal to to the sum of the whole sequence. We have also shown that this definition is equivalent 
 to the original definition, i.e. \textbf{part\_alter} in \hyperref[fig:4.8]{Figure 4.8}. 
 \begin{figure}[!h]

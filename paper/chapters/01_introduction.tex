@@ -4,7 +4,7 @@ We may encounter many real-life problems that require a decision process to find
 For example, we always want to choose the shortest queue when shopping at a supermarket. 
 Another example is Seven Bridges of Königsberg---is there a way to go through all seven bridges 
 without visiting a bridge twice? These problems are formally defined as decision problems.\\\\
-NP-hard problems is one of the most famous decision problem classes.
+NP-hard problems are one of the most famous decision problem classes.
 NP-hard problems are hard to be computed by a polynomial-time algorithm. Choosing the shortest queue, 
 known as scheduling, is a well-known example for NP-hard problems. There also many other real-life examples
 such as map colouring and sudoko.
@@ -16,7 +16,7 @@ Among many fields related to NP-hardness, we focus on the polynomial-time reduct
 All the existing proofs of the correctness of polynomial-time reductions were pen-and-paper proofs, 
 which lack automated verification by a computer. 
 While human researchers may make mistakes in a proof, the computers are accurate once the system is correctly defined. In addition, 
-it is also interesting to show that the computers are able to verify the first few theories that are highly related modern computers today.
+it is also interesting to show that the computers are able to verify the first few theories that are highly related to modern computers today.
 With the help of interactive theorem provers, 
 it is possible to formalise and verify the classical results of NP-hardness on a computer.
 In this manner, we contribute to the theoretical basis of many existing formalisation results, 
@@ -44,7 +44,7 @@ Additionally, it also provides the theoretical background for other formalisatio
 approximation algorithms, combinatorical optimization etc. 
 
 \section{Outline}
-In Chapter 2, we introduce Isabelle dependencies and mathematical backgrounds.\\\\
+In Chapter 2, we introduce Isabelle dependencies, mathematical backgrounds and paradigms of our implementation.\\\\
 Chapter 3 and Chapter 4 follow with the formalisation and verification of the listed problems. For each decision problem, 
 we define the problem and the reduction. Then, we sketch the proof of the correctness of the reduction and the polynomial-time complexity.
 Finally, we present a few concrete implementation details. Examples are also offered for reductions that are rather complicated. 

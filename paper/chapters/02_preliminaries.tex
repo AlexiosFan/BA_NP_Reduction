@@ -9,12 +9,17 @@
 \newcommand{\bigO}[1]{\mathcal{O}({#1})}
 
 \chapter{Preliminaries}\label{chapter:preliminaries}
+In this chapter, we present the background information that supports our work. 
+We start with the introduction to the interactive theorem prover Isabelle and its dependencies. 
+Furthermore, we present the mathematical backgrounds that are need for verification. 
+In the end, we describe the approaches for the complexity analysis and discuss the paradigm 
+that is used througout this work.
 \section{Isabelle and Dependencies}
 \subsection*{Isabelle/HOL and Archive of Formal Proofs}
 Isabelle \cite{wenzel2004isabelle} is a generic interactive theorem prover. HOL is the Isabelle's formalization of Higher-Order Logic, 
 a logical system with inductive sets, types , well-founded recursion etc. 
 Archive of Formal Proofs \cite{AFP} is a library of verification projects developed by Isabelle. 
-Our work is implemented with Isabelle and used many entries from Archive of Formal 
+Our work is implemented with Isabelle and uses many entries from Archive of Formal 
 Proofs.
 
 \subsection*{HOL-Real\_Asymp and Laudau\_Symbols}
@@ -118,7 +123,7 @@ We limit these problems and given them a formal definition.
 \end{definition}
 \begin{definition}
 If a problem is at least as complex as the most complex problems in \NP. It is 
-    in the complexity class NP-hard.
+    in the complexity class \textbf{NP-hard}.
 \end{definition}
 
 Instead of trying to prove or reject the existence of a non-deterministic algorithm 
@@ -126,11 +131,13 @@ for the NP problems, we focus on the NP-hardness. We would like to formally prov
 that many classical decision problems are NP-hard. For this reason, we have to introduce polynomial-time reductions.
 
 \subsection*{Polynomial-time Reductions}
-Given two decision problems $A$ and $B$, 
+\begin{definition}
+    Given two decision problems $A$ and $B$, 
 a reduction is a function $f: A \rightarrow B$, 
 which maps the instances of $A$ to those of $B$. A reduction is a polynomial-time reduction
 if and only if the reduction function has a polynomial-time complexity. 
-For a polynomial-time reduction from $A$ to $B$, we write $A \red B$. \\ \\
+For a polynomial-time reduction from $A$ to $B$, we write $A \red B$. 
+\end{definition}
 Let $M$ and $N$ denote the universe of $A$ and $B$. 
 A function $g: M \rightarrow N$ is a polynomial-time reduction 
 if and only if the following conditions are satisfied.
@@ -144,7 +151,7 @@ For convenience, we separate (2.1) into the soundness and completeness of the re
     completeness: \quad g(x) \in B \Longrightarrow x \in A
 \end{align*}
 
-\subsection*{NP-Hardness and Satisfiability}
+\subsection*{Satisfiability}
 To show a decision problem $B$ is NP-hard, 
 we have to find a NP-hard problem $A$ and polynomial-time reduction 
 such that $A \red B$. The first proven NP-hard problem is Satisfiability, 
@@ -152,10 +159,10 @@ which was independently proven by Cook in 1971 \cite{cook2023complexity} and Lev
 The Satisfiability problem is defined by 
 \problem{Satisfiability}{A propositional logical formula in 
 conjunctive normal form. }{Is there a valid assignment for this formula?}
-In the previous implementation of the project, Satisfiability is defined with a list of clauses, with the clauses as sets of variables.
+In the previous implementation of the project, Satisfiability is defined by a list of clauses, with the clauses as sets of variables.
 Our first reduction also stems from Satisfiability, while all the other reductions are constructed upon novel introduced problems. 
-More details on the reduction and implementation are given in Chapter 3 and Chapter 4. A glimpse of the available 
-definition is given by \hyperref[figure:2]{Figure 2.2}. \\\\
+More details on the reduction and implementation are given in \hyperref[chapter:covering]{Chapter 3} and \hyperref[chapter:weighted]{Chapter 4}. 
+A glimpse of the available definition is given by \hyperref[figure:2]{Figure 2.2}. \\\\
 In this definition, a literal is defined as either a positive or negative existence of the variables. Then 
 the type \textbf{three\_sat} is defined. It is technically not a 3-Satisfiability instance, for each clause can 
 contain more than three literals. This naming mistake is a historical legacy, which should be renamed after negotiation with the original contributors.
@@ -167,7 +174,7 @@ logical formula. Finally, we add the definition of \textbf{cnf\_sat}, upon which
     \label{figure:2}
 \end{figure}
 
-\section{Application of NREST and Paradigm}
+\section{Application of NREST and Paradigms}
 The NREST package offers an approach for approximating the complexity of non-deterministic processes.
 This is especially useful when iterating a set, a collection or any other unordered data structures. Thus,
 we use this package throughout this work. In our complexity analysis, the following commands are used. 
@@ -175,8 +182,9 @@ we use this package throughout this work. In our complexity analysis, the follow
     \item \textbf{$RETURNT$ res}. A command that returns the result \textbf{res}. It costs exactly one unit of time.
     \item \textbf{$SPECT$ [cond $\rightarrow$ cost]}. A command used for checking a condition. Checking the condition \textbf{cond}
     take \textbf{cost} units of time.
-    \item \textbf{$SPEC$ $P$ $Q$}. A command used for assignment. Should $P\ x$ hold for an object $x$, it is a valid object after the assignment
-    The assignment then takes $Q\ x$ units of time.
+    \item \textbf{$SPEC$ $P$ $Q$}. A command used for assignment. 
+    Should $P\ x$ hold for an object $x$, it is a valid object after the assignment.
+    This assignment takes $Q\ x$ units of time.
 \end{itemize}
 To apply the NREST approach in the complexity analysis, it is necessary to rewrite the algorithm with the NREST commands.
 In our implementation, it means to convert the reduction function into an algorithm implemented with NREST commands.
