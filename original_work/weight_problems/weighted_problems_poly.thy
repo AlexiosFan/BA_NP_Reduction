@@ -59,7 +59,7 @@ section "the reduction from subset sum to number partition is polynomial"
 subsection "definitions"
 
 definition "mop_check_not_greater_eq \<equiv> \<lambda>(as, s). SPECT [s \<le> sum ((!) as) {..<length as} \<mapsto> 1]"
-definition "mop_cons_new_sum \<equiv> \<lambda>(as, s). SPEC (\<lambda>as'. as' = (sum ((!) as) {..<length as} + 1 - s) # (s + 1) # as) (\<lambda>_. 2 * length as + 3 + 2)"
+definition "mop_cons_new_sum \<equiv> \<lambda>(as, s). SPEC (\<lambda>as'. as' = (sum ((!) as) {..<length as} + 1 - s) # (s + 1) # as) (\<lambda>_. 3 * length as + 3 + 2)"
 (* 2*length for indexing and addition*)
 
 definition "ss_list_to_part_alg \<equiv> \<lambda>(as, s).
@@ -76,7 +76,7 @@ definition "ss_list_to_part_alg \<equiv> \<lambda>(as, s).
   }"
 
 definition "ss_list_to_part_space n = n + 3"
-definition "ss_list_to_part_time n = 1 + 2*n + 3 + 2"
+definition "ss_list_to_part_time n = 1 + 3*n + 3 + 2"
 
 subsection "proof"
 

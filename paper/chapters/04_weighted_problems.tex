@@ -1,70 +1,78 @@
 \chapter{Weighted Sum Problems}\label{chapter:weighted}
-In this chapter, we discuss the NP-Hardness of a few weighted sum problems. In weighted sum problems, 
-there is a weighting function $w$ over a set $S$. The problems ask about whether the weight of elements 
-in $S$ satisfies an equality or inequality relationship. The weighted sum problems are also mathematical programming 
-problems, which is another large discipline of NP-hard problems. In Karp's paper, there were Partition, Subset Sum \footnote{What Karp presented was referred to as Knapsack, although
-the definition is closer to the Subset Sum nowadays}, and Knapsack introduced. 
-We present reductions from Exact Cover to Subset Sum, from Subset Sum to Partition, Knapsack and Zero-one Integer Programming. 
+In this chapter, we discuss the NP-hardness of a few weighted sum problems. In weighted sum problems, 
+there is a weighting function $w$ over a set $S$. 
+The problems ask about whether the weight of elements 
+in $S$ satisfies an equality or inequality relationship. 
+The weighted sum problems are also mathematical programming 
+problems, which are another large discipline of NP-hard problems. In Karp's paper, there were Partition, Subset Sum 
+\footnote{Karp called this problem Knapsack, although they are two different problems nowadays}, and Knapsack introduced. 
+We present reductions from Exact Cover to Subset Sum, and from Subset Sum to Partition, Knapsack and Zero-one Integer Programming. 
 
-\section{Subset sum}
+\section{Subset Sum}
 We define Subset Sum with a set and a weighting function. The definition stems from the book \textit{The design and analysis of algorithms} \cite{kozen1992design}.
-There is also an alternative definition using a multiset or a sequence without 
-a weighting function, which is useful for other reductions in this work. More details follow in the \hyperref[sec:partition]{Partition} section. 
+There is also an alternative definition using a multi-set or a list without 
+a weighting function, which is useful for other reductions in this work. 
+More details follow in the \hyperref[sec:partition]{Partition} section, where this alternative definition is used.
 \problem{Subset Sum}{A finite set $S$, a weighting function $w$, and an integer $B$}{Is there a subset $S' \subseteq S$ s.t. 
 \begin{equation}
-    \sum_{x \in S'} w(x) = B \tag{1}
+    \sum_{x \in S'} w(x) = B \tag{1} \label{eq:1}
 \end{equation}}
 \begin{myalign}
-    \textbf{Subset Sum} := \{(S, w, B) | \exists S' \subseteq S. \sum_{x \in S'} w(x) = B\}
+    \textbf{Subset Sum}_{YES} := \{(S, w, B) | \exists S' \subseteq S. \sum_{x \in S'} w(x) = B\}
 \end{myalign}
 
 \subsection{Reduction Details}
 We reduce Exact Cover to Subset Sum. We start with Exact Cover problems over natural numbers. 
-Given $(X, S)$ an instance of Exact Cover over natural numbers, let $S$ be the set in the instance of Subset Sum. Then we
+Given $(X, S)$ a YES-instance of Exact Cover over natural numbers, let $S$ be the set in the YES-instance of Subset Sum. Then we
 define the weighting function $w_{p}$ and the sum $B_{X}$ by 
 \begin{align*}
-    w_p(s) = \sum_{x \in s} p^x , B_X = w(X)
+    w_p(s) = \sum_{x \in s} p^x, \ \ B_X = w(X)
 \end{align*}
 where $p$ is a natural number no less than $|S|$
-\begin{definition}[Reduction XC to SS]
-    Given an instance of Exact Cover over natural numebers $(X, S)$, 
-    it is reduced to an instance of Subset Sum $(S, w_p, B_X)$ as presented above.
+\begin{definition}[Reduction Exact Cover to Subset Sum]
+    Given a YES-instance of Exact Cover over natural numbers $(X, S)$, 
+    it is reduced to a YES-instance of Subset Sum $(S, w_p, B_X)$ as presented above.
 \end{definition}
 With this definition, we show the correctness of the reduction.
 \begin{lemma}[Soundness]
-    If $(X, S)$ is an instance of Exact Cover. The reduced $(S, w_p, B_X)$ is then an instance of Subset Sum. 
+    If $(X, S)$ is a YES-instance of Exact Cover. The reduced $(S, w_p, B_X)$ is then a YES-instance of Subset Sum. 
+    \label{lemma:7}
 \end{lemma}
 \begin{proof}
     Let the $S' \subseteq S$ be an exact cover of X. It then holds that
 \begin{align*}
     \sum_{s \in S'} w_p(s) = \sum_{s \in S'} (\sum_{x \in s} p^x) 
     \stackrel{\text{S' disjoint}}{=} \sum_{x \in \bigcup S'} p^x 
-    \stackrel{X = \bigcup S'}{=} \sum_{x \in X} p^x = B_X
+    \stackrel{\text{S' covers X}}{=} \sum_{x \in X} p^x = B_X
 \end{align*}
-Thus, $(S, w_p, B_X)$ is an instance of Subset Sum. 
+Thus, $(S, w_p, B_X)$ is a YES-instance of Subset Sum. 
 \end{proof}
 \begin{lemma}[Completeness]
-    Let $(S, w_p, B_X)$ be reduced from $(X, S)$. If $(S, w_p, B_X)$ is an instance of Subset Sum, 
-    $(X, S)$ has to be an instance of Exact Cover. 
+    Let $(S, w_p, B_X)$ be reduced from $(X, S)$. If $(S, w_p, B_X)$ is a YES-instance of Subset Sum, 
+    $(X, S)$ has to be a YES-instance of Exact Cover.
+    \label{lemma:8} 
 \end{lemma}
 \begin{proof}
     \label{lemma:sscompl}
-    Obtain $S' \subseteq S$ for which \textbf{(1)} holds. We show the disjointness of $S'$ by contradiction. 
-Assume that $S'$ is not disjoint. Then there exist $s_1, s_2 \in S'$ s.t. $s_1 \cap s_2 \not= \emptyset$. Let $a \in s_1 \cap s_2$ be arbitrary. Then 
-there are two cases for the coefficient $c_a$ of $p^a$ in the polynomial $\sum_{x \in S'} w_p(x)$ of $p$. 
-\begin{enumerate}
-    \item $c_a \neq 1$. This case is invalid. It is obvious that the $p$-nary representation of 
-    a natural number is unique. Since \textbf{(1)} holds and $B_X = \sum_{x \in X} {p^x}$, the coefficient 
-    $c_a$ has to be exactly one.
-    \item $c_a = 1$. Though \textbf{(1)} is satisfied, there are still at least two $p^a$ in the polynomial $\sum_{x \in S'} w_p(x)$.
-    One of them stems from $s_1$, the other from $s_2$.
-    Hence the number of $p^a$ in this polynomial is at least $p$. However, there are utmost $|S|$ elements in $S'$, meaning that there are utmost $|S|$ such $p^a$. From the 
-    fact the $p > |S|$, it is not possible that the number of $p^a$ is greater equal $p$. As a result, this case is also invalid.
-\end{enumerate}
-In conclusion, the assumption is false, and $S'$ is disjoint. Then, it follows directly from the disjointness that $S'$ covers $X$ exactly, otherwise \textbf{(1)}
-is not satisfied.
+Obtain $S' \subseteq S$ for which \hyperref[eq:1]{equation (1)} holds. 
+From \hyperref[eq:1]{equation (1)} and  $B_X = w(X)$ from reduction, we obtain the equation 
+\begin{equation}
+    \sum_{s \in S'} \sum_{x \in s} p^x = \sum_{x \in S'} w(s) = B =  \sum_{x \in X} p^x \tag{*} \label{eq:proof}
+\end{equation}
+We show the disjointness of $S'$ by contradiction. 
+Assume that $S'$ is not disjoint. Then there exist $s_1, s_2 \in S'$ s.t. $s_1 \cap s_2 \not= \emptyset$. Let $a \in s_1 \cap s_2$ be arbitrary. 
+Then we take a closer look at the coefficient $c_a$ of $p^a$ in the polynomial $\sum_{x \in S'} w_p(x)$ of $p$. 
+It is obvious that the $p$-nary representation of a natural number is unique. 
+Hence $c_a$ has to be exactly one, otherwise \hyperref[eq:1]{equation (1)} would not hold because of $B_X = w(X)$. \\\\ 
+For $c_a = 1$. Though \hyperref[eq:1]{equation (1)} is satisfied, there are still at least two $p^a$ in the polynomial $\sum_{x \in S'} w_p(x)$.
+One of them stems from $s_1$, the other from $s_2$.
+Hence the number of $p^a$ in this polynomial is at least $p$. However, there are at most $|S|$ elements in $S'$, meaning that there are at most $|S|$ such $p^a$. From the 
+fact the $p > |S|$, it is not possible that the number of $p^a$ is greater equal $p$. As a result, this case is also invalid. \\\\
+In conclusion, the assumption that $S'$ is not disjoint does not hold, and $S'$ is disjoint. 
+Then it follows that $S'$ covers $X$ exactly, otherwise \hyperref[eq:proof]{equation (*)} would not hold for a disjoint set $S'$.
+
 \end{proof}
-This reduction is, however, limited to the Exact Cover over natural numbers. It is still necessary to generalize the reduction. 
+This reduction is, however, limited to the Exact Cover over natural numbers. It is still necessary to generalize the reduction to the Exact Cover over any arbitrary type. 
 For this reason, we need to construct a mapping.
 \begin{lemma}
     \label{lemma:9}
@@ -77,87 +85,113 @@ For this reason, we need to construct a mapping.
     \end{align*}
 \end{lemma}
 \begin{proof}
-    Trivial.
+    Any finite set is countable.
 \end{proof}
-With this approach, we are able to generalize Exact Cover and covert each instance to an equivalent instance 
+With this approach, we are able to generalize Exact Cover and convert each YES-instance to an equivalent YES-instance 
 over natural numbers. 
-\begin{definition}[Reduction XC to SS, updated]
-    Given an instance of Exact Cover $(X, S)$, 
+\begin{definition}[Reduction Exact Cover to Subset Sum, generalised]
+    \label{def:13}
+    Given a YES-instance of Exact Cover $(X, S)$, 
     we first map it into natural numbers using the bijective function $f$. 
-    The resulting instance of Exact Cover $(X_f, S_f)$ is reduced to an instance of Subset Sum $(S_f, w_p, B_X)$ as presented above.
+    The resulting YES-instance of Exact Cover $(X_f, S_f)$ is reduced to a YES-instance of Subset Sum $(S_f, w_p, B_X)$ as presented above.
 \end{definition}
 Then, we perform a complexity analysis over the whole construction.
 \begin{lemma}[Polynomial Complexity]
     The construction of $(S_f, w_p, B_X)$ from $(X, S)$ can be computed within polynomial time. 
+    \label{lemma:10}
 \end{lemma}
 \begin{proof}
-    When we map an arbitrary set into a natural number set as presented in Lemma 9, we have to iterate over the set $X$, which costs the complexity of $|X|$. 
-Furthremore, we have to iterate $S$ to construct $w_p$ and $B_X$, resulting in the complexity of $2|S|$. In total, it costs $|X| + 2|S| \in\bigO{|X| + |S|}$, 
+    When we map an arbitrary set into a natural number set as presented in \hyperref[lemma:9]{Lemma 9}, we have to iterate over the set $X$, which costs the complexity of $|X|$. 
+Furthermore, we have to iterate $S$ to construct $w_p$ and $B_X$, resulting in the complexity of $2|S|$. In total, it costs $|X| + 2|S| \in\bigO{|X| + |S|}$, 
 i.e. the linear complexity. 
 \end{proof}
 Finally, we summarize to obtain the main theorem.
 \begin{theorem}
     Subset Sum is NP-hard.
 \end{theorem}
+\begin{proof}
+    By \hyperref[lemma:7]{Lemma 7}, \hyperref[lemma:8]{Lemma 8}, and \hyperref[lemma:9]{Lemma 10}
+\end{proof}
 
-\subsection{Implemantation Deatails}
-The Isabelle definition of Subset Sum is given in \hyperref[fig:4.1]{Figure 4.1}. 
-It is easy to notice that the definition is identical to the pen-and-paper definition.
+\subsection{Example}
+Again, we present an example for the reduction from Exact Cover to Subset Sum for better understanding.\\\\
+\textbf{Input:} The YES-instance of exact cover is given by 
+\begin{align*}
+    X &:= \{1, 2, 3, 4\} \\ 
+    S &:= \{\{1\}, \{2\}, \{2, 3\}, 
+    \{2, 4\}, \{3, 4\}, \{1, 2, 3\}\}
+\end{align*}
+\textbf{Output:} 
+While $S$ is not changed, the weighting function $w$ and the sum $B$ is given by 
+\begin{align*}
+    w_p(s) = \sum_{x \in s} 4^x, \ \
+    B_X = w(X) = 4 + 4^2 + 4^3 + 4^4 = 340
+\end{align*}
+\textbf{Validity:} An exact cover $S'$ is given by 
+\begin{align*}
+    S' = \{\{1\}, \{2\}, \{3, 4\}\}
+\end{align*}
+Hence it holds that 
+\begin{align*}
+    w(\{1\}) + w(\{2\}) + w(\{3,4\}) = 4 + 4^2 + (4^3 + 4^4) = 340 = B
+\end{align*}
+
+\subsection{Implementation Details}
+The Isabelle definition of Subset Sum is given in \hyperref[fig:4.1]{Figure 4.1}, which is identical to the pen-and-paper definition,
+except for that we state the finiteness of $S$ explicitly.
 \begin{figure}[!h]
     \Snippet{subset-sum-def}
     \caption{Definition of Subset Sum}
     \label{fig:4.1}
 \end{figure}
 \subsubsection{Definition of the Reduction}
-In implementation shown in \hyperref[fig:4.2]{Figure 4.2}, we started with the construction as presented in \hyperref[lemma:9]{Lemma 9}. The function \textbf{map\_to\_nat} returns 
-a mapping function with the property in Lemma 9, in whose definition the predicate \textbf{SOME} is used again.
+In the implementation shown in \hyperref[fig:4.2]{Figure 4.2}, we started with the construction as presented in \hyperref[lemma:9]{Lemma 9}. The function \textbf{map\_to\_nat} returns 
+a mapping function with the property in \hyperref[lemma:9]{Lemma 9}, in whose definition the predicate \textbf{SOME} is used again.
 Following this, we define the weighting function and reduction function. 
 Similar to what happened to Exact Hitting Set, we also check if $X$ is finite and if $S$ is 
 a collection before we perform a reduction, for these conditions are a requirement under our definition. 
 \begin{figure}[!h]
     \Snippet{subset-sum-red}
-    \caption{Definition of the reduction, XC to SS}
+    \caption{Definition of the reduction, Exact Cover to Subset Sum}
     \label{fig:4.2}
 \end{figure}
 Apart from the definition, we need a lemma that converts the sum to a polynomial. To guarantee that $p^k$ is unique for an arbitrary $k$, 
 we require that $p \geq 2$ as in \hyperref[fig:4.3]{Figure 4.3}.
 \begin{figure}[!h]
     \Snippet{subset-sum-aux1} 
-    \caption{Definition of the reduction, XC to SS}
+    \caption{Definition of the reduction, Exact Cover to Subset Sum}
     \label{fig:4.3}
 \end{figure}
 
 \subsubsection{Uniqueness of Polynomials}
 The main part of the proof is implemented as discussed in the reduction details. A problem occurred when showing the completeness of the reduction. 
-Besides the proof presented in the implementation details, it is necessary to show that the representation of a natural number as
-polynomial with the base $p$ is unique. To achieve this, we imported the Archive of Formal Proofs entry DigitInBase and applied the theorem \textbf{seq\_uniqueness}
+Besides the proof presented in \hyperref[lemma:8]{Lemma 8}, it is necessary to show that the representation of a natural number as
+polynomial with the base $p$ is unique. To achieve this, we imported the Archive of Formal Proofs entry DigitInBase \cite{DigitsInBase-AFP} and applied the theorem \textbf{seq\_uniqueness}
 in \hyperref[fig:4.4]{Figure 4.4}.\\\\
-$m$ is computed by $\sum \textbf{D j} \cdot b^i$, hence \textbf{D j} should be exactly the $i$-th 
-digit of $m$ with base $b$, i.e. $\textbf{D j} = \textbf{ith\_digit m j}$. 
-In our proof by contradiction as in \hyperref[lemma:sscompl]{Lemma 8}, 
-we found an $m = \sum_{x \in S'} w(x) = B$ that can be represented with two coefficient functions \textbf{D j} and \textbf{E j}. 
-\textbf{D j} is a representation resulting from $\sum_{x \in S'} w(x)$, 
-while \textbf{E j} is a representation resulting from $B$.
-Hence it holds that 
-\begin{align*}
-    \textbf{D j} = \textbf{ith\_digit m j} = \textbf{E j}
-\end{align*}
-However, due to the existence of $a \in s_1 \cap s_2$, it holds that $\textbf{D a} \geq 2$ and $\textbf{E a} = 1$ in the meantime. 
-By this contradiction, we are able to show the completeness.
+This lemma shows that each digit of the $p$-nary representation of an arbitrary number is unique. 
+In our proof by contradiction, we managed to find a digit in which two representations are different. 
+In this manner, we are able to finish the proof in \hyperref[lemma:8]{Lemma 8}.
 \begin{figure}[!h]
     \Snippet{subset-sum-aux2}
     \caption{Snippets from DigitInBase}
     \label{fig:4.4}
 \end{figure}
 \subsubsection{Polynomial-time Complexity}
-The implementation of the proof for polynomial complexity is identical to what is introduced in reduction details. 
+The implementation of the proof for polynomial complexity is identical to what is introduced in \hyperref[def:13]{Definition 13}. 
 Fortunately, the proof is automated, hence we only present and discuss about complexity in \hyperref[fig:4.5]{Figure 4.5} and \hyperref[table:4.1]{Table 4.1}.
+In the NREST-algorithm, a condition check is performed before entering the reduction. 
+If the requirement of the reduction is not fulfilled. i.e. when b is true, a NO-instance is returned immediately. 
+After entering the reduction, we construct the bijective mapping from \hyperref[lemma:9]{Lemma 9} and three components of the result 
+in \hyperref[def:13]{Definition 13}. \\\\
+Constructing the mapping and the constant $B$ needs to iterate and modify the sets, 
+costing at least $3n$ unit of time according to the \hyperref[para1]{paradigm}.  
+On the other hand, the construction of the base costs only $n + 3$ because we only iterate set and count the cardinality without doing any configuration.
 Different from the previous reductions, this reduction returns not only a set but also two constants,
 resulting a few constant operations during the reduction. Overall, the reduction has linear complexity,
 which is the same as the pen-and-paper proof.
 \begin{figure}[!h]
     \Snippet{subset-sum-poly}
-    \caption{The NREST version of the reduction, XC to SS}
+    \caption{The NREST version of the reduction, Exact Cover to Subset Sum}
     \label{fig:4.5}
 \end{figure}
 \begin{table}[!h]
@@ -177,51 +211,27 @@ which is the same as the pen-and-paper proof.
         mop\_constr\_B & computing the constant sum & $3n + 1$ \\
         \hline
     \end{tabular}
-    \caption{Complexity of operations in reduction XC to SS.}
+    \caption{Complexity of operations in reduction Exact Cover to Subset Sum.}
     \label{table:4.1}
 \end{table}
 
-\subsection{Example}
-Again, we present an example for the reduction from Exact Cover to Subset Sum for better understanding.\\\\
-\textbf{Input:} The instance of exact cover is given by 
-\begin{align*}
-    X &:= \{1, 2, 3, 4\} \\ 
-    S &:= \{\{1\}, \{2\}, \{2, 3\}, 
-    \{2, 4\}, \{3, 4\}, \{1, 2, 3\}\}
-\end{align*}
-\textbf{Output:} 
-While $S$ is not changed, the weighting function $w$ and the sum $B$ is given by 
-\begin{align*}
-    w_p(s) = \sum_{x \in s} 4^x,
-    B_X = w(X) = 4 + 4^2 + 4^3 + 4^4 = 340
-\end{align*}
-\textbf{Validity:} An exact cover $S'$ is given by 
-\begin{align*}
-    S' = \{\{1\}, \{2\}, \{3, 4\}\}
-\end{align*}
-Hence it holds that 
-\begin{align*}
-    w(\{1\}) + w(\{2\}) + w(\{3,4\}) = 4 + 4^2 + (4^3 + 4^4) = 340 = B
-\end{align*}
-
-\section{Subset Sum in Sequence and Partition}\label{sec:partition}
+\section{Subset Sum in List and Partition}\label{sec:partition}
 The next problem that we want to reduce to is Partition. 
-For convenience, we use $as - as'$ to demonstrate the difference between two sequences.
-\begin{align*}
-    as - as' = \{x | x \in as \land x \not\in as' \}
-\end{align*}
-\problem{Partition}{A finite sequence $as$ of natural numbers.}{Is there a sub-sequence $as' \subset s$ s.t. 
+For convenience, we use the notations of multi-sets for the lists. 
+Hence $as - as'$ stands for the difference between two lists, 
+while $x \in as$ shows the existence of $x$ in $as$.
+Additionally, $\#$ is used to append elements at the front of the lists. 
+\problem{Partition}{A list $as$ of natural numbers.}{Is there a sub-list $as' \subset s$ s.t. 
 \begin{align*} 
-    \sum_{x \in as'} x = \sum_{x \in  as - as'} x \tag{2}
+    \sum_{x \in as'} x = \sum_{x \in  as - as'} x \tag{2} \label{eq:2}
 \end{align*}
 }
 \begin{myalign}
-    \textbf{Partition} := \{(a_1, a_2,...,a_n) | \exists S' \subseteq \{1, ..., n\}. \sum_{j \in S'} a_j = \sum_{j \not\in S'} a_j\}
+    \textbf{Partition}_{YES} := \{(a_1, a_2,...,a_n) | \exists S' \subseteq \{1, ..., n\}. \sum_{j \in S'} a_j = \sum_{j \not\in S'} a_j\}
 \end{myalign}
 
 \subsection{Reduction Details}
-Since all of the valid inputs require the sequences to be finite, we model the sequences using lists in all implementations.
-In addition, $\#$ is used to append elements at the front of the lists. Although it is possible 
+Although it is possible 
 to define the partition problem using the set and weighting function as in Subset Sum.
 We choose the presented definition for two reasons.
 \begin{enumerate}
@@ -231,28 +241,29 @@ We choose the presented definition for two reasons.
     \textit{Hardness of Lattice Problems} \cite{CVP_Hardness-AFP}, which is also the purpose of this work,
     i.e. providing theoretical basis for other verification projects.
 \end{enumerate} 
-Thus, we need to perform the reduction from the sequence version of Subset Sum. 
-We give the definition of Subset Sum using a sequence. 
-\problem{Subset Sum in Sequence}{
-    A finite natural number sequence $as$, a natural number $s$}{
-    Is there a sub-sequence $as' \subset as$ s.t. 
+Thus, we need to perform the reduction from the list version of Subset Sum. 
+We give the definition of Subset Sum using a list. 
+\problem{Subset Sum in List}{
+    A natural number list $as$, a natural number $s$}{
+    Is there a sub-list $as' \subset as$ s.t. 
     \begin{align*}
-        \sum_{x \in as'} x = B \tag{3}
+        \sum_{x \in as'} x = B \tag{3} \label{eq:3}
     \end{align*}
 }
 \begin{myalign}
-    \textbf{Subset Sum Seq} := \{(a_1, a_2,...,a_n, s) | \exists S' \subseteq \{1, ..., n\}. \sum_{j \in S'} a_j = s\}
+    \textbf{Subset Sum Seq}_{YES} := \{(a_1, a_2,...,a_n, s) | \exists S' \subseteq \{1, ..., n\}. \sum_{j \in S'} a_j = s\}
 \end{myalign}
-Given the instance of Subst Sum $(S, w, B)$, it is obvious that we can obtain a sequence $as$ by
-converting $S$ into a sequence and map the sequence with the weighting function $w$. Let $s = B$.
-The resulting pair $(as, s)$ is then an instance of the Subset Sum problem in sequence representation. 
-Then we reduce $(as, s)$ to an instance of Partition $bs$.
+Given a YES-instance of Subset Sum $(S, w, B)$, it is obvious that we can obtain a list $as$ by
+converting $S$ into a list and map the list with the weighting function $w$. Let $s = B$.
+The resulting pair $(as, s)$ is then a YES-instance of the Subset Sum problem in list representation. 
+Then we reduce $(as, s)$ to a YES-instance of Partition $bs$.
 \begin{align*}
-    bs = (1 - s + \sum_{x \in as} x) \# (s + 1) \# as
+    bs = (1 - s + \sum_{x \in as} x) \# (s + 1) \# as 
 \end{align*}
 With this definition, we start to show the soundness of the reduction.
 \begin{lemma}[Soundness]
-    If there exists an $as'$ s.t. the equation \textbf{(3)} holds for $(as, B)$, \textbf{(2)} should hold for the reduced $bs$.
+    \label{lemma:11}
+    If there exists an $as'$ s.t. \hyperref[eq:3]{equation (3)} holds for $(as, B)$, \hyperref[eq:2]{equation (2)} should hold for the reduced $bs$.
 \end{lemma}
 We construct a $bs'$ from $as'$ by 
 \begin{proof}
@@ -260,7 +271,7 @@ We construct a $bs'$ from $as'$ by
         bs' &= (1 - s + \sum_{x \in as} x) \# as' \\
         bs - bs' &=  (s + 1) \# (as - as')
     \end{align*}
-    Where the sums of the sequences satisfy the equation 
+    Where the sums of the lists satisfy the equation 
     \begin{align*}
         \sum_{x \in bs'} x = (1 - s + \sum_{x \in as} x) + \sum_{x \in as'} x
         = (1 - s + \sum_{x \in as} x) + s = (s + 1) + (\sum_{x \in as} x - s)
@@ -270,8 +281,9 @@ We construct a $bs'$ from $as'$ by
 \end{proof}
 Similarly, we can show the completeness of the reduction.
 \begin{lemma}[Completeness]
-    Let $bs$ be reduced from $(as, B)$. If there exists a $bs'$ s.t. \textbf{(2)} holds for $bs$, 
-    \textbf{(3)} should then hold for $(as, B)$.
+    \label{lemma:12}
+    Let $bs$ be reduced from $(as, B)$. If there exists a $bs'$ s.t. \hyperref[eq:2]{equation (2)} holds for $bs$, 
+    \hyperref[eq:3]{equation (3)} should then hold for $(as, B)$.
 \end{lemma}
 \begin{proof}
     It holds that
@@ -279,16 +291,17 @@ Similarly, we can show the completeness of the reduction.
     (1 - s + \sum_{x \in as} x) + (s + 1) = 2 + \sum_{x \in as} x > \sum_{x \in as} x
 \end{align*}
 As a result, $(1 - s + \sum_{x \in as} x)$ and $s + 1$ are not supposed be simultaneously existent in $bs'$. 
-After separating the first two elements of bs into different subsequences, the $as'$ is constructed 
+After separating the first two elements of bs into different sub-lists, the $as'$ is constructed 
 by obtaining the tail of $bs'$, with which the completeness is proven.
 \end{proof} 
 Finally, we analyse the complexity of the reduction.
 \begin{lemma}[Polynomial Complexity]
+    \label{lemma:13}
     The reduction from Subset Sum to Partition can be computed within polynomial time.
 \end{lemma}
 \begin{proof}
 The conversion between the definitions of the Subset Sum problem costs the complexity of $|S| + 1$,
-for it it necessary to iterate the set $S$ and map the sequence with the weighting function. Furthermore, we iterate the sequence similary when reducing the subset sum to partition, costing
+for it it necessary to iterate the set $S$ and map the list with the weighting function. Furthermore, we iterate the list similarly when reducing the subset sum to partition, costing
 the complexity of $|as| + 2$. In total, the complexity is $(|S| + 1) + (|as| + 2) \in \bigO{|S|}$  because of $|as| = |S|$.
 Thus, the reduction has linear complexity.
 \end{proof}
@@ -296,117 +309,11 @@ Then, we conclude the the main theorem with all the lemmas proven.
 \begin{theorem}
     Partition is NP-hard.
 \end{theorem}
-\subsection{Implemantation Details of Subset Sum in Sequence}
-\subsubsection*{Intermediate Step}
-Although the reduction is more straightforward compared to the previously introduced ones, the implementation is even lengthier. 
-The reason is that conversion of the set to a list also needs an additional reduction for indexing. For this reason, we introduce 
-a intermediate step, \textbf{subset\_sum\_indices} in \hyperref[fig:4.5]{Figure 4.5}.
-Apparently, to map $S$ to an set of integers from 1 to $|S|$, we need to apply \hyperref[lemma:9]{Lemma 9} again. 
-As always, we have to check if $S$ is finite, because finiteness is a requirement of the reduction.
-\begin{figure}[!h]
-    \Snippet{ss-indices-def}
-    \caption{Intermediate step of the reduction I, SS to Part}
-    \label{fig:4.6}
-\end{figure}\\\\
-Then, it suffices to convert the set into a list and perform the mapping, in which we used the function 
-\textbf{sorted\_list\_of\_set}, converting a set of ordered type to a sorted list. Similarly, we check if 
-$S$ is finite and if $S$ is of form $\{1, 2, .. , |S|\}$ as a requirement. The proof for the correctness is then mostly straightforward
-after unfolding the necessary definitions and using a few available lemmas in the list library, such as \textbf{nth\_equalityI} etc. 
-
-\subsubsection*{Polynomial-time Complexity}
-Similar to the reduction from Exact Cover to Subset Sum, the proof of the polynomial-time complexity for two reductions 
-is rather trivial. An NREST version of the reduction is given in \hyperref[fig:4.7]{Figure 4.7}.
-As shown in \hyperref[table:4.2]{Table 4.2} and \hyperref[table:4.3]{Table 4.3}, the reduction 
-costs linear-time complexity. Similar to the reduction from Exact Cover to Subset Sum, there are a few 
-constant steps taken because of the structure of the instances.
-\begin{figure}[!h]
-    \Snippet{ss-indices-poly}
-\Snippet{ss-list-poly}
-\caption{The NREST version of the reductions, SS to SS list}
-\label{fig:4.7}
-\end{figure}
-\begin{table}[!h]
-    \centering 
-    \begin{tabular}{| c | c | c |}
-        \hline 
-        Operation & Functionality & Complexity \\ 
-        \hhline{|=|=|=|}
-        mop\_check\_finiteness & checking the requirements & $1$ \\ 
-        \hline 
-        mop\_mapping\_of\_set & constructing the mapping & $6n + 1$ \\ 
-        \hline 
-        mop\_updating\_the\_weighting & updating the weighting function & $6n + 1$ \\ 
-        \hline 
-    \end{tabular}
-    \caption{Complexity of operations in reduction SS to SS Indices.}
-    \label{table:4.2}
-\end{table}
-\begin{table}[!h]
-    \centering 
-    \begin{tabular}{| c | c | c |}
-        \hline 
-        Operation & Functionality & Complexity \\ 
-        \hhline{|=|=|=|}
-        mop\_check\_finiteness\_set & checking the requirements & $1$ \\ 
-        \hline 
-        mop\_mapping\_to\_list & mapping the set to the list & $6n$ \\ 
-        \hline 
-        mop\_nat\_to\_int & computing the constant & $1$ \\ 
-        \hline 
-    \end{tabular}
-    \caption{Complexity of operations in reduction SS Indices to SS List.}
-    \label{table:4.3}
-\end{table}
-
-\subsection{Implemantation Details of Partition}
-\subsubsection{Choice of Definitions}
-Instead of the original definition, where the sum of a sub-sequence is equal to its complement, we use a different definition in the implementation,
-where the double of the sum of a sub-sequence is equal to to the sum of the whole sequence. We have also shown that this definition is equivalent 
-to the original definition, i.e. \textbf{part\_alter} in \hyperref[fig:4.8]{Figure 4.8}. 
-\begin{figure}[!h]
-    \Snippet{part-def}
-    \caption{Definitions for Partition}
-    \label{fig:4.8}
-\end{figure}\\\\
-The reason was initially the convenience of the proof. 
-In \textbf{part\_alter}, it is necessary to consider the sum of the sub-sequence $(as - as')$ when showing the soundness lemma. 
-Unfortunately, this is rather complex under our definition, for we have to flip the list $xs$, the zero-one list that is used for multiplication. For this 
-flipping operation, we have shown the lemma \textbf{sum\_binary\_part} in \hyperref[fig:4.9]{Figure 4.9}. If we use the new definition, this is avoidable.
-\begin{figure}[!h]
-    \Snippet{part-aux1}
-    \caption{Details of the reduction, SS List to Partition}
-    \label{fig:4.9}
-\end{figure}
-However, when showing the completeness lemma, we found out that we have to show the same statement for the new definition, too. 
-Thus, it is not an absolutely better definition. 
-\subsubsection{Polynomial-time Complexity}
-The proof of the polynomial-time complexity is also trivial. 
-An NREST version is given in \hyperref[fig:4.10]{Figure 4.10}. 
-As shown in \hyperref[table:4.5]{Table 4.5}, the reduction costs linear complexity. It is slightly 
-different from the estimation of the pen-and-paper proof, because a few more constance steps are taken. 
-\begin{figure}[!h]
-    \Snippet{part-poly}
-    \caption{The NREST version of the reductions, SS List to Partition}
-    \label{fig:4.10}
-\end{figure}
-\begin{table}[!h]
-    \centering 
-    \begin{tabular}{| c | c | c |}
-        \hline 
-        Operation & Functionality & Complexity \\ 
-        \hhline{|=|=|=|}
-        mop\_check\_not\_greater\_eq & checking the requirements & $1$ \\ 
-        \hline 
-        mop\_cons\_new\_sum & constructing the new sequence & $2n + 5$ \\ 
-        \hline 
-    \end{tabular}
-    \caption{Complexity of operations in reduction SS List to Partition.}
-    \label{table:4.5}
-\end{table}
-
-\subsection{Example}
-As a last part of Partition, we present an example indicating how an instance of Subset Sum 
-is reduce to an instance of Partition.\\
+\begin{proof}
+    By \hyperref[lemma:11]{Lemma 11}, \hyperref[lemma:12]{Lemma 12}, and \hyperref[lemma:13]{Lemma 13}
+\end{proof}
+\subsection{Example of the reduction}
+In additional to mathematical proofs, we also present an example to illustrate the reduction.\\
 \textbf{Input:} We use the same instance of subset sum as in the previous example. $(S, w, B)$ be 
 then converted to 
 \begin{align*}
@@ -427,6 +334,125 @@ with the equality
     425 + 4 + 16 + 320 = 765 = 341 + 80 + 272 + 72 
 \end{align*}
 
+\subsection{Implementation Details of Subset Sum in List}
+\subsubsection*{Intermediate Step}
+Although the reduction is more straightforward compared to the previously introduced ones, the implementation is even lengthier. 
+The reason is that conversion of the set to a list also needs an additional reduction for indexing. For this reason, we introduce 
+a intermediate step, \textbf{subset\_sum\_indices} in \hyperref[fig:4.5]{Figure 4.5}.
+Apparently, to map $S$ to an set of integers from 1 to $|S|$, we need to apply \hyperref[lemma:9]{Lemma 9} again. 
+As always, we have to check if $S$ is finite, because finiteness is a requirement of the reduction.
+\begin{figure}[!h]
+    \Snippet{ss-indices-def}
+    \caption{Intermediate step of the reduction I, Subset Sum to Partition}
+    \label{fig:4.6}
+\end{figure}\\\\
+Then, it suffices to convert the set into a list and perform the mapping, in which we used the function 
+\textbf{sorted\_list\_of\_set}, converting a set of ordered type to a sorted list. Similarly, we check if 
+$S$ is finite and if $S$ is of form $\{1, 2, .. , |S|\}$ as a requirement. The proof for the correctness is then mostly straightforward
+after unfolding the necessary definitions and using a few available lemmas in the list library, such as \textbf{nth\_equalityI} etc. 
+
+\subsubsection*{Polynomial-time Complexity}
+Similar to the reduction from Exact Cover to Subset Sum, the proof of the polynomial-time complexity for two reductions 
+is straightforward. An NREST version of the reduction is given in \hyperref[fig:4.7]{Figure 4.7}.
+In both cases, the NREST version starts with a condition check for the finiteness of the input. 
+In the first reduction, we construct a mapping in \hyperref[lemma:9]{Lemma 9}, 
+followed by an operation updating the weighting function. 
+In the second reduction, the set is mapped to a list and then the type is lifted to natural numbers. \\\\
+As shown in \hyperref[table:4.2]{Table 4.2} and \hyperref[table:4.3]{Table 4.3}, the reduction 
+costs linear-time complexity. 
+Similar to the reduction from Exact Cover to Subset Sum, there a few constant steps due to the structure of tuples. 
+In both reductions, we may have to iterate the set or the list twice, resulting a complexity of at least $6n$ 
+instead of $3n$ in the previous reductions.
+\begin{figure}[!h]
+    \Snippet{ss-indices-poly}
+\Snippet{ss-list-poly}
+\caption{The NREST version of the reductions, Subset Sum to Subset Sum List}
+\label{fig:4.7}
+\end{figure}
+\begin{table}[!h]
+    \centering 
+    \begin{tabular}{| c | c | c |}
+        \hline 
+        Operation & Functionality & Complexity \\ 
+        \hhline{|=|=|=|}
+        mop\_check\_finiteness & checking the requirements & $1$ \\ 
+        \hline 
+        mop\_mapping\_of\_set & constructing the mapping & $6n + 1$ \\ 
+        \hline 
+        mop\_updating\_the\_weighting & updating the weighting function & $6n + 1$ \\ 
+        \hline 
+    \end{tabular}
+    \caption{Complexity of operations in reduction, Subset Sum to Subset Sum Indices.}
+    \label{table:4.2}
+\end{table}
+\begin{table}[!h]
+    \centering 
+    \begin{tabular}{| c | c | c |}
+        \hline 
+        Operation & Functionality & Complexity \\ 
+        \hhline{|=|=|=|}
+        mop\_check\_finiteness\_set & checking the requirements & $1$ \\ 
+        \hline 
+        mop\_mapping\_to\_list & mapping the set to the list & $6n$ \\ 
+        \hline 
+        mop\_nat\_to\_int & computing the constant & $1$ \\ 
+        \hline 
+    \end{tabular}
+    \caption{Complexity of operations in reduction, Subset Sum Indices to Subset Sum List.}
+    \label{table:4.3}
+\end{table}
+
+\subsection{Implementation Details of Partition}
+\subsubsection{Choice of Definitions}
+Instead of the original definition, where the sum of a sub-list is equal to its complement, we use a different definition in the implementation,
+where the double of the sum of a sub-list is equal to to the sum of the whole list. We have also shown that this definition is equivalent 
+to the original definition, i.e. \textbf{part\_alter} in \hyperref[fig:4.8]{Figure 4.8}. 
+\begin{figure}[!h]
+    \Snippet{part-def}
+    \caption{Definitions for Partition}
+    \label{fig:4.8}
+\end{figure}\\\\
+The reason was initially the convenience of the proof. 
+In \textbf{part\_alter}, it is necessary to consider the sum of the sub-list $(as - as')$ when showing the soundness lemma. 
+Unfortunately, this is rather complex under our definition, for we have to flip the list $xs$, the zero-one list that is used for multiplication. For this 
+flipping operation, we have shown the lemma \textbf{sum\_binary\_part} in \hyperref[fig:4.9]{Figure 4.9}. If we use the new definition, this is avoidable.
+\begin{figure}[!h]
+    \Snippet{part-aux1}
+    \caption{Details of the reduction, Subset Sum List to Partition}
+    \label{fig:4.9}
+\end{figure}
+However, when showing the completeness lemma, we found out that we have to show the same statement for the new definition, too. 
+Thus, it is not an absolutely better definition. 
+\subsubsection{Polynomial-time Complexity}
+The proof of the polynomial-time complexity is also trivial. 
+An NREST version is given in \hyperref[fig:4.10]{Figure 4.10}. 
+As shown in \hyperref[table:4.5]{Table 4.5}, the reduction costs linear complexity. 
+An interesting phenomenon is the complexity of constructing the new finite list. 
+When constructing the list, we have to iterate and sum up the list elements.
+According to our \hyperref[para1]{paradigm}, iterating and accessing the structure both cost one unit of time. 
+The addition, as an arithmetic operation, also costs one unit of time.
+Hence the resulting complexity is $3n$ even though we do not modify the list.
+Five more constant steps are taken, so that new elements are appended to the list.
+\begin{figure}[!h]
+    \Snippet{part-poly}
+    \caption{The NREST version of the reductions, Subset Sum List to Partition}
+    \label{fig:4.10}
+\end{figure}
+\begin{table}[!h]
+    \centering 
+    \begin{tabular}{| c | c | c |}
+        \hline 
+        Operation & Functionality & Complexity \\ 
+        \hhline{|=|=|=|}
+        mop\_check\_not\_greater\_eq & checking the requirements & $1$ \\ 
+        \hline 
+        mop\_cons\_new\_sum & constructing the new list & $3n + 5$ \\ 
+        \hline 
+    \end{tabular}
+    \caption{Complexity of operations in reduction Subset Sum List to Partition.}
+    \label{table:4.5}
+\end{table}
+
 \section{Knapsack and Zero-One Integer Programming}
 Knapsack and Zero-One Integer Programming are another two classical weighted sum problems. While Subset Sum was referred 
 to as Knapsack in Karp's paper, its definition is nowadays different. Additionally, Zero-One Integer Programming 
@@ -440,12 +466,12 @@ and largely automated. Hence a discussion for implementation details is omitted 
     Is there a subset $S' \subseteq S$ s.t. 
     \begin{align*}
         \sum_{x \in S'} w(x) &\leq W \\ 
-        \sum_{x \in S'} b(x) &\geq B \tag{4}
+        \sum_{x \in S'} b(x) &\geq B \tag{4} \label{eq:4}
     \end{align*}
 }
 This definition also stems from the book \textit{The design and analysis of algorithms} \cite{kozen1992design}. 
-We reduce Subset Sum to Knapsack. With $(S, w, B)$ as an instance of Subset Sum, $(S, w, w, B, B)$
-is then an instance of knapsack.
+We reduce Subset Sum to Knapsack. With $(S, w, B)$ as a YES-instance of Subset Sum, $(S, w, w, B, B)$
+is then a YES-instance of knapsack.
 \begin{theorem}[Polynomial-time Reduction]
     Knapsack is NP-hard.
 \end{theorem}
@@ -455,7 +481,7 @@ is then an instance of knapsack.
         \sum_{x \in S'} w(x) &= W \\ 
         \sum_{x \in S'} b(x) &= B
     \end{align*}
-    where $b = w$ and $W = B$. Thus, equations in \textbf{(4)} are satisfied.
+    where $b = w$ and $W = B$. Thus, \hyperref[eq:4]{equations (4)} are satisfied.
     Apparently, the reduction is constant, for all operations are constant. 
 \end{proof}
 
@@ -465,23 +491,24 @@ is an integer, an $m$-tuple $c$ and an integer $B$}{
     Is there an $m$-tuple $y$ of integers s.t.
     \begin{align*}
         x^T \cdot y &\leq b \\ 
-        c^T \cdot y &\geq B, \forall (x, b) \in X \tag{5}
+        c^T \cdot y &\geq B, \forall (x, b) \in X \tag{5} \label{eq:5}
     \end{align*}
 }
 Although most researchers tend to use matrix for the 
 definition of the zero-one integer programming, we follow the definition from \textit{Computers and Intractability} \cite{garey1979computers}, because 
-it is convenient for our definition and consequently requires less effort. Given an instance of subset sum problem in sequence,
+it is convenient for our definition and consequently requires less effort. 
+Given a YES-instance of Subset Sum in List,
 (as, s), let 
 \begin{align*}
-    X = \{(as, s)\}, c = as, B = s
+    X = \{(as, s)\}, c = as, B = s 
 \end{align*} 
-The triple $(X, c, B)$ is then an instance of Zero-One Integer Programming.
+The triple $(X, c, B)$ is then a YES-instance of Zero-One Integer Programming.
 \begin{theorem}[Polynomial-time Reduction]
     Zero-One Integer Programming is NP-hard.
 \end{theorem}
 \begin{proof}
-    $(X, c, B)$ is then an instance of the zero-one integer programming problem,
-    for there exists an $xs$ s.t. $xs^T \cdot as = s$. Hence all equations in \textbf{(5)} hold.
+    $(X, c, B)$ is then a YES-instance of the zero-one integer programming problem,
+    for there exists an $xs$ s.t. $xs^T \cdot as = s$. Hence \hyperref[eq:5]{equations (5)} hold.
     Since all the operations are constant, the resulting complexity is also constant.
 \end{proof}
 It is not hard to notice that this definition can be converted to an alternative definition using matrices. 

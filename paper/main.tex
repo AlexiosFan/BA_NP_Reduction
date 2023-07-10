@@ -17,7 +17,7 @@
 \newcommand*{\getDoctype}{Bachelor's Thesis in Informatics}
 \newcommand*{\getSupervisor}{Prof. Tobias Nipkow}
 \newcommand*{\getAdvisor}{Katharina Kreuzer}
-\newcommand*{\getSubmissionDate}{Submission date}
+\newcommand*{\getSubmissionDate}{2023.07.15}
 \newcommand*{\getSubmissionLocation}{Munich}
 
 \newcommand{\PN}{\textbf{P}}
@@ -31,14 +31,14 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 
-\let\oldfigure\figure% Store old figure environment start
-\let\endoldfigure\endfigure% 
-\renewenvironment{figure}[1][htbp]% Redefine figure
+\let\oldfigure\figure
+\let\endoldfigure\endfigure%
+\renewenvironment{figure}[1][htbp]
   {\oldfigure[#1]\mdframed[backgroundcolor=gray!15]}
   {\endmdframed\endoldfigure}
 
 
-\newtcolorbox{myalign}[1][]{ams align*,colback=black!20!white,colframe=gray,#1}
+\newtcolorbox{myalign}[1][]{ams align*,colback=gray!20,colframe=gray!20,#1}
 
 
 \begin{document}
@@ -68,11 +68,6 @@
 \input{chapters/04_weighted_problems}
 \cleardoublepage{}
 \input{chapters/05_conclusion.tex}
-
-\appendix{}
-
-% TODO: appendix chapter
-\input{pages/appendix}
 
 \microtypesetup{protrusion=false}
 \listoffigures{}

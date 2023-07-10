@@ -13,7 +13,7 @@ In this chapter, we present the background information that supports our work.
 We start with the introduction to the interactive theorem prover Isabelle and its dependencies. 
 Furthermore, we present the mathematical backgrounds that are need for verification. 
 In the end, we describe the approaches for the complexity analysis and discuss the paradigm 
-that is used througout this work.
+that is used throughout this work.
 \section{Isabelle and Dependencies}
 \subsection*{Isabelle/HOL and Archive of Formal Proofs}
 Isabelle \cite{wenzel2004isabelle} is a generic interactive theorem prover. HOL is the Isabelle's formalization of Higher-Order Logic, 
@@ -25,12 +25,12 @@ Proofs.
 \subsection*{HOL-Real\_Asymp and Laudau\_Symbols}
 HOL-Real\_Asymp is a component of the Isabelle/HOL, in which the asymptotic 
 classes are defined. Moreover, the Archive of Formal Proof entry, Landau\_Symbols \cite{Landau_Symbols-AFP}, 
-defines the Landau's symbols and provides tool for reasoning about the asympototic
+defines the Landau's symbols and provides tool for reasoning about the asymptotic
 growth of the functions. 
 
 \subsection*{NREST}
 NREST is part of the verification frame work Isabelle-LLVM with time \cite{haslbeck2021verified}. It enables 
-the systematic verification of asympototic complexity of imperative algorithms in Isabelle \cite{zhan2018verifying}. 
+the systematic verification of asymptotic complexity of imperative algorithms in Isabelle \cite{zhan2018verifying}. 
 We apply this framework 
 to verify the polynomial-time complexity of iteration of unordered data structures, such as sets.
 
@@ -113,7 +113,7 @@ The handling of a decision problem usually involves two questions:
 If the answer to the first question is yes for a problem, it is a decidable problem, otherwise it is non-decidable. 
 We do not expect a yes-no answer for the second question, but would like to find 
 the optimal complexity for the algorithm, e.g. logarithmic complexity, polynomial complexity, etc. 
-While some problems are possible to be computed in an optimal compleixty by a deterministic algorithm, 
+While some problems are possible to be computed in an optimal complexity by a deterministic algorithm, 
 there are also a few problems, for which no deterministic polynomial-time algorithm is found. 
 We limit these problems and given them a formal definition.
 \begin{definition}
@@ -200,7 +200,7 @@ the existing definition of polynomial-time reduction in the Karp21 project requi
 We are consistent with this definition, and hence verified the polynomial-space complexity in each reduction as well.
 Let $f$ denote a polynomial-time reduction from $A$ to $B$, while $f_{alg}$ denotes the NREST version of the reduction.
 Furthermore, we define sizing functions $s_A$ and $s_B$ as metrics for the asymptotic classes.
-To show that the reduction is polynomial, we show that the reduction is polynomially bounded in terms 
+To show that the reduction is polynomial, we show that the reduction is polynomial bounded in terms 
 of time and space, which are respectively the \textit{refines} and the \textit{size} lemma.
 \begin{align*}
     refines: \quad f_{alg}(A) \leq \mathcal{O}((s_A(A))^k) \\
