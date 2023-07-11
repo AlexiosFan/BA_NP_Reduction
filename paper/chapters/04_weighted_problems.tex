@@ -221,7 +221,7 @@ For convenience, we use the notations of multi-sets for the lists.
 Hence $as - as'$ stands for the difference between two lists, 
 while $x \in as$ shows the existence of $x$ in $as$.
 Additionally, $\#$ is used to append elements at the front of the lists. 
-\problem{Partition}{A list $as$ of natural numbers.}{Is there a sub-list $as' \subset s$ s.t. 
+\problem{Partition}{A list $as$ of natural numbers.}{Is there a sub-list $as' \subset as$ s.t. 
 \begin{align*} 
     \sum_{x \in as'} x = \sum_{x \in  as - as'} x \tag{2} \label{eq:2}
 \end{align*}
@@ -247,7 +247,7 @@ We give the definition of Subset Sum using a list.
     A natural number list $as$, a natural number $s$}{
     Is there a sub-list $as' \subset as$ s.t. 
     \begin{align*}
-        \sum_{x \in as'} x = B \tag{3} \label{eq:3}
+        \sum_{x \in as'} x = s \tag{3} \label{eq:3}
     \end{align*}
 }
 \begin{myalign}
@@ -265,8 +265,8 @@ With this definition, we start to show the soundness of the reduction.
     \label{lemma:11}
     If there exists an $as'$ s.t. \hyperref[eq:3]{equation (3)} holds for $(as, B)$, \hyperref[eq:2]{equation (2)} should hold for the reduced $bs$.
 \end{lemma}
-We construct a $bs'$ from $as'$ by 
 \begin{proof}
+We construct a $bs'$ from $as'$ by 
     \begin{align*}
         bs' &= (1 - s + \sum_{x \in as} x) \# as' \\
         bs - bs' &=  (s + 1) \# (as - as')
@@ -291,8 +291,17 @@ Similarly, we can show the completeness of the reduction.
     (1 - s + \sum_{x \in as} x) + (s + 1) = 2 + \sum_{x \in as} x > \sum_{x \in as} x
 \end{align*}
 As a result, $(1 - s + \sum_{x \in as} x)$ and $s + 1$ are not supposed be simultaneously existent in $bs'$. 
-After separating the first two elements of bs into different sub-lists, the $as'$ is constructed 
-by obtaining the tail of $bs'$, with which the completeness is proven.
+W.L.o.G. assume $(1 - s + \sum_{x \in as} x) \in bs'$ and $(s + 1) \in bs - bs'$. 
+The $as'$ is obtained by removing $(1 - s + \sum_{x \in as} x)$ from $bs'$, while removing $(s + 1)$ from $bs - bs'$.
+throws $as - as'$. According to \hyperref[eq:2]{Equation (2)}, it now holds 
+\begin{align*}
+    (1 - s + \sum_{x \in as} x) + \sum_{x \in as'} x = (s + 1) + \sum_{x \in as - as'} x
+\end{align*}
+This results in 
+\begin{align*}
+    \sum_{x \in as'} x = s
+\end{align*}
+which proves the completeness of the reduction.
 \end{proof} 
 Finally, we analyse the complexity of the reduction.
 \begin{lemma}[Polynomial Complexity]
@@ -336,10 +345,11 @@ with the equality
 
 \subsection{Implementation Details of Subset Sum in List}
 \subsubsection*{Intermediate Step}
-Although the reduction is more straightforward compared to the previously introduced ones, the implementation is even lengthier. 
+Although the reduction is more straightforward compared to the previous ones, the implementation is even lengthier. 
 The reason is that conversion of the set to a list also needs an additional reduction for indexing. For this reason, we introduce 
 a intermediate step, \textbf{subset\_sum\_indices} in \hyperref[fig:4.5]{Figure 4.5}.
-Apparently, to map $S$ to an set of integers from 1 to $|S|$, we need to apply \hyperref[lemma:9]{Lemma 9} again. 
+This step maps $S$ to an set to a set of natural numbers from 1 to $|S|$, which is exactly the index of elements 
+in the list in the next step. Apparently, we need to apply \hyperref[lemma:9]{Lemma 9} again. 
 As always, we have to check if $S$ is finite, because finiteness is a requirement of the reduction.
 \begin{figure}[!h]
     \Snippet{ss-indices-def}
@@ -427,8 +437,7 @@ Thus, it is not an absolutely better definition.
 The proof of the polynomial-time complexity is also trivial. 
 An NREST version is given in \hyperref[fig:4.10]{Figure 4.10}. 
 As shown in \hyperref[table:4.5]{Table 4.5}, the reduction costs linear complexity. 
-An interesting phenomenon is the complexity of constructing the new finite list. 
-When constructing the list, we have to iterate and sum up the list elements.
+An interesting phenomenon is the complexity of constructing the new finite list, when we have to iterate and sum up the list elements.
 According to our \hyperref[para1]{paradigm}, iterating and accessing the structure both cost one unit of time. 
 The addition, as an arithmetic operation, also costs one unit of time.
 Hence the resulting complexity is $3n$ even though we do not modify the list.
@@ -462,7 +471,7 @@ Since the reductions and definitions are nicely chosen, the implementation was i
 and largely automated. Hence a discussion for implementation details is omitted for these problems.
 
 \subsection{Knapsack}
-\problem{Knapsack}{A finite set S, a weighting function $w$, a limiting function $b$, a upperbound $W$, a lowerbound $B$}{
+\problem{Knapsack}{A finite set S, a weighting function $w$, a limiting function $b$, an upperbound $W$, a lowerbound $B$}{
     Is there a subset $S' \subseteq S$ s.t. 
     \begin{align*}
         \sum_{x \in S'} w(x) &\leq W \\ 
