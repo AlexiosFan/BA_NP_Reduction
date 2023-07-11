@@ -1,34 +1,21 @@
 # Description
-This is the repository for the bachelor thesis on the NP-reduction of the exact cover, subset sum, knapsack etc.
+This is the repository for the bachelor thesis on the NP-hardness of Exact Cover, Exact Hitting Set, 
+Subset Sum, Partition, Knapsack and Zero-One Integer Programming. The work is done in Isabelle, 
+on the basis of the [Karp21](https://github.com/rosskopfs/poly-reductions) project.
 
-# Change log
-A change log as well as working plan is also listed here.
-
-##  16/02/2023
-Creation of the repository
-
-## 01/03/2023
-Starting to work on the basic setting. 
-  - Included the poly-reduction repository as a dependency. 
-  - Resolved some old errors in the subdirectory of Karp21. 
-  - Resolved the dependency problems in the directory original_work, which is the
-  workspace for the thesis project
-
-## 10/03/2023
-Added an on-paper proof for polynomial reduction from **3SAT** to **Exact Cover**
-
-## 24/03/2023
-Finished and did a first few refinements of the correctness of the reduction from **3SAT**  to **Exact Cover**
-
-## 11/04/2023
-Finished the proof of the polynomial complexity of the reduction from **3SAT** to **Exact Cover**
-
-## 15/04/2023
-Finished the proof of the correctness and polynomial complexity of the reduction from **Exact cover** to **Subset sum**
-
-## 25/04/2023
-Finished the proof of the correctness of the reduction from **subset sum** to **partition**
-
-## 02/05/2023
-Finished the proof of the correctness of the reduction from **exact cover** to
-**hitting set**
+## How to use this project
+It is suggested to view this project with Isabelle editors. 
+To successfully run this project, make sure that you have Isabelle-2022 installed and added to path and 
+downloaded Archive of Formal Proofs 
+to the lastest version. 
+Then there are a few steps to do 
+1. Build the Karp21 session in direcotry `/poly-reduction/Karp21` with the command
+```
+  isabelle jedit -l HOL-Analysis Karp21/All_Reductions_Poly.thy &
+```
+2. Build the project in the original path with the command 
+```
+  isabelle jedit -d your_path_to_current_directory -l Karp21
+```
+Alternatively, it is also possible to replace `jedit` with `vscode` if that is your preferred editor.
+3. Enjoy
