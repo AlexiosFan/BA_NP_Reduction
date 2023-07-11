@@ -185,7 +185,7 @@ After entering the reduction, we construct the bijective mapping from \hyperref[
 in \hyperref[def:13]{Definition 13}. \\\\
 Constructing the mapping and the constant $B$ needs to iterate and modify the sets, 
 costing at least $3n$ unit of time according to the \hyperref[para1]{paradigm}.  
-On the other hand, the construction of the base costs only $n + 3$ because we only iterate set and count the cardinality without doing any configuration.
+On the other hand, the construction of the base costs only $n + 3$ units of time because we only iterate set and count the cardinality without doing any configuration.
 Different from the previous reductions, this reduction returns not only a set but also two constants,
 resulting a few constant operations during the reduction. Overall, the reduction has linear complexity,
 which is the same as the pen-and-paper proof.
@@ -437,7 +437,7 @@ Thus, it is not an absolutely better definition.
 The proof of the polynomial-time complexity is also trivial. 
 An NREST version is given in \hyperref[fig:4.10]{Figure 4.10}. 
 As shown in \hyperref[table:4.5]{Table 4.5}, the reduction costs linear complexity. 
-An interesting phenomenon is the complexity of constructing the new finite list, when we have to iterate and sum up the list elements.
+An interesting phenomenon is the complexity of constructing the new finite list, where we have to iterate and sum up the list elements.
 According to our \hyperref[para1]{paradigm}, iterating and accessing the structure both cost one unit of time. 
 The addition, as an arithmetic operation, also costs one unit of time.
 Hence the resulting complexity is $3n$ even though we do not modify the list.
@@ -478,6 +478,9 @@ and largely automated. Hence a discussion for implementation details is omitted 
         \sum_{x \in S'} b(x) &\geq B \tag{4} \label{eq:4}
     \end{align*}
 }
+\begin{myalign}
+    \textbf{Knapsack}_{YES} := \{(S, w, b, W, B) | \exists S' \subseteq S. \sum_{x \in S'} w(x) \leq W \land \sum_{x \in S'} b(x) \geq B\}
+\end{myalign}
 This definition also stems from the book \textit{The design and analysis of algorithms} \cite{kozen1992design}. 
 We reduce Subset Sum to Knapsack. With $(S, w, B)$ as a YES-instance of Subset Sum, $(S, w, w, B, B)$
 is then a YES-instance of knapsack.
@@ -494,8 +497,8 @@ is then a YES-instance of knapsack.
     Apparently, the reduction is constant, for all operations are constant. 
 \end{proof}
 
-\subsection{Zero-one Integer Programming}
-\problem{Zero-one Integer Programming}{A finite set $X$ of pairs $(x, b)$, where $x$ is an $m$-tuple of integers and $b$
+\subsection{Zero-One Integer Programming}
+\problem{Zero-One Integer Programming}{A finite set $X$ of pairs $(x, b)$, where $x$ is an $m$-tuple of integers and $b$
 is an integer, an $m$-tuple $c$ and an integer $B$}{
     Is there an $m$-tuple $y$ of integers s.t.
     \begin{align*}
@@ -503,8 +506,11 @@ is an integer, an $m$-tuple $c$ and an integer $B$}{
         c^T \cdot y &\geq B, \forall (x, b) \in X \tag{5} \label{eq:5}
     \end{align*}
 }
+\begin{myalign}
+    \textbf{0-1 Integer Programming}_{YES} := \{(X, c, B) |\exists y. \forall (x, b) \in X. x^T \cdot y \leq b \land c^T \cdot y \leq B\}
+\end{myalign}
 Although most researchers tend to use matrix for the 
-definition of the zero-one integer programming, we follow the definition from \textit{Computers and Intractability} \cite{garey1979computers}, because 
+definition of the Zero-One Integer Programming, we follow the definition from \textit{Computers and Intractability} \cite{garey1979computers}, because 
 it is convenient for our definition and consequently requires less effort. 
 Given a YES-instance of Subset Sum in List,
 (as, s), let 
