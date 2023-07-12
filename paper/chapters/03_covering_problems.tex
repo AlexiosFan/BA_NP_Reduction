@@ -203,7 +203,7 @@ we also benefited from reusing the existing lemmas in the relating dependency.
 \subsubsection{Encapsulation Type for the Construction}
 Intuitively, the variables, positions and clauses can be represented by tuple of indices. However, it is not easy 
 to unify the representation such that they are of the same type. For example, a unary set of position is representable with
-one single index, whereas a binary set of a clause and a position needs at least two indices. 
+one index, whereas a binary set of a clause and a position needs at least two indices. 
 On the contrary, an encapsulation type is exempted from the tedious handling of tuples.
 Thus, we implement this encapsulation type \textbf{xc\_element} with the help of \textbf{datatype} keyword from Isabelle, 
 as shown in \hyperref[figure:5]{Figure 3.3}
@@ -242,10 +242,10 @@ Though it is bit lengthy, the general idea is clear and straightforward.
 In the complexity analysis, it is necessary to determine the metrics on which the complexity is dependent. For 
 a propositional logical formula $F$, we will iterate all variables, clauses and positions. Hence all of them are needed as metrics. 
 Nevertheless, the NREST implementation does not support a complexity bound with different metrics. 
-As a result, we choose the maximum of all metrics and use it as our sole metrics\footnote{A few previous reductions in Karp21 project use the number of clauses 
+As a result, we choose the maximum of all metrics and use it as our sole metric\footnote{A few previous reductions in Karp21 project use the number of clauses 
 as a metric. Since those reductions iterated only the clauses, this choice of metric is not an issue.}. Similarly, we define $max |X| |S|$ as the metrics 
 for the YES-instance of exact cover  $(X, S)$. Then we can define the NREST-algorithm in \hyperref[fig:3.5]{Figure 3.5}.
-The NREST-algorithm collects the set of the variables, clauses, and literals first. 
+The NREST-algorithm collects the sets of the variables, clauses, and literals first. 
 Then it collects the four kinds of sub-collections in $S$. 
 Finally, $X$ and $S$ are constructed by joining the corresponding sets together.
 \begin{figure}[!h]
@@ -415,7 +415,7 @@ We determine the size of the YES-instance of Exact Hitting Set $C$ as $|C|$. Acc
 we define the NREST algorithm in \hyperref[fig:3.9]{Figure 3.9}. 
 The NREST-algorithm consists of a condition check, which we have stated to be necessary, 
 and a command that constructs the new instance.
-In the same way as the implementation for the reduction from Satisfiability to Exact Cover, we can only use one single metric. 
+In the same way as the implementation for the reduction from Satisfiability to Exact Cover, we can only use one metric. 
 Let $n = max |X| |S|$ be the metric for Exact cover. 
 The complexity of each operation is given in \hyperref[table:3.2]{Table 3.2}. 
 Since the old set is iterated and modified, the coefficient $3$ is necessary according to our \hyperref[para1]{paradigm}.
@@ -430,7 +430,7 @@ However, an additional step is required for indicating the relationship between 
 While it holds $|C| = |X|$, 
 the size of the Exact Cover problem is defined by $max |X| |S|$ instead of $|X|$. Hence we can
 only conclude that the size of the Exact Hitting Set is less equal than the size of the Exact Cover. 
-The proof automation will then fails in showing $|C| \leq |S| \cdot |S| + 1$ when $|S| \geq |X|$. 
+The proof-automation will then fail in showing $|C| \leq |S| \cdot |S| + 1$ when $|S| \geq |X|$. 
 For this reason, we have to prove one additional lemma showing this property in \hyperref[fig:3.10]{Figure 3.9}.
 
 
